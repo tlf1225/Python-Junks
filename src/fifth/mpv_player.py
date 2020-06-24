@@ -9,10 +9,10 @@ environ["PATH"] = f"{environ['PYTHONPATH'].split(pathsep)[0]}/lib{pathsep}{envir
 
 
 class Player:
-    flag = True
-
+    
     def __init__(self) -> None:
         super().__init__()
+        self.flag = True
 
         def log_mpv(loglevel, component, message):
             print(f"[{loglevel}] {component}: {message}")
