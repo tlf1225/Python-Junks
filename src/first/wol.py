@@ -14,5 +14,11 @@ if __name__ == '__main__':
     if len(argv) > 1:
         main(argv[1])
     else:
-        [main("".join(x.split(":"))) for x in ["50:26:90:A4:E0:AB", "04:92:26:C2:4E:0F", "70:85:C2:AC:A9:B1"]]
-    sleep(2)
+        [main(x.replace(":", "", 5)[:12])
+         for x in
+         ["50:26:90:A4:E0:AB"
+          # , "04:92:26:C2:4E:0F"
+          # , "70:85:C2:AC:A9:B1"
+          ]]
+
+        sleep(2)
