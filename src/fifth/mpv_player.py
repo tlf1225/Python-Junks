@@ -1,15 +1,12 @@
 from code import interact as console
-from os import environ, pathsep
 from sys import stderr
 from time import sleep
 
 from mpv import MPV
 
-environ["PATH"] = f"{environ['PYTHONPATH'].split(pathsep)[0]}/lib{pathsep}{environ['PATH']}"
-
 
 class Player:
-    
+
     def __init__(self) -> None:
         super().__init__()
         self.flag = True
@@ -41,11 +38,14 @@ class Player:
         while self.flag:
             # noinspection
             try:
+                locals().update({"ex": lambda: (_ for _ in ()).throw(SystemExit)})
                 console(banner="Interpreter", local=locals(), exitmsg="Continue")
+            except SystemExit:
+                pass
             except Exception as e:
                 print(e, file=stderr)
             except:
-                print("Exception", file=stderr)
+                print(e, file=stderr)
             finally:
                 self.player.wait_for_playback()
 
@@ -61,6 +61,9 @@ class Player:
 
 
 if __name__ == '__main__':
+    from os import environ, pathsep
+
+    environ["PATH"] = f"{environ['PYTHONPATH'].split(pathsep)[0]}/lib{pathsep}{environ['PATH']}"
     ax = Player()
     ax.play_mpv("ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")
     sleep(0.5)
