@@ -45,7 +45,7 @@ class Player:
             except Exception as e:
                 print(e, file=stderr)
             except:
-                print(e, file=stderr)
+                print("Unknown Error", file=stderr)
             finally:
                 self.player.wait_for_playback()
 
