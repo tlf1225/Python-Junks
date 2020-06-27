@@ -42,10 +42,9 @@ class Player:
         while self.flag:
             # noinspection
             try:
-                locals().update({"ex": lambda: (_ for _ in ()).throw(SystemExit)})
-                console(banner="Interpreter", local=locals(), exitmsg="Continue")
+                console(banner="Interpreter", local=locals().update(globals()), exitmsg="Continue")
             except SystemExit:
-                pass
+                return
             except Exception as e:
                 print(e, file=stderr)
             except:
