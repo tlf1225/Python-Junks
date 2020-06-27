@@ -25,6 +25,7 @@ class Player:
                 self.flag = False
 
         self.event_handler = event_handler
+        self.setup()
 
     def log_mpv(self, loglevel, component, message):
         self.log.write(f"[{loglevel}] {component}: {message}\n")
@@ -41,8 +42,9 @@ class Player:
         self.player.autofit = "1280x720"
 
     def play_mpv(self, url) -> None:
-        self.player.play(url)
+        self.player.playlist_shuffle = True
         self.player.shuffle = True
+        self.player.play(url)
         sleep(5)
 
     def wait_loop(self) -> None:
@@ -80,6 +82,6 @@ if __name__ == '__main__':
     sleep(0.5)
     ax.player.playlist_pos = 33
     ax.wait_loop()
-    sleep(1)
+    sleep(0.5)
     ax.stop_mpv()
     del ax
