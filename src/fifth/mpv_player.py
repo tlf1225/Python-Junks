@@ -45,7 +45,7 @@ class Player:
                 console(banner="Interpreter", local=locals().update(globals()), exitmsg="Continue")
             except SystemExit as e:
                 print(f"Exit: {e.code}")
-                if e.code != 0:
+                if e.code is not None or e.code != 0:
                     self.flag = False
             except Exception as e:
                 print(e, file=stderr)
