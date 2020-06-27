@@ -46,7 +46,7 @@ class Player:
             except SystemExit as e:
                 print(f"Exit: {e.code}")
                 if e.code != 0:
-                    return
+                    self.flag = False
             except Exception as e:
                 print(e, file=stderr)
             except:
