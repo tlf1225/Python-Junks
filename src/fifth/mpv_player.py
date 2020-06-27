@@ -1,4 +1,5 @@
 from code import interact as console
+from io import StringIO
 from os import environ, pathsep
 from sys import stderr
 from time import sleep
@@ -14,11 +15,9 @@ class Player:
     def __init__(self) -> None:
         super().__init__()
         self.flag = True
+        self.log = StringIO()
 
-        def log_mpv(loglevel, component, message):
-            print(f"[{loglevel}] {component}: {message}")
-
-        self.player = MPV(loglevel="warn", log_handler=log_mpv, ytdl=True, input_default_bindings=True, input_vo_keyboard=True, osc=True)
+        self.player = MPV(loglevel="warn", log_handler=self.log_mpv, ytdl=True, input_default_bindings=True, input_vo_keyboard=True, osc=True)
 
         @self.player.event_callback("end-file")
         def event_handler(event):
@@ -26,6 +25,14 @@ class Player:
                 self.flag = False
 
         self.event_handler = event_handler
+
+    def log_mpv(self, loglevel, component, message):
+        self.log.write(f"[{loglevel}] {component}: {message}\n")
+        if self.log.tell() > 8192:
+            self.log.seek(0)
+            print("".join(self.log.readlines()))
+            self.log.truncate(0)
+            self.log.seek(0)
 
     def setup(self) -> None:
         self.player["vo"] = "gpu"
@@ -42,17 +49,19 @@ class Player:
         while self.flag:
             # noinspection
             try:
-                console(banner="Interpreter", local=locals().update(globals()), exitmsg="Continue")
+                g = globals().copy()
+                ll = locals().copy()
+                g.update(ll)
+                console(banner="Interpreter", local=g, exitmsg="Continue")
             except SystemExit as e:
                 print(f"Exit: {e.code}")
                 if e.code is not None and e.code != 0:
+                    self.player.wait_for_playback()
                     self.flag = False
             except Exception as e:
                 print(e, file=stderr)
             except:
                 print("Unknown Error", file=stderr)
-            finally:
-                self.player.wait_for_playback()
 
     def stop_mpv(self) -> None:
         self.event_handler.unregister_mpv_events()
