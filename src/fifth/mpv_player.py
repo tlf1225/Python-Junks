@@ -1,6 +1,10 @@
 from code import interact as console
+from os import environ, pathsep
 from sys import stderr
 from time import sleep
+
+if "PYTHONPATH" in environ:
+    environ["PATH"] = f"{environ.get('PYTHONPATH').split(pathsep)[0] or ''}\\lib{pathsep}{environ.get('PATH') or ''}"
 
 from mpv import MPV
 
