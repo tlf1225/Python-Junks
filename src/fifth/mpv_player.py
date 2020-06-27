@@ -43,8 +43,10 @@ class Player:
             # noinspection
             try:
                 console(banner="Interpreter", local=locals().update(globals()), exitmsg="Continue")
-            except SystemExit:
-                return
+            except SystemExit as e:
+                print(f"Exit: {e.code}")
+                if e.code == 0:
+                    return
             except Exception as e:
                 print(e, file=stderr)
             except:
