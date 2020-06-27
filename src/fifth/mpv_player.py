@@ -27,7 +27,7 @@ class Player:
         self.event_handler = event_handler
         self.setup()
 
-    def log_mpv(self, loglevel, component, message):
+    def log_mpv(self, loglevel, component, message) -> None:
         self.log.write(f"[{loglevel}] {component}: {message}\n")
         if self.log.tell() > 8192:
             self.log.seek(0)
@@ -36,7 +36,9 @@ class Player:
             self.log.seek(0)
 
     def setup(self) -> None:
-        self.player["vo"] = "gpu"
+        self.player["vo"] = "gpu,direct3d,sdl"
+        self.player["ao"] = "wasapi,openal,sdl"
+        self.player.hwdec = "auto-copy-safe"
         self.player.loop_playlist = "inf"
         self.player.geometry = "1280x720"
         self.player.autofit = "1280x720"
