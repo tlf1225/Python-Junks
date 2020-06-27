@@ -61,9 +61,6 @@ class Player:
 
 
 if __name__ == '__main__':
-    from os import environ, pathsep
-
-    environ["PATH"] = f"{environ['PYTHONPATH'].split(pathsep)[0]}/lib{pathsep}{environ['PATH']}"
     ax = Player()
     ax.play_mpv("ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")
     sleep(0.5)
