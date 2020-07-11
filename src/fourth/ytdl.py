@@ -1,7 +1,7 @@
 from youtube_dl import YoutubeDL
 
 
-def main():
+def main(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr", ffmpeg="D:/"):
     ytdl = YoutubeDL(params={
         "no_cache": True,
         "no_warnings": False,
@@ -9,9 +9,9 @@ def main():
         "quiet": True,
         "skip_download": True,
         "simulate": True,
-        "ffmpeg_location": "D:/ffmpeg-20200603-b6d7c4c-win64-shared/bin"
+        "ffmpeg_location": ffmpeg
     })
-    result = ytdl.extract_info(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr", download=False)
+    result = ytdl.extract_info(url=url, download=False, ie_key="Youtube")
     if "entries" not in result:
         print(result["title"])
         for url in sorted(result["formats"], key=lambda x: int(x["format_id"])):
@@ -25,4 +25,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(url="https://www.youtube.com/watch?v=WJ16v-hD1mw", ffmpeg="D:/ffmpeg-20200628-4cfcfb3-win64-shared/bin")
