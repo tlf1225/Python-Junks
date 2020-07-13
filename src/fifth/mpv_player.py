@@ -119,9 +119,9 @@ class Player:
         :return: None
         """
 
-        self.player.shuffle = True
         self.player.play(url)
         sleep(5)
+        self.player.shuffle = True
 
     def wait_loop(self) -> None:
         """
@@ -139,13 +139,13 @@ class Player:
                 console(banner="Interpreter", local=gg, exitmsg="Continue")
             except SystemExit as e:
                 if e.code is not None and e.code != 0:
-                    if not self.player.playback_abort:
+                    if not self.player.playback_abort and not self.player.pause:
                         self.player.wait_for_playback()
                     self.flag = False
             except Exception as e:
                 print(e, file=stderr)
             except:
-                print("Unknown Error", file=stderr)
+                pass
 
     def stop_mpv(self) -> None:
         """
@@ -265,6 +265,14 @@ def main():
         # ax.player.playlist_pos = 33
         # add_playlist(ax)
         # ax.player.command("playlist_shuffle")
+        # ax.player.command("osd-bar", "show-progress")
+        # ax.player.media_keys = True
+        # ax.player.osd_duration = 5000
+        # ax.player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
+        # ax.player.cycle("pause")
+        # ax.player.input_bindings key binding list
+        # ax.player.time_pos playback time
+        ax.player.af = "lavfi=[dynaudnorm=g=31:c=1],asoftclip=type=sin"
         ax.wait_loop()
         ax.stop_mpv()
     del ax
