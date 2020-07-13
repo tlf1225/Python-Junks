@@ -26,7 +26,7 @@ def add_playlist(play):
     :param play: Player Class
     :return: None
     """
-    if not hasattr(play, "player") or not isinstance(play, Player):
+    if not isinstance(play, Player) or not hasattr(play, "player"):
         return
 
     for t in ["7kHDRCO43iw", "thDKz6QQtQk", "fZLptuqF9pk", "Oiud3DLGloA", "v0jb3Ld8bF8",
