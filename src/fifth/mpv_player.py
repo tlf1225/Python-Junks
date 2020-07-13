@@ -106,11 +106,11 @@ class Player:
         self.player.loop_playlist = "inf"
         self.player.geometry = self.player.autofit = "1280x720"
         self.player.af = "lavfi=[dynaudnorm=g=31:c=1],asoftclip=type=sin"
+        self.player.media_keys = True
         # self.player.playlist_pos = 33
         # add_playlist(ax)
         # self.player.command("playlist_shuffle")
         # self.player.command("osd-bar", "show-progress")
-        # self.player.media_keys = True
         # self.player.osd_duration = 5000
         # self.player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
         # self.player.cycle("pause")
@@ -278,12 +278,11 @@ def main():
 
 
 if __name__ == '__main__':
-    from os import environ, pathsep, sep
+    from os import environ, pathsep
     from time import sleep
 
-    if "PYTHONPATH" in environ:
-        environ["PATH"] = pathsep.join(
-            [f"{environ['PYTHONPATH'].split(pathsep)[0]}{sep}lib", "D:/ffmpeg-20200628-4cfcfb3-win64-shared/bin", environ['PATH']])
+    environ["PATH"] = pathsep.join(["D:/Depends/mpv/libmpv", "D:/ffmpeg-20200713-7772666-win64-shared/bin", environ['PATH']])
     with open(__file__) as file:
         print(file.read())
+
     main()
