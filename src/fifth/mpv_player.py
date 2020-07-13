@@ -1,22 +1,14 @@
-from code import interact as console
-from io import StringIO
-from os import environ, pathsep, sep
-from re import search
-from sys import stderr
-from time import sleep
-from urllib.request import urlopen
-from xml.etree.ElementTree import fromstring
-
-import ffmpeg
-from youtube_dl import YoutubeDL
-
-
 def update_check():
     """
     For Windows 10 x64 LibMPV and YoutubeDL
 
     :return: LibMPV and YoutubeDL Download URL
     """
+
+    from re import search
+    from urllib.request import urlopen
+    from xml.etree.ElementTree import fromstring
+
     with urlopen("https://github.com/ytdl-org/youtube-dl/releases.atom") as m:
         ytdl = fromstring(m.read())
     down_ytdl = "https://github.com/ytdl-org/youtube-dl/releases/download/" + \
@@ -34,6 +26,8 @@ def add_playlist(play):
     :param play: Player Class
     :return: None
     """
+    if not hasattr(play, "player") or not isinstance(play, Player):
+        return
 
     for t in ["7kHDRCO43iw", "thDKz6QQtQk", "fZLptuqF9pk", "Oiud3DLGloA", "v0jb3Ld8bF8",
               "Xuf2Kt2CfkQ", "xoNDIBcNI-I", "sNuNR8v9MLU", "oMr0y0hZ2HA", "aKtHNlP0_zo",
@@ -54,16 +48,17 @@ class Player:
         Constructor
         """
 
+        from sys import stderr
+        from io import StringIO
         try:
             from mpv import MPV
-            self.flag = True
         except (OSError, ImportError) as e:
             print("Couldn't Initialize MPV", file=stderr)
             print(e, file=stderr)
             return
 
+        self.flag = True
         self.log = StringIO()
-
         self.player = MPV(loglevel="warn", log_handler=self.log_mpv, ytdl=True, input_default_bindings=True, input_vo_keyboard=True, osc=True)
 
         @self.player.event_callback("end-file")
@@ -110,6 +105,17 @@ class Player:
         self.player.hwdec = "auto-copy-safe"
         self.player.loop_playlist = "inf"
         self.player.geometry = self.player.autofit = "1280x720"
+        self.player.af = "lavfi=[dynaudnorm=g=31:c=1],asoftclip=type=sin"
+        # self.player.playlist_pos = 33
+        # add_playlist(ax)
+        # self.player.command("playlist_shuffle")
+        # self.player.command("osd-bar", "show-progress")
+        # self.player.media_keys = True
+        # self.player.osd_duration = 5000
+        # self.player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
+        # self.player.cycle("pause")
+        # self.player.input_bindings key binding list
+        # self.player.time_pos playback time
 
     def play_mpv(self, url) -> None:
         """
@@ -119,9 +125,8 @@ class Player:
         :return: None
         """
 
-        self.player.play(url)
-        sleep(5)
         self.player.shuffle = True
+        self.player.play(url)
 
     def wait_loop(self) -> None:
         """
@@ -130,13 +135,15 @@ class Player:
         :return: None
         """
 
+        from code import interact
+        from sys import stderr
         while self.flag:
-            # noinspection PyBroadException
             try:
                 gg = globals().copy()
                 ll = locals().copy()
                 gg.update(ll)
-                console(banner="Interpreter", local=gg, exitmsg="Continue")
+                interact(banner="Interpreter", local=gg, exitmsg="Continue")
+                del gg, ll
             except SystemExit as e:
                 if e.code is not None and e.code != 0:
                     if not self.player.playback_abort and not self.player.pause:
@@ -144,8 +151,6 @@ class Player:
                     self.flag = False
             except Exception as e:
                 print(e, file=stderr)
-            except:
-                pass
 
     def stop_mpv(self) -> None:
         """
@@ -157,7 +162,6 @@ class Player:
         self.event_handler.unregister_mpv_events()
         self.player.quit()
         self.player.terminate()
-        sleep(3)
 
     @staticmethod
     def ytdl_info(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr", ffloc="D:/") -> list:
@@ -168,6 +172,8 @@ class Player:
         :param ffloc: FFmpeg Location
         :return: Format Requests
         """
+
+        from youtube_dl import YoutubeDL
 
         information = []
         with YoutubeDL(params={
@@ -230,10 +236,12 @@ def load_with_ffmpeg(p=Player(), url="https://www.youtube.com/watch?v=YoPx9EhxR0
         :return:
         """
 
-        i = ax.ytdl_info(url=url)
+        import ffmpeg
+
+        i = p.ytdl_info(url=url)
         if not i:
             return
-        # noinspection PyBroadException
+        
         for j in i:
             nonlocal process
             video = ffmpeg.input(j["137"], fflags="discardcorrupt")
@@ -262,23 +270,17 @@ def main():
     ax = Player()
     if hasattr(ax, "flag") and ax.flag:
         ax.play_mpv("ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")
-        # ax.player.playlist_pos = 33
-        # add_playlist(ax)
-        # ax.player.command("playlist_shuffle")
-        # ax.player.command("osd-bar", "show-progress")
-        # ax.player.media_keys = True
-        # ax.player.osd_duration = 5000
-        # ax.player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
-        # ax.player.cycle("pause")
-        # ax.player.input_bindings key binding list
-        # ax.player.time_pos playback time
-        ax.player.af = "lavfi=[dynaudnorm=g=31:c=1],asoftclip=type=sin"
+        sleep(3)
         ax.wait_loop()
         ax.stop_mpv()
+        sleep(1)
     del ax
 
 
 if __name__ == '__main__':
+    from os import environ, pathsep, sep
+    from time import sleep
+
     if "PYTHONPATH" in environ:
         environ["PATH"] = pathsep.join(
             [f"{environ['PYTHONPATH'].split(pathsep)[0]}{sep}lib", "D:/ffmpeg-20200628-4cfcfb3-win64-shared/bin", environ['PATH']])
