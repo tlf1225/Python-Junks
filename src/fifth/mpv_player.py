@@ -32,7 +32,8 @@ def add_playlist(play):
     for t in ["7kHDRCO43iw", "thDKz6QQtQk", "fZLptuqF9pk", "Oiud3DLGloA", "v0jb3Ld8bF8",
               "Xuf2Kt2CfkQ", "xoNDIBcNI-I", "sNuNR8v9MLU", "oMr0y0hZ2HA", "aKtHNlP0_zo",
               "OjYskFbYJTI", "9m3qeiAgZvA", "BVGUA5vLsl8", "Rf9ppDaIxAI", "QRcagfSTRE0",
-              "mfZVElthNHA", "e3yq5UBR0hQ", "I42W9RyGvF4", "ZRWq2JFOSXw", "EHY4GTg1wpM"]:
+              "mfZVElthNHA", "e3yq5UBR0hQ", "I42W9RyGvF4", "ZRWq2JFOSXw", "EHY4GTg1wpM",
+              "6G5PS8alMuM", "oejeamt3akY", "B5nzIG1B45g"]:
         play.player.playlist_append(f"ytdl://{t}")
 
 
@@ -62,7 +63,7 @@ class Player:
         self.player = MPV(loglevel="warn", log_handler=self.log_mpv, ytdl=True, input_default_bindings=True, input_vo_keyboard=True, osc=True)
 
         @self.player.event_callback("end-file")
-        def event_handler(event):
+        def end_file_handler(event):
             """
             Event Handler
 
@@ -73,7 +74,11 @@ class Player:
             if event["event"]["reason"] == 3:
                 self.flag = False
 
-        self.event_handler = event_handler
+        @self.player.event_callback("shutdown")
+        def shutdown_handler(_):
+            self.flag = False
+
+        self.event_handler = [end_file_handler, shutdown_handler]
         self.setup()
 
     def log_mpv(self, loglevel, component, message) -> None:
@@ -106,16 +111,25 @@ class Player:
         self.player.loop_playlist = "inf"
         self.player.geometry = self.player.autofit = "1280x720"
         self.player.af = "lavfi=[dynaudnorm=g=31:c=1],asoftclip=type=sin"
+        self.player.vf = "lavfi=[fade=in:0:60]"
         self.player.media_keys = True
+        self.player.ytdl_raw_options = "no-cache="
         # self.player.playlist_pos = 33
         # add_playlist(ax)
-        # self.player.command("playlist_shuffle")
+        # self.player.playlist_shuffle()
         # self.player.command("osd-bar", "show-progress")
         # self.player.osd_duration = 5000
         # self.player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
         # self.player.cycle("pause")
         # self.player.input_bindings key binding list
         # self.player.time_pos playback time
+
+        """
+        from ctypes import windll
+        @self.player.event_callback("start-file")
+        def test_handler(_):
+            windll.kernel32.SetConsoleTitleW(self.player.media_title)
+        """
 
     def play_mpv(self, url) -> None:
         """
@@ -128,6 +142,24 @@ class Player:
         self.player.shuffle = True
         self.player.play(url)
 
+    @staticmethod
+    def reader(prompt=""):
+        data = input(prompt)
+        if data.startswith("/"):
+            parsed = data[1::].split(" ")
+            if len(parsed) > 2:
+                cmd, mot, other = parsed[0], parsed[1], parsed[2::]
+                if cmd == "mpv":
+                    if mot == "set":
+                        return f"self.player.{other[0]} = {other[1]}"
+                    elif mot == "get":
+                        return f"self.player.{other[0]}"
+                    elif mot == "call":
+                        return f"self.player.{other[0]}({','.join(other[1::])})"
+            return ""
+        else:
+            return data
+
     def wait_loop(self) -> None:
         """
         Console Interpreter
@@ -139,11 +171,11 @@ class Player:
         from sys import stderr
         while self.flag:
             try:
-                gg = globals().copy()
-                ll = locals().copy()
-                gg.update(ll)
-                interact(banner="Interpreter", local=gg, exitmsg="Continue")
-                del gg, ll
+                loc = locals().copy()
+                glo = globals().copy()
+                glo.update(loc)
+                interact(banner="Interpreter", readfunc=self.reader, local=glo, exitmsg="Continue")
+                del loc, glo
             except SystemExit as e:
                 if e.code is not None and e.code != 0:
                     if not self.player.playback_abort and not self.player.pause:
@@ -158,8 +190,8 @@ class Player:
 
         :return: None
         """
-
-        self.event_handler.unregister_mpv_events()
+        for x in self.event_handler:
+            x.unregister_mpv_events()
         self.player.quit()
         self.player.terminate()
 
@@ -241,7 +273,7 @@ def load_with_ffmpeg(p=Player(), url="https://www.youtube.com/watch?v=YoPx9EhxR0
         i = p.ytdl_info(url=url)
         if not i:
             return
-        
+
         for j in i:
             nonlocal process
             video = ffmpeg.input(j["137"], fflags="discardcorrupt")
@@ -251,10 +283,10 @@ def load_with_ffmpeg(p=Player(), url="https://www.youtube.com/watch?v=YoPx9EhxR0
                 run_async(pipe_stdout=True)
             buf = process.stdout
             while True:
-                temp = buf.read(1024)
-                if not temp:
+                ttt = buf.read(1024)
+                if not ttt:
                     break
-                yield temp
+                yield ttt
             del video, audio, buf
 
     process = None
@@ -269,6 +301,7 @@ def load_with_ffmpeg(p=Player(), url="https://www.youtube.com/watch?v=YoPx9EhxR0
 def main():
     ax = Player()
     if hasattr(ax, "flag") and ax.flag:
+        from time import sleep
         ax.play_mpv("ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")
         sleep(3)
         ax.wait_loop()
@@ -279,10 +312,24 @@ def main():
 
 if __name__ == '__main__':
     from os import environ, pathsep
-    from time import sleep
+    from sys import argv
 
-    environ["PATH"] = pathsep.join(["D:/Depends/mpv/libmpv", "D:/ffmpeg-20200713-7772666-win64-shared/bin", environ['PATH']])
+    temp = environ["PATH"].split(pathsep)
+
+    if len(argv) > 2:
+        temp.extend(argv[1::])
+    else:
+        temp.append("D:/Depends/mpv")
+        temp.append("D:/ffmpeg-20200713-7772666-win64-shared/bin")
+
+    temp = sorted(set(temp), key=temp.index)
+    environ["PATH"] = pathsep.join(temp)
+    del temp
+
     with open(__file__) as file:
         print(file.read())
+    del file
+
+    del argv, environ, pathsep
 
     main()
