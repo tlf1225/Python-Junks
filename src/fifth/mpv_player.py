@@ -10,13 +10,13 @@ def update_check():
     from xml.etree.ElementTree import fromstring
 
     with urlopen("https://github.com/ytdl-org/youtube-dl/releases.atom") as m:
-        ytdl = fromstring(m.read())
-    down_ytdl = "https://github.com/ytdl-org/youtube-dl/releases/download/" + \
-                search(r"\d{4}\.\d{2}\.\d{2}(?:\.\d)?", ytdl[5][3].text).group() + "/youtube-dl.exe"
+        youtube_dl = fromstring(m.read())
+    down_youtube_dl = "https://github.com/ytdl-org/youtube-dl/releases/download/" + \
+                      search(r"\d{4}\.\d{2}\.\d{2}(?:\.\d)?", youtube_dl[5][3].text).group() + "/youtube-dl.exe"
     with urlopen("https://sourceforge.net/projects/mpv-player-windows/rss?path=/libmpv") as y:
-        libmpv = fromstring(y.read())
-    down_mpv = libmpv[0][6][1].text
-    return down_ytdl, down_mpv
+        lib_mpv = fromstring(y.read())
+    down_mpv = lib_mpv[0][6][1].text
+    return down_youtube_dl, down_mpv
 
 
 def add_playlist(play):
@@ -58,28 +58,16 @@ class Player:
             print(e, file=stderr)
             return
 
-        self.flag = True
         self.log = StringIO()
         self.player = MPV(loglevel="warn", log_handler=self.log_mpv, ytdl=True, input_default_bindings=True, input_vo_keyboard=True, osc=True)
 
-        @self.player.event_callback("end-file")
-        def end_file_handler(event):
-            """
-            Event Handler
+        self.event_handler = []
 
-            :param event: Callback Event
-            :return: None
-            """
+        from argparse import ArgumentParser
+        self.parser = ArgumentParser(prog="mpv", description="mpv parser")
+        self.parser.add_argument("type", help="execute type")
 
-            if event["event"]["reason"] == 3:
-                self.flag = False
-
-        @self.player.event_callback("shutdown")
-        def shutdown_handler(_):
-            self.flag = False
-
-        self.event_handler = [end_file_handler, shutdown_handler]
-        self.setup()
+        self.__setup()
 
     def log_mpv(self, loglevel, component, message) -> None:
         """
@@ -98,7 +86,7 @@ class Player:
             self.log.truncate(0)
             self.log.seek(0)
 
-    def setup(self) -> None:
+    def __setup(self) -> None:
         """
         Construtor with Initialize
 
@@ -123,6 +111,7 @@ class Player:
         # self.player.cycle("pause")
         # self.player.input_bindings key binding list
         # self.player.time_pos playback time
+        # from getopt import getopt
 
         """
         from ctypes import windll
@@ -142,10 +131,13 @@ class Player:
         self.player.shuffle = True
         self.player.play(url)
 
-    @staticmethod
-    def reader(prompt=""):
+    def reader(self, prompt=""):
         data = input(prompt)
+        """
         if data.startswith("/"):
+            parser = self.parser.parse_args(data[1::].split(" "))
+            if parser[""]:
+                pass
             parsed = data[1::].split(" ")
             if len(parsed) > 2:
                 cmd, mot, other = parsed[0], parsed[1], parsed[2::]
@@ -159,6 +151,8 @@ class Player:
             return ""
         else:
             return data
+        """
+        return data
 
     def wait_loop(self) -> None:
         """
@@ -169,7 +163,7 @@ class Player:
 
         from code import interact
         from sys import stderr
-        while self.flag:
+        while not self.player.core_shutdown:
             try:
                 loc = locals().copy()
                 glo = globals().copy()
@@ -178,9 +172,7 @@ class Player:
                 del loc, glo
             except SystemExit as e:
                 if e.code is not None and e.code != 0:
-                    if not self.player.playback_abort and not self.player.pause:
-                        self.player.wait_for_playback()
-                    self.flag = False
+                    self.player.wait_until_paused()
             except Exception as e:
                 print(e, file=stderr)
 
@@ -247,15 +239,14 @@ class Player:
         :return: None
         """
 
-        if hasattr(self, "flag"):
-            if self.flag:
-                self.stop_mpv()
-            del self.flag
         if hasattr(self, "player"):
+            if not self.player.core_shutdown:
+                self.stop_mpv()
             del self.player
         if hasattr(self, "event_handler"):
             del self.event_handler
         if hasattr(self, "log"):
+            self.log.close()
             del self.log
 
 
@@ -270,11 +261,11 @@ def load_with_ffmpeg(p=Player(), url="https://www.youtube.com/watch?v=YoPx9EhxR0
 
         import ffmpeg
 
-        i = p.ytdl_info(url=url)
-        if not i:
+        information = p.ytdl_info(url=url)
+        if not information:
             return
 
-        for j in i:
+        for j in information:
             nonlocal process
             video = ffmpeg.input(j["137"], fflags="discardcorrupt")
             audio = ffmpeg.input(j["140"], fflags="discardcorrupt")
@@ -300,7 +291,7 @@ def load_with_ffmpeg(p=Player(), url="https://www.youtube.com/watch?v=YoPx9EhxR0
 
 def main():
     ax = Player()
-    if hasattr(ax, "flag") and ax.flag:
+    if hasattr(ax, "player"):
         from time import sleep
         ax.play_mpv("ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")
         sleep(3)
@@ -311,25 +302,15 @@ def main():
 
 
 if __name__ == '__main__':
-    from os import environ, pathsep
-    from sys import argv
-
-    temp = environ["PATH"].split(pathsep)
-
-    if len(argv) > 2:
-        temp.extend(argv[1::])
-    else:
-        temp.append("D:/Depends/mpv")
-        temp.append("D:/ffmpeg-20200713-7772666-win64-shared/bin")
-
-    temp = sorted(set(temp), key=temp.index)
-    environ["PATH"] = pathsep.join(temp)
-    del temp
+    from os import scandir, environ, pathsep, add_dll_directory
 
     with open(__file__) as file:
         print(file.read())
-    del file
 
-    del argv, environ, pathsep
+    for i in scandir("D:/"):
+        if "ffmpeg" in i.name:
+            environ["PATH"] += pathsep + i.path
 
-    main()
+    with add_dll_directory("D:/Depends/mpv") as dll:
+        environ["PATH"] += pathsep + dll.path
+        main()
