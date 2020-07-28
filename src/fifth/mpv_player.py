@@ -114,9 +114,9 @@ class Player:
         # from getopt import getopt
 
         """
-        from ctypes import windll
         @self.player.event_callback("start-file")
         def test_handler(_):
+            from ctypes import windll
             windll.kernel32.SetConsoleTitleW(self.player.media_title)
         """
 
@@ -133,7 +133,6 @@ class Player:
 
     def reader(self, prompt=""):
         data = input(prompt)
-        """
         if data.startswith("/"):
             parser = self.parser.parse_args(data[1::].split(" "))
             if parser[""]:
@@ -151,8 +150,6 @@ class Player:
             return ""
         else:
             return data
-        """
-        return data
 
     def wait_loop(self) -> None:
         """
@@ -164,17 +161,19 @@ class Player:
         from code import interact
         from sys import stderr
         while not self.player.core_shutdown:
+            loc = locals().copy()
+            glo = globals().copy()
+            glo.update(loc)
             try:
-                loc = locals().copy()
-                glo = globals().copy()
-                glo.update(loc)
                 interact(banner="Interpreter", readfunc=self.reader, local=glo, exitmsg="Continue")
-                del loc, glo
             except SystemExit as e:
                 if e.code is not None and e.code != 0:
+                    break
+                else:
                     self.player.wait_until_paused()
             except Exception as e:
                 print(e, file=stderr)
+            del loc, glo
 
     def stop_mpv(self) -> None:
         """
