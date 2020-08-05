@@ -1,6 +1,9 @@
-from code import interact
 from json import loads
 from urllib.request import urlopen
+
+from code import interact
+
+
 # from mpv_player import Player
 
 class MirrativAPI:
@@ -31,6 +34,18 @@ class MirrativAPI:
     def load_live_polling(live_id):
         with urlopen(f"https://www.mirrativ.com/api/live/live_polling?live_id={live_id}") as temp:
             return loads(temp.read())
+
+    @staticmethod
+    def itsukaralink():
+        with urlopen("https://api.itsukaralink.jp/livers") as f:
+            g = f.info()
+            h = loads(f.readline())
+            print(h)
+
+        with urlopen("https://api.itsukaralink.jp/events") as e:
+            i = e.info()
+            j = loads(e.readline())
+            print(j)
 
 
 if __name__ == '__main__':

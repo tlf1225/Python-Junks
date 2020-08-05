@@ -107,8 +107,8 @@ def main():
 「{decrypted_text}」
 '''[1:-1])
             break
-    with open("diff.txt", encoding="ASCII") as e:
-        with open("diff2.txt", encoding="ASCII") as f:
+    with open("../first/diff.txt", encoding="ASCII") as e:
+        with open("../first/diff2.txt", encoding="ASCII") as f:
             g = e.readlines()
             h = f.readlines()
             u = ndiff(g, h)

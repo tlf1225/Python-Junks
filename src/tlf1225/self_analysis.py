@@ -6,7 +6,9 @@ from sys import argv
 from urllib.error import HTTPError
 from urllib.parse import parse_qs
 from urllib.request import urlopen, Request
+
 from gzip import decompress
+
 # from youtube_dl.extractor import youtube
 
 ORIGIN = "https://www.youtube.com"

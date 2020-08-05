@@ -1,19 +1,20 @@
+# import threading
+# from asyncio import get_event_loop, wait
+# from subprocess import call
+from concurrent.futures import ProcessPoolExecutor
 from email.utils import formatdate
 from http import HTTPStatus
+from http.server import ThreadingHTTPServer, CGIHTTPRequestHandler
 from io import open
 from logging import basicConfig, error, info, DEBUG, getLogger
 from mimetypes import guess_type, add_type
 from os import linesep, chdir, scandir
 from os.path import exists, isfile
-from http.server import ThreadingHTTPServer, CGIHTTPRequestHandler
 from socketserver import ThreadingTCPServer, StreamRequestHandler, ThreadingMixIn
 from ssl import create_default_context, Purpose
 from time import time
+
 from string import Template
-# import threading
-# from asyncio import get_event_loop, wait
-# from subprocess import call
-from concurrent.futures import ProcessPoolExecutor
 
 FORMAT = "%(levelname)s: %(asctime)s [%(funcName)s] {%(threadName)s:%(thread)d}: %(message)s"
 
