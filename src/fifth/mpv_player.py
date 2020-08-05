@@ -63,10 +63,6 @@ class Player:
 
         self.event_handler = []
 
-        from argparse import ArgumentParser
-        self.parser = ArgumentParser(prog="mpv", description="mpv parser")
-        self.parser.add_argument("type", help="execute type")
-
         self.__setup()
 
     def log_mpv(self, loglevel, component, message) -> None:
@@ -98,22 +94,27 @@ class Player:
         self.player.hwdec = "auto-copy-safe"
         self.player.loop_playlist = "inf"
         self.player.geometry = self.player.autofit = "1280x720"
-        self.player.af = "lavfi=[dynaudnorm=g=31:c=1],asoftclip=type=sin"
+        self.player.af = "lavfi=[dynaudnorm=b=1:c=1:r=0.11],asoftclip=type=atan"
         self.player.vf = "lavfi=[fade=in:0:60]"
-        self.player.media_keys = True
+        self.player.input_media_keys = True
         self.player.ytdl_raw_options = "no-cache="
         # self.player.playlist_pos = 33
-        # add_playlist(ax)
-        # self.player.playlist_shuffle()
         # self.player.command("osd-bar", "show-progress")
         # self.player.osd_duration = 5000
         # self.player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
         # self.player.cycle("pause")
-        # self.player.input_bindings key binding list
-        # self.player.time_pos playback time
-        # from getopt import getopt
+        # self.player.input_bindings # key binding list
+        # self.player.time_pos # playback time
+        # add_playlist(ax)
 
         """
+        from getopt import getopt
+        opts, other = getopt(argv, "a:m:t", ["arg=", "mpv=", "toggle"])
+        
+        from argparse import ArgumentParser
+        self.parser = ArgumentParser(prog="mpv", description="mpv parser")
+        self.parser.add_argument("type", help="execute type")
+            
         @self.player.event_callback("start-file")
         def test_handler(_):
             from ctypes import windll
@@ -130,6 +131,7 @@ class Player:
 
         self.player.shuffle = True
         self.player.play(url)
+        self.player.playlist_shuffle()
 
     def reader(self, prompt=""):
         data = input(prompt)
@@ -306,7 +308,7 @@ if __name__ == '__main__':
     with open(__file__) as file:
         print(file.read())
 
-    for i in scandir("D:/"):
+    for i in scandir():
         if "ffmpeg" in i.name:
             environ["PATH"] += pathsep + i.path
 

@@ -1,6 +1,8 @@
 from math import gcd
 from sys import argv
 
+from code import interact
+
 
 def euclid(alpha=0, beta=0, s_list=None, t_list=None):
     if s_list is None:
@@ -15,6 +17,8 @@ def euclid(alpha=0, beta=0, s_list=None, t_list=None):
     t_list.append(t_list[-2] - t_list[-1] * a_to_b)
     return euclid(beta, alpha, s_list, t_list)
 
+
+oil = lambda a: (x for x in range(1, a) if gcd(x, a) == 1)
 
 if __name__ == '__main__':
     if len(argv) > 2:
@@ -32,3 +36,4 @@ if __name__ == '__main__':
     print(f"gcd_target = {target}")
     print(f"s = {s}")
     print(f"t = {t}")
+    interact(banner="GCD", local=locals(), exitmsg="Exit")
