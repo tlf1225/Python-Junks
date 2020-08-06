@@ -3,9 +3,10 @@ from argparse import ArgumentParser
 from ctypes import windll
 from io import StringIO
 from os import scandir, environ, pathsep
+from os.path import isdir
 from re import search
 # noinspection PyUnresolvedReferences
-from sys import argv, stderr
+from sys import argv, path, stderr
 from time import sleep
 from urllib.request import urlopen
 from xml.etree.ElementTree import fromstring
@@ -16,11 +17,12 @@ from code import interact
 from getopt import getopt
 
 try:
-    for i in scandir():
-        if "ffmpeg" in i.name:
-            environ["PATH"] += pathsep + i.path
-    environ["PATH"] += pathsep + "D:/Depends/mpv"
-
+    for i in [k for k in path if isdir(k)]:
+        for j in scandir(i):
+            if "ffmpeg" in j.name:
+                environ["PATH"] += j.path + pathsep
+            if "mpv" in j.name:
+                environ["PATH"] += j.path + pathsep
     from mpv import MPV
     from youtube_dl import YoutubeDL
     import ffmpeg
@@ -65,10 +67,10 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
         if not information:
             return
 
-        for j in information:
+        for format_list in information:
             nonlocal process
-            video = ffmpeg.input(j["137"], fflags="discardcorrupt")
-            audio = ffmpeg.input(j["140"], fflags="discardcorrupt")
+            video = ffmpeg.input(format_list["137"], fflags="discardcorrupt")
+            audio = ffmpeg.input(format_list["140"], fflags="discardcorrupt")
             process = ffmpeg.output(video, audio, "pipe:", codec="copy", format="hls"). \
                 global_args("-hide_banner", "-loglevel", "warning"). \
                 run_async(pipe_stdout=True)
@@ -148,17 +150,18 @@ def setup():
         :return: None
         """
 
-        data["log"].write(f"[{loglevel}] {component}: {message}\n")
-        if data["log"].tell() > 16384:
-            data["log"].seek(0)
-            print("".join(set(data["log"].readlines())))
-            data["log"].truncate(0)
-            data["log"].seek(0)
+        log = data.get("log")
+        log.write(f"[{loglevel}] {component}: {message}\n")
+        if log.tell() > 16384:
+            log.seek(0)
+            print("".join(set(log.readlines())))
+            log.truncate(0)
+            log.seek(0)
 
     data["log_mpv"] = log_mpv
-    data["player"] = MPV(loglevel="warn", log_handler=data["log_mpv"], ytdl=True, input_default_bindings=True, input_vo_keyboard=True, osc=True)
+    data["player"] = MPV(loglevel="warn", log_handler=log_mpv, ytdl=True, input_default_bindings=True, input_vo_keyboard=True, osc=True)
 
-    player = data["player"]
+    player = data.get("player")
     player["vo"] = "gpu,direct3d,sdl"
     player["ao"] = "wasapi,openal,sdl"
     player.hwdec = "auto-copy-safe"
@@ -202,7 +205,7 @@ def setup():
                   "OjYskFbYJTI", "9m3qeiAgZvA", "BVGUA5vLsl8", "Rf9ppDaIxAI", "QRcagfSTRE0",
                   "mfZVElthNHA", "e3yq5UBR0hQ", "I42W9RyGvF4", "ZRWq2JFOSXw", "EHY4GTg1wpM",
                   "6G5PS8alMuM", "oejeamt3akY", "B5nzIG1B45g"]:
-            data["player"].playlist_append(f"ytdl://{t}")
+            player.playlist_append(f"ytdl://{t}")
 
     data["add_list"] = add_playlist
     return data
@@ -210,16 +213,20 @@ def setup():
 
 # noinspection SpellCheckingInspection
 def loop(data, url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
-    player = data["player"]
+    player = data.get("player")
     player.play(url)
+    sleep(3)
     player.playlist_shuffle()
 
     def reader(prompt=""):
         return input(prompt)
 
     while not player.core_shutdown:
+        loc = locals().copy()
+        glo = globals().copy()
+        loc.update(glo)
         try:
-            interact(banner="Interpreter", readfunc=reader, local=locals(), exitmsg="Continue")
+            interact(banner="Interpreter", readfunc=reader, local=loc, exitmsg="Continue")
         except SystemExit as e:
             if e.code is not None and e.code != 0:
                 break
@@ -227,12 +234,14 @@ def loop(data, url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
                 player.wait_until_paused()
         except Exception as e:
             print(e, file=stderr)
+        del loc, glo
 
 
 # noinspection SpellCheckingInspection
 def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
     data = setup()
-    player = data["player"], event_handler = data["event_handler"]
+    player = data.get("player")
+    event_handler = data.get("event_handler")
     loop(data, url)
     for x in event_handler:
         x.unregister_mpv_events()

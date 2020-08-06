@@ -19,7 +19,9 @@ def euclid(alpha=0, beta=0, s_list=None, t_list=None):
     return euclid(beta, alpha, s_list, t_list)
 
 
-oil = lambda a: (x for x in range(1, a) if gcd(x, a) == 1)
+def euler(alpha):
+    return (x for x in range(1, alpha) if gcd(x, alpha) == 1)
+
 
 if __name__ == '__main__':
     if len(argv) > 2:
