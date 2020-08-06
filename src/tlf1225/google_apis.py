@@ -4,12 +4,14 @@ from time import sleep
 from urllib.parse import urlunsplit, urlencode
 from urllib.request import urlopen
 
+# noinspection SpellCheckingInspection
 KEY = "AIzaSyDgqOE9EVLYILwq1bd7_7NzYSWlKLdrq1Q"
 API_URL = "www.googleapis.com"
 VIDEO = "/youtube/v3/videos"
 LIVE_CHAT = "/youtube/v3/liveChat/messages"
 
 
+# noinspection SpellCheckingInspection
 def oauth2():
     code = ["https", "accounts.google.com", "/o/oauth2/v2/auth", "", None]
     code[3] = urlencode({

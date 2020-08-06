@@ -1,6 +1,7 @@
 from youtube_dl import YoutubeDL
 
 
+# noinspection SpellCheckingInspection
 def main(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr", ffmpeg="D:/"):
     ytdl = YoutubeDL(params={
         "no_cache": True,
@@ -25,4 +26,4 @@ def main(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY-QqJt
 
 
 if __name__ == '__main__':
-    main(url="https://www.youtube.com/watch?v=WJ16v-hD1mw", ffmpeg="D:/ffmpeg-20200628-4cfcfb3-win64-shared/bin")
+    main(url="https://www.youtube.com/watch?v=WJ16v-hD1mw", ffmpeg="ffmpeg-latest-win64-shared/bin")

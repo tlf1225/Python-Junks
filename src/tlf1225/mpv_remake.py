@@ -1,5 +1,6 @@
 from ctypes import cdll, c_void_p, c_char_p, c_int64, c_int, c_long, POINTER
 
+# noinspection PyUnresolvedReferences
 from code import interact
 
 if __name__ == '__main__':

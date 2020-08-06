@@ -9,6 +9,7 @@ if __name__ == '__main__':
         if regtype == REG_BINARY:
             keyOffset = 52
             i = 24
+            # noinspection SpellCheckingInspection
             Chars = "BCDFGHJKMPQRTVWXY2346789"
             after = (value[66] // 6) & 1
             value[66] = (value[66] & 0xF7) | ((after & 2) * 4)

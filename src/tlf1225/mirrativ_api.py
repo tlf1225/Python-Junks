@@ -1,11 +1,13 @@
 from json import loads
 from urllib.request import urlopen
 
+# noinspection PyUnresolvedReferences
 from code import interact
 
 
 # from mpv_player import Player
 
+# noinspection SpellCheckingInspection
 class MirrativAPI:
 
     def __init__(self, identify) -> None:
@@ -38,12 +40,12 @@ class MirrativAPI:
     @staticmethod
     def itsukaralink():
         with urlopen("https://api.itsukaralink.jp/livers") as f:
-            g = f.info()
+            print(f.info())
             h = loads(f.readline())
             print(h)
 
         with urlopen("https://api.itsukaralink.jp/events") as e:
-            i = e.info()
+            print(e.info())
             j = loads(e.readline())
             print(j)
 

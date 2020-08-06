@@ -7,11 +7,13 @@ from urllib.error import HTTPError
 from urllib.parse import parse_qs
 from urllib.request import urlopen, Request
 
+# noinspection PyUnresolvedReferences
 from gzip import decompress
 
 # from youtube_dl.extractor import youtube
 
 ORIGIN = "https://www.youtube.com"
+# noinspection SpellCheckingInspection
 HD = {
     "Accept": "application/json",
     "Accept-Encoding": "gzip, deflate",
@@ -28,6 +30,7 @@ HD = {
 }
 
 
+# noinspection SpellCheckingInspection
 def main(req):
     if isinstance(req, list):
         test = compile(r"([\w-]{11}).*?$")
@@ -69,8 +72,8 @@ def main(req):
                 li.append(k["cipher"])
 
         for j in li:
-            l = parse_qs(j)
-            ask = Request(l["url"][0] + f'&{l["sp"][0]}={l["s"][0]}', headers=HD, origin_req_host=ORIGIN, method="HEAD")
+            queries = parse_qs(j)
+            ask = Request(queries["url"][0] + f'&{queries["sp"][0]}={queries["s"][0]}', headers=HD, origin_req_host=ORIGIN, method="HEAD")
             try:
                 with urlopen(ask) as e:
                     if e.status == 200:

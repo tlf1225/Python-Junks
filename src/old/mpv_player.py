@@ -134,8 +134,10 @@ class Player:
         self.player.playlist_shuffle()
 
     def reader(self, prompt=""):
+        """
         data = input(prompt)
         if data.startswith("/"):
+            # noinspection PyUnresolvedReferences
             parser = self.parser.parse_args(data[1::].split(" "))
             if parser[""]:
                 pass
@@ -152,6 +154,8 @@ class Player:
             return ""
         else:
             return data
+        """
+        return input(prompt)
 
     def wait_loop(self) -> None:
         """
@@ -160,6 +164,7 @@ class Player:
         :return: None
         """
 
+        # noinspection PyUnresolvedReferences
         from code import interact
         from sys import stderr
         while not self.player.core_shutdown:

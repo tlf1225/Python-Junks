@@ -4,6 +4,7 @@ from os import environ
 from sys import argv, executable, stderr
 from time import sleep
 
+# noinspection PyUnresolvedReferences
 from getpass import getpass
 
 
@@ -11,6 +12,7 @@ class LuID(Structure):
     _fields_ = [("LowPart", DWORD), ("HighPart", LONG)]
 
 
+# noinspection SpellCheckingInspection
 class LUIDAttributes(Structure):
     _fields_ = [("Luid", LuID), ("Attributes", DWORD)]
 
@@ -50,9 +52,11 @@ if __name__ == '__main__':
             exit(0)
 
         Login = HANDLE()
+        # noinspection SpellCheckingInspection
         if LogonUserW(input("UserName: "), environ['COMPUTERNAME'], getpass("Password: "), 4, 0, PHANDLE(Login)):
             ImpersonateLoggedOnUser(Login)
             Token = HANDLE()
+            # noinspection SpellCheckingInspection
             luid = LuID()
             if OpenProcessToken(GetCurrentProcess(), 0x28, PHANDLE(Token)):
                 if LookupPrivilegeValueW(None, "SE_SHUTDOWN_NAME", byref(luid)):
