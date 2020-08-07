@@ -143,7 +143,8 @@ def ytdl_info(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY
 # noinspection SpellCheckingInspection
 def setup():
     log = StringIO()
-    data = {"log": log, "event_handler": []}
+    event_handler = []
+    data = {"log": log, "event_handler": event_handler}
 
     # noinspection SpellCheckingInspection
     def log_mpv(loglevel, component, message) -> None:
@@ -189,13 +190,12 @@ def setup():
 
     # noinspection SpellCheckingInspection
     def loop(url=None):
+        nonlocal data, player, log, event_handler
         if not url:
             return
 
-        nonlocal data, player, log
-        player.play(url)
-        sleep(3)
-        player.playlist_shuffle()
+        # player.play(url)
+        # player.playlist_shuffle()
 
         def reader(prompt=""):
             return input(prompt)
@@ -244,6 +244,8 @@ def setup():
     def test_handler(_):
         windll.kernel32.SetConsoleTitleW(player.media_title)
 
+    event_handler.append(test_handler)
+
     return data
 
 
@@ -252,14 +254,14 @@ def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
     data = setup()
     player = data.get("player")
     event_handler = data.get("event_handler")
-    sleep(3)
+    sleep(1)
     loop = data.get("loop")
     loop(url)
     for x in event_handler:
-        x.unregister_mpv_events()
+        if callable(x.unregister_mpv_events):
+            x.unregister_mpv_events()
     player.quit()
     player.terminate()
-    sleep(1)
 
 
 if __name__ == '__main__':
