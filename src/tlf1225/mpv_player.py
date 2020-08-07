@@ -21,7 +21,8 @@ try:
         for j in scandir(i):
             if "ffmpeg" in j.name:
                 environ["PATH"] += j.path + pathsep
-            if "mpv" in j.name:
+            # noinspection SpellCheckingInspection
+            if "libmpv" in j.name:
                 environ["PATH"] += j.path + pathsep
     from mpv import MPV
     from youtube_dl import YoutubeDL
@@ -235,6 +236,7 @@ def setup():
     @player.event_callback("start-file")
     def test_handler(_):
         windll.kernel32.SetConsoleTitleW(player.media_title)
+
     return data
 
 
