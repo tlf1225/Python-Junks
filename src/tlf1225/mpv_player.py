@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from ctypes import windll
 from io import StringIO
-from os import scandir, environ, pathsep
+from os import scandir, environ, pathsep, sep
 from os.path import isdir
 from re import search
 # noinspection PyUnresolvedReferences
@@ -20,10 +20,10 @@ try:
     for i in [k for k in path if isdir(k)]:
         for j in scandir(i):
             if "ffmpeg-latest" in j.name:
-                environ["PATH"] += j.path + pathsep
+                environ["PATH"] += f"{j.path}{sep}bin{pathsep}"
             # noinspection SpellCheckingInspection
             if "libmpv" in j.name:
-                environ["PATH"] += j.path + pathsep
+                environ["PATH"] += f"{j.path}{pathsep}"
     temp = environ["PATH"].split(pathsep)
     environ["PATH"] = pathsep.join(sorted(set(temp), key=temp.index))
     del temp
@@ -176,23 +176,25 @@ def setup():
     player.af = "lavfi=[dynaudnorm=b=1:c=1:r=0.11],asoftclip=type=atan"
     player.vf = "lavfi=[fade=in:0:60]"
     player.input_media_keys = True
+    player.ytdl_format = "bestvideo+bestaudio"
     player.ytdl_raw_options = "no-cache-dir="
     player.shuffle = True
 
-    # player.playlist_pos = 33
     # player.command("osd-bar", "show-progress")
     # player.osd_duration = 5000
     # player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
     # player.cycle("pause")
     # player.input_bindings # key binding list
     # player.time_pos # playback time
-    # add_playlist(player)
 
     # noinspection SpellCheckingInspection
-    def loop(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
+    def loop(url=None):
+        if not url:
+            return
+
         nonlocal data, player, log
         player.play(url)
-        sleep(5)
+        sleep(3)
         player.playlist_shuffle()
 
         def reader(prompt=""):
@@ -246,7 +248,7 @@ def setup():
 
 
 # noinspection SpellCheckingInspection
-def main(url=r"ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
+def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
     data = setup()
     player = data.get("player")
     event_handler = data.get("event_handler")
