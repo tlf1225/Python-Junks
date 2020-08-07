@@ -19,11 +19,14 @@ from getopt import getopt
 try:
     for i in [k for k in path if isdir(k)]:
         for j in scandir(i):
-            if "ffmpeg" in j.name:
+            if "ffmpeg-latest" in j.name:
                 environ["PATH"] += j.path + pathsep
             # noinspection SpellCheckingInspection
             if "libmpv" in j.name:
                 environ["PATH"] += j.path + pathsep
+    temp = environ["PATH"].split(pathsep)
+    environ["PATH"] = pathsep.join(sorted(set(temp), key=temp.index))
+    del temp
     from mpv import MPV
     from youtube_dl import YoutubeDL
     import ffmpeg
@@ -173,7 +176,7 @@ def setup():
     player.af = "lavfi=[dynaudnorm=b=1:c=1:r=0.11],asoftclip=type=atan"
     player.vf = "lavfi=[fade=in:0:60]"
     player.input_media_keys = True
-    player.ytdl_raw_options = "no-cache="
+    player.ytdl_raw_options = "no-cache-dir="
     player.shuffle = True
 
     # player.playlist_pos = 33
@@ -189,7 +192,7 @@ def setup():
     def loop(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
         nonlocal data, player, log
         player.play(url)
-        sleep(3)
+        sleep(5)
         player.playlist_shuffle()
 
         def reader(prompt=""):
@@ -243,10 +246,11 @@ def setup():
 
 
 # noinspection SpellCheckingInspection
-def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
+def main(url=r"ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
     data = setup()
     player = data.get("player")
     event_handler = data.get("event_handler")
+    sleep(3)
     loop = data.get("loop")
     loop(url)
     for x in event_handler:
