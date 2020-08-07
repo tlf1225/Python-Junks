@@ -139,7 +139,8 @@ def ytdl_info(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY
 
 # noinspection SpellCheckingInspection
 def setup():
-    data = {"log": StringIO(), "event_handler": []}
+    log = StringIO()
+    data = {"log": log, "event_handler": []}
 
     # noinspection SpellCheckingInspection
     def log_mpv(loglevel, component, message) -> None:
@@ -151,8 +152,8 @@ def setup():
         :param message: Message
         :return: None
         """
+        nonlocal log
 
-        log = data.get("log")
         log.write(f"[{loglevel}] {component}: {message}\n")
         if log.tell() > 16384:
             log.seek(0)
@@ -186,6 +187,7 @@ def setup():
 
     # noinspection SpellCheckingInspection
     def loop(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
+        nonlocal data, player, log
         player.play(url)
         sleep(3)
         player.playlist_shuffle()
@@ -211,7 +213,7 @@ def setup():
     data["loop"] = loop
 
     # noinspection SpellCheckingInspection
-    def add_playlist():
+    def add_list():
         """
         Playlist append
 
@@ -225,7 +227,7 @@ def setup():
                   "6G5PS8alMuM", "oejeamt3akY", "B5nzIG1B45g"]:
             player.playlist_append(f"ytdl://{t}")
 
-    data["add_list"] = add_playlist
+    data["add_list"] = add_list
 
     # noinspection PyUnusedReferences
     # opts, other = getopt(argv, "a:m:t", ["arg=", "mpv=", "toggle"])
