@@ -52,7 +52,7 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
     if p is None or "player" not in p:
         return
 
-    player = p["player"]
+    player = p.get("player")
 
     # noinspection SpellCheckingInspection
     @player.python_stream("abcd")
@@ -83,6 +83,7 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
             del video, audio, buf
 
     process = None
+    loop = p.get("loop")
     loop(p, "python://abcd")
     if hasattr(process, "terminate"):
         process.terminate()
@@ -182,20 +183,36 @@ def setup():
     # player.time_pos # playback time
     # add_playlist(player)
 
-    # noinspection PyUnusedReferences
-    # opts, other = getopt(argv, "a:m:t", ["arg=", "mpv=", "toggle"])
+    # noinspection SpellCheckingInspection
+    def loop(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
+        player.play(url)
+        sleep(3)
+        player.playlist_shuffle()
 
-    # self.parser = ArgumentParser(prog="mpv", description="mpv parser")
-    # self.parser.add_argument("type", help="execute type")
+        def reader(prompt=""):
+            return input(prompt)
 
-    @player.event_callback("start-file")
-    def test_handler(_):
-        windll.kernel32.SetConsoleTitleW(player.media_title)
+        while not player.core_shutdown:
+            loc = locals().copy()
+            glo = globals().copy()
+            loc.update(glo)
+            try:
+                interact(banner="Interpreter", readfunc=reader, local=loc, exitmsg="Continue")
+            except SystemExit as e:
+                if e.code is not None and e.code != 0:
+                    break
+                else:
+                    player.wait_until_paused()
+            except Exception as e:
+                print(e, file=stderr)
+            del loc, glo
+
+    data["loop"] = loop
 
     # noinspection SpellCheckingInspection
     def add_playlist():
         """
-        Player Class Execute Function Replace
+        Playlist append
 
         :return: None
         """
@@ -208,33 +225,17 @@ def setup():
             player.playlist_append(f"ytdl://{t}")
 
     data["add_list"] = add_playlist
+
+    # noinspection PyUnusedReferences
+    # opts, other = getopt(argv, "a:m:t", ["arg=", "mpv=", "toggle"])
+
+    # self.parser = ArgumentParser(prog="mpv", description="mpv parser")
+    # self.parser.add_argument("type", help="execute type")
+
+    @player.event_callback("start-file")
+    def test_handler(_):
+        windll.kernel32.SetConsoleTitleW(player.media_title)
     return data
-
-
-# noinspection SpellCheckingInspection
-def loop(data, url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
-    player = data.get("player")
-    player.play(url)
-    sleep(3)
-    player.playlist_shuffle()
-
-    def reader(prompt=""):
-        return input(prompt)
-
-    while not player.core_shutdown:
-        loc = locals().copy()
-        glo = globals().copy()
-        loc.update(glo)
-        try:
-            interact(banner="Interpreter", readfunc=reader, local=loc, exitmsg="Continue")
-        except SystemExit as e:
-            if e.code is not None and e.code != 0:
-                break
-            else:
-                player.wait_until_paused()
-        except Exception as e:
-            print(e, file=stderr)
-        del loc, glo
 
 
 # noinspection SpellCheckingInspection
@@ -242,7 +243,8 @@ def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
     data = setup()
     player = data.get("player")
     event_handler = data.get("event_handler")
-    loop(data, url)
+    loop = data.get("loop")
+    loop(url)
     for x in event_handler:
         x.unregister_mpv_events()
     player.quit()
