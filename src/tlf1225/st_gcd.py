@@ -23,6 +23,37 @@ def euler(alpha):
     return (x for x in range(1, alpha) if gcd(x, alpha) == 1)
 
 
+def fermat_tool():
+    def fermat(integer, power, count, base):
+        for i in range(count):
+            integer = (integer ** power) % base
+            # yield integer
+        return integer
+
+    def calc(base, *calc_list):
+        multiply = 1
+        for i in calc_list:
+            if isinstance(i, int):
+                multiply *= i
+        return multiply % base
+
+    return fermat, calc
+
+
+# f, g = fermat_tool()
+# g(127, list(f(5, 2, 6, 127))[-1], list(f(5, 2, 5, 127))[-1], 5)
+
+
+def ab_tool(calc=lambda x, alpha, beta, n: x ** 2 + ((alpha + beta) % n) * x + (alpha * beta) % n, n=7):
+    for i in range(n):
+        for j in range(n):
+            for k in range(n):
+                print(f"x={i},a={j},b={k}")
+                d = calc(i, j, k, n)
+                print(f"{i}*x^2+{(j + k) % n}*x+{(j * k) % n}={d % n}")
+                # print(f"既約: {j % n == 0 or k % n == 0}")
+
+
 if __name__ == '__main__':
     if len(argv) > 2:
         a = int(argv[1])

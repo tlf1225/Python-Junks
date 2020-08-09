@@ -1,3 +1,7 @@
+"""
+This file is implemented with mpv.
+"""
+
 # noinspection PyUnresolvedReferences
 from argparse import ArgumentParser
 from ctypes import windll
@@ -53,6 +57,13 @@ def update_check():
 
 # noinspection SpellCheckingInspection
 def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
+    """
+    mpv load with ffmpeg and youtube-dl
+
+    :param p: predefined dictionary
+    :param url: Youtube Link
+    :return: No return
+    """
     if p is None or "player" not in p:
         return
 
@@ -64,7 +75,7 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
         """
         Reading MPV
 
-        :return:
+        :return: No return
         """
 
         information = ytdl_info(url=url)
@@ -114,7 +125,7 @@ def ytdl_info(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY
         "quiet": True,
         "skip_download": True,
         "simulate": True,
-        "format": "best",
+        "format": "bestvideo+bestaudio/best",
         "ffmpeg_location": ffloc
     }) as ytdl:
         result = ytdl.extract_info(url=url, download=False)
@@ -142,6 +153,11 @@ def ytdl_info(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY
 
 # noinspection SpellCheckingInspection
 def setup():
+    """
+    setup player with mpv
+
+    :return: predefined dictionary
+    """
     log = StringIO()
     event_handler = []
     data = {"log": log, "event_handler": event_handler}
@@ -177,7 +193,7 @@ def setup():
     player.af = "lavfi=[dynaudnorm=b=1:c=1:r=0.11],asoftclip=type=atan"
     player.vf = "lavfi=[fade=in:0:60]"
     player.input_media_keys = True
-    player.ytdl_format = "bestvideo+bestaudio"
+    player.ytdl_format = "bestvideo+bestaudio/best"
     player.ytdl_raw_options = "no-cache-dir="
     player.shuffle = True
 
@@ -190,6 +206,11 @@ def setup():
 
     # noinspection SpellCheckingInspection
     def loop(url=None):
+        """
+        Loop with data
+        :param url:
+        :return: No return
+        """
         nonlocal data, player, log, event_handler
         if not url:
             return
@@ -242,6 +263,11 @@ def setup():
 
     @player.event_callback("start-file")
     def test_handler(_):
+        """
+        Console Title Changes when start file.
+        :param _: No Param
+        :return: No return
+        """
         windll.kernel32.SetConsoleTitleW(player.media_title)
 
     event_handler.append(test_handler)
@@ -251,6 +277,12 @@ def setup():
 
 # noinspection SpellCheckingInspection
 def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
+    """
+    play with setup
+
+    :param url: Play URI
+    :return:
+    """
     data = setup()
     player = data.get("player")
     event_handler = data.get("event_handler")
