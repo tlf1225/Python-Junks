@@ -21,16 +21,17 @@ from code import interact
 from getopt import getopt
 
 try:
+    path_list = environ["PATH"].split(pathsep)
+    # path_list.remove(r"D:\Python\Scripts")
     for i in [k for k in path if isdir(k)]:
         for j in scandir(i):
             if "ffmpeg-latest" in j.name:
-                environ["PATH"] += f"{j.path}{sep}bin{pathsep}"
+                path_list.insert(-1, f"{j.path}{sep}bin")
             # noinspection SpellCheckingInspection
             if "libmpv" in j.name:
-                environ["PATH"] += f"{j.path}{pathsep}"
-    temp = environ["PATH"].split(pathsep)
-    environ["PATH"] = pathsep.join(sorted(set(temp), key=temp.index))
-    del temp
+                path_list.insert(-1, j.path)
+    environ["PATH"] = pathsep.join(sorted(set(path_list), key=path_list.index))
+    del path_list
     from mpv import MPV
     from youtube_dl import YoutubeDL
     import ffmpeg
@@ -190,7 +191,7 @@ def setup():
     player.hwdec = "auto-copy-safe"
     player.loop_playlist = "inf"
     player.geometry = player.autofit = "1280x720"
-    player.af = "lavfi=[dynaudnorm=b=1:c=1:r=0.11],asoftclip=type=atan"
+    player.af = "lavfi=[dynaudnorm=b=1:c=1:g=11:r=0.1],asoftclip=type=sin"
     player.vf = "lavfi=[fade=in:0:60]"
     player.input_media_keys = True
     player.ytdl_format = "bestvideo+bestaudio/best"
