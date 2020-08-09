@@ -31,7 +31,6 @@ try:
             if "libmpv" in j.name:
                 path_list.insert(-1, j.path)
     environ["PATH"] = pathsep.join(sorted(set(path_list), key=path_list.index))
-    del path_list
     from mpv import MPV
     from youtube_dl import YoutubeDL
     import ffmpeg
