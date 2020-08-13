@@ -156,11 +156,11 @@ def setup():
     """
     setup player with mpv
 
-    :return: predefined dictionary
+    :return: player, loop, event_handler, log, add_list, log_mpv
     """
-    log = StringIO()
+
     event_handler = []
-    data = {"log": log, "event_handler": event_handler}
+    log = StringIO()
 
     # noinspection SpellCheckingInspection
     def log_mpv(loglevel, component, message) -> None:
@@ -181,62 +181,41 @@ def setup():
             log.truncate(0)
             log.seek(0)
 
-    data["log_mpv"] = log_mpv
-    data["player"] = MPV(loglevel="warn", log_handler=log_mpv, ytdl=True, input_default_bindings=True, input_vo_keyboard=True, osc=True)
+    player = MPV(loglevel="warn", log_handler=log_mpv, ytdl=True, input_default_bindings=True, input_vo_keyboard=True, osc=True)
 
-    player = data.get("player")
     player["vo"] = "gpu,direct3d,sdl"
     player["ao"] = "wasapi,openal,sdl"
     player.hwdec = "auto-copy-safe"
     player.loop_playlist = "inf"
     player.geometry = player.autofit = "1280x720"
-    player.af = "lavfi=[dynaudnorm=b=1:c=1:g=11:r=0.1],asoftclip=type=sin"
+    player.af = "lavfi=[dynaudnorm=b=1:c=1:g=11:r=0.25],asoftclip=type=tanh"
     player.vf = "lavfi=[fade=in:0:60]"
     player.input_media_keys = True
     player.ytdl_format = "bestvideo+bestaudio/best"
     player.ytdl_raw_options = "no-cache-dir="
     player.shuffle = True
 
+    # player.wid = windll.user32.GetDesktopWindow()
     # player.command("osd-bar", "show-progress")
+    # player.script_message_to("stats", "display-stats")
+    # player.script_message_to("stats", "display-stats-toggle")
+    # player.command("cycle-values", "osd-level", 3, 1)
     # player.osd_duration = 5000
     # player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
     # player.cycle("pause")
     # player.input_bindings # key binding list
     # player.time_pos # playback time
 
-    # noinspection SpellCheckingInspection
-    def loop(url=None):
+    @player.event_callback("file-loaded")
+    def test_handler(_):
         """
-        Loop with data
-        :param url:
+        Console Title Changes when start file.
+        :param _: No Param
         :return: No return
         """
-        nonlocal data, player, log, event_handler
-        if not url:
-            return
+        windll.kernel32.SetConsoleTitleW(player.media_title)
 
-        # player.play(url)
-        # player.playlist_shuffle()
-
-        def reader(prompt=""):
-            return input(prompt)
-
-        while not player.core_shutdown:
-            loc = locals().copy()
-            glo = globals().copy()
-            loc.update(glo)
-            try:
-                interact(banner="Interpreter", readfunc=reader, local=loc, exitmsg="Continue")
-            except SystemExit as e:
-                if e.code is not None and e.code != 0:
-                    break
-                else:
-                    player.wait_until_paused()
-            except Exception as e:
-                print(e, file=stderr)
-            del loc, glo
-
-    data["loop"] = loop
+    event_handler.append(test_handler)
 
     # noinspection SpellCheckingInspection
     def add_list():
@@ -268,7 +247,37 @@ def setup():
         for bb in ['BV1Es41127k8', 'BV1Zs411C7K8', 'BV1ds411C7pL']:
             player.playlist_append(f"https://www.bilibili.com/video/{bb}")
 
-    data["add_list"] = add_list
+    # noinspection SpellCheckingInspection
+    def loop(url=None):
+        """
+        Loop with data
+        :param url:
+        :return: No return
+        """
+        nonlocal player, event_handler, log, add_list, log_mpv
+        if not url:
+            return
+
+        # player.play(url)
+        # player.playlist_shuffle()
+
+        def reader(prompt=""):
+            return input(prompt)
+
+        while not player.core_shutdown:
+            loc = locals().copy()
+            glo = globals().copy()
+            loc.update(glo)
+            try:
+                interact(banner="Interpreter", readfunc=reader, local=loc, exitmsg="Continue")
+            except SystemExit as e:
+                if e.code is not None and e.code != 0:
+                    break
+                else:
+                    player.wait_until_paused()
+            except Exception as e:
+                print(e, file=stderr)
+            del loc, glo
 
     # noinspection PyUnusedReferences
     # opts, other = getopt(argv, "a:m:t", ["arg=", "mpv=", "toggle"])
@@ -276,18 +285,7 @@ def setup():
     # self.parser = ArgumentParser(prog="mpv", description="mpv parser")
     # self.parser.add_argument("type", help="execute type")
 
-    @player.event_callback("start-file")
-    def test_handler(_):
-        """
-        Console Title Changes when start file.
-        :param _: No Param
-        :return: No return
-        """
-        windll.kernel32.SetConsoleTitleW(player.media_title)
-
-    event_handler.append(test_handler)
-
-    return data
+    return player, loop, event_handler, log, add_list, log_mpv
 
 
 # noinspection SpellCheckingInspection
@@ -299,10 +297,10 @@ def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
     :return:
     """
     data = setup()
-    player = data.get("player")
-    event_handler = data.get("event_handler")
+    player = data[0]
+    loop = data[1]
+    event_handler = data[2]
     sleep(1)
-    loop = data.get("loop")
     loop(url)
     for x in event_handler:
         if callable(x.unregister_mpv_events):
