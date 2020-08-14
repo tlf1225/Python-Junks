@@ -264,6 +264,8 @@ def setup():
             :arg f: Flag
             :return None
             """
+            if f:
+                path_list.remove(r"D:\Python\Scripts")
 
             player.play(url)
             sleep(3)
@@ -274,14 +276,14 @@ def setup():
                 player.wid = windll.user32.GetDesktopWindow()
                 player.osd_duration = 5000
                 player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
-                player.command("osd-bar", "show-progress")
-                player.script_message_to("stats", "display-stats")
-                player.script_message_to("stats", "display-stats-toggle")
-                player.command("cycle-values", "osd-level", 3, 1)
-                # path_list.remove(r"D:\Python\Scripts")
                 for x in player.input_bindings:
                     for i, j in x.items():
                         print(f"{i}: {j}")
+                player.wait_until_playing()
+                player.command("osd-bar", "show-progress")
+                player.script_message_to("stats", "display-stats")
+                # player.script_message_to("stats", "display-stats-toggle")
+                # player.command("cycle-values", "osd-level", 3, 1)
                 print(player.time_pos)
 
         def reader(prompt=""):
