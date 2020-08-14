@@ -265,7 +265,11 @@ def setup():
             :return None
             """
             if f:
-                path_list.remove(r"D:\Python\Scripts")
+                try:
+                    path_list.remove(r"D:\Python\Scripts")
+                    environ["PATH"] = pathsep.join(path_list)
+                except ValueError:
+                    pass
 
             player.play(url)
             sleep(3)
