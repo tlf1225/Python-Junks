@@ -22,14 +22,15 @@ from getopt import getopt
 
 try:
     path_list = environ["PATH"].split(pathsep)
-    # path_list.remove(r"D:\Python\Scripts")
-    for i in [k for k in path if isdir(k)]:
-        for j in scandir(i):
-            if "ffmpeg-latest" in j.name:
-                path_list.insert(-1, f"{j.path}{sep}bin")
-            # noinspection SpellCheckingInspection
-            if "libmpv" in j.name:
-                path_list.insert(-1, j.path)
+    for act_dir in path:
+        if isdir(act_dir):
+            for working in scandir(act_dir):
+                if "ffmpeg-latest" in working.name:
+                    path_list.insert(-1, f"{working.path}{sep}bin")
+                # noinspection SpellCheckingInspection
+                if "libmpv" in working.name:
+                    path_list.insert(-1, working.path)
+
     environ["PATH"] = pathsep.join(sorted(set(path_list), key=path_list.index))
     from mpv import MPV
     from youtube_dl import YoutubeDL
@@ -197,16 +198,6 @@ def setup():
     player.ytdl_raw_options = "no-cache-dir="
     player.shuffle = True
 
-    # player.wid = windll.user32.GetDesktopWindow()
-    # player.osd_duration = 5000
-    # player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
-    # player.command("osd-bar", "show-progress")
-    # player.script_message_to("stats", "display-stats")
-    # player.script_message_to("stats", "display-stats-toggle")
-    # player.command("cycle-values", "osd-level", 3, 1)
-    # player.input_bindings
-    # print(player.time_pos)
-
     @player.event_callback("file-loaded")
     def test_handler(_):
         """
@@ -266,9 +257,11 @@ def setup():
 
             return playlist
 
-        def start():
+        def start(f=False):
             """
             Predefined Start
+
+            :arg f: Flag
             :return None
             """
 
@@ -276,6 +269,20 @@ def setup():
             sleep(3)
             add_list()
             player.playlist_shuffle()
+            player.playlist_pos = 0
+            if f:
+                player.wid = windll.user32.GetDesktopWindow()
+                player.osd_duration = 5000
+                player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
+                player.command("osd-bar", "show-progress")
+                player.script_message_to("stats", "display-stats")
+                player.script_message_to("stats", "display-stats-toggle")
+                player.command("cycle-values", "osd-level", 3, 1)
+                # path_list.remove(r"D:\Python\Scripts")
+                for x in player.input_bindings:
+                    for i, j in x.items():
+                        print(f"{i}: {j}")
+                print(player.time_pos)
 
         def reader(prompt=""):
             # noinspection PyUnusedReferences
