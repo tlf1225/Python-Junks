@@ -104,7 +104,7 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
     loop(p, "python://abcd")
     if hasattr(process, "terminate"):
         process.terminate()
-        print("FFmpeg Terminate")
+        print("FFmpeg Terminate", file=stderr)
     player.quit()
     player.terminate()
 
@@ -135,21 +135,21 @@ def ytdl_info(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY
         if not result:
             return information
         if "entries" not in result:
-            print(result["title"])
+            print(result["title"], file=stderr)
             mapping = {}
             for url in sorted(result["formats"], key=lambda x: int(x["format_id"])):
                 mapping[url['format_id']] = url['url']
-                # print(f"{url['format']} {url['url']}")
+                # print(f"{url['format']} {url['url']}", file=stderr)
             information.append(mapping)
         else:
             for entries in result["entries"]:
                 mapping = {}
-                print(entries["title"])
+                print(entries["title"], file=stderr)
                 for url in sorted(entries["formats"], key=lambda x: int(x["format_id"])):
                     mapping[url['format_id']] = url['url']
-                    # print(f"{url['format']} {url['url']}")
+                    # print(f"{url['format']} {url['url']}", file=stderr)
                 information.append(mapping)
-                print()
+                print(file=stderr)
     return information
 
 
@@ -180,7 +180,7 @@ def setup():
         log.write(f"[{loglevel}] {component}: {message}\n")
         if log.tell() > 16384:
             log.seek(0)
-            print("".join(set(log.readlines())))
+            print(pathsep.join(set(log.readlines())), file=stderr)
             log.truncate(0)
             log.seek(0)
 
@@ -278,17 +278,20 @@ def setup():
             player.playlist_pos = 0
             if f:
                 player.wid = windll.user32.GetDesktopWindow()
-                player.osd_duration = 5000
-                player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
+                player.wait_until_playing()
                 for x in player.input_bindings:
                     for i, j in x.items():
-                        print(f"{i}: {j}")
-                player.wait_until_playing()
+                        print(f"{i}: {j}", file=stderr)
                 player.command("osd-bar", "show-progress")
                 player.script_message_to("stats", "display-stats")
                 # player.script_message_to("stats", "display-stats-toggle")
                 # player.command("cycle-values", "osd-level", 3, 1)
-                print(player.time_pos)
+                print(player.time_pos, file=stderr)
+                sleep(3)
+                player.osd_duration = 3000
+                player.script_opts = "osc-hidetimeout=3000,osc-fadeduration=1000,osc-visibility=always"
+                player.cycle("input-default-bindings")
+                player.cycle("input-vo-keyboard")
 
         def reader(prompt=""):
             # noinspection PyUnusedReferences
@@ -339,5 +342,5 @@ def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
 
 if __name__ == '__main__':
     with open(__file__) as file:
-        print(file.read())
+        print(file.read(), file=stderr)
     main()
