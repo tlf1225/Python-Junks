@@ -273,7 +273,8 @@ def setup():
 
             player.play(url)
             sleep(3)
-            add_list()
+            for pid in add_list():
+                player.playlist_append(pid)
             player.playlist_shuffle()
             player.playlist_pos = 0
             if f:
