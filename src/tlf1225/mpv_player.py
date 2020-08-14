@@ -42,7 +42,8 @@ def update_check():
     """
     For Windows 10 x64 LibMPV and YoutubeDL
 
-    :return: LibMPV and YoutubeDL Download URL
+    :returns: down_youtube_dl, down_mpv
+    :rtype: tuple
     """
 
     with urlopen("https://github.com/ytdl-org/youtube-dl/releases.atom") as m:
@@ -62,12 +63,12 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
 
     :param p: predefined dictionary
     :param url: Youtube Link
-    :return: No return
+    :return: None
     """
-    if p is None or "player" not in p:
+    if p is None or len(p) < 3:
         return
 
-    player = p.get("player")
+    player = p[0]
 
     # noinspection SpellCheckingInspection
     @player.python_stream("abcd")
@@ -75,7 +76,7 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
         """
         Reading MPV
 
-        :return: No return
+        :return: ttt
         """
 
         information = ytdl_info(url=url)
@@ -98,7 +99,7 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
             del video, audio, buf
 
     process = None
-    loop = p.get("loop")
+    loop = p[1]
     loop(p, "python://abcd")
     if hasattr(process, "terminate"):
         process.terminate()
@@ -114,7 +115,7 @@ def ytdl_info(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY
 
     :param url: Youtube URL
     :param ffloc: FFmpeg Location
-    :return: Format Requests
+    :return: information: Requested Formats
     """
 
     information = []
@@ -156,7 +157,8 @@ def setup():
     """
     setup player with mpv
 
-    :return: player, loop, event_handler, log, add_list, log_mpv
+    :returns: player, loop, event_handler, log, log_mpv
+    :rtype: tuple
     """
 
     event_handler = []
@@ -183,8 +185,8 @@ def setup():
 
     player = MPV(loglevel="warn", log_handler=log_mpv, ytdl=True, input_default_bindings=True, input_vo_keyboard=True, osc=True)
 
-    player["vo"] = "gpu,direct3d,sdl"
-    player["ao"] = "wasapi,openal,sdl"
+    player.vo = "gpu,direct3d,sdl"
+    player.ao = "wasapi,openal,sdl"
     player.hwdec = "auto-copy-safe"
     player.loop_playlist = "inf"
     player.geometry = player.autofit = "1280x720"
@@ -196,72 +198,91 @@ def setup():
     player.shuffle = True
 
     # player.wid = windll.user32.GetDesktopWindow()
+    # player.osd_duration = 5000
+    # player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
     # player.command("osd-bar", "show-progress")
     # player.script_message_to("stats", "display-stats")
     # player.script_message_to("stats", "display-stats-toggle")
     # player.command("cycle-values", "osd-level", 3, 1)
-    # player.osd_duration = 5000
-    # player.script_opts = "osc-hidetimeout=8000,osc-fadeduration=1000,osc-visibility=always"
-    # player.cycle("pause")
-    # player.input_bindings # key binding list
-    # player.time_pos # playback time
+    # player.input_bindings
+    # print(player.time_pos)
 
     @player.event_callback("file-loaded")
     def test_handler(_):
         """
         Console Title Changes when start file.
-        :param _: No Param
-        :return: No return
-        """
-        windll.kernel32.SetConsoleTitleW(player.media_title)
-
-    event_handler.append(test_handler)
-
-    # noinspection SpellCheckingInspection
-    def add_list():
-        """
-        Playlist append
 
         :return: None
         """
-        for yt in ['0mxpCgVE_4c', '14C7d1LO8bU', '340ZzONBHhQ', '4mbtk45j6rc', '5aFDb2aUI-o',
-                   '5gzJ7uk74UA', '6G5PS8alMuM', '6gBbpbRSRiY', '6it-y7zyt8s', '7U1qiS7B8Nk',
-                   '7kHDRCO43iw', '9avbb6e9eBw', '9c0gAfV7M_4', '9m3qeiAgZvA', 'B1g1djVfweY',
-                   'B5nzIG1B45g', 'BVGUA5vLsl8', 'BaB0e3O08I4', 'BahP4Pixv5w', 'E46l605KSlg',
-                   'EHY4GTg1wpM', 'FnVLrIV2Ook', 'I42W9RyGvF4', 'IHCrqdLTWKo', 'JDocJA7hDKY',
-                   'K0lw3qXBQ0g', 'Lk7t7m8uXgg', 'NgCGAIKdcYI', 'Oiud3DLGloA', 'OjYskFbYJTI',
-                   'PhbB4eGV-fI', 'QRcagfSTRE0', 'Q_as_NVMfB4', 'Rf9ppDaIxAI', 'SBlpxAxJkMA',
-                   'VLng2Eu1YyQ', 'WcNIJldE7U8', 'Xuf2Kt2CfkQ', 'Ys2p_bXOaAc', 'ZRWq2JFOSXw',
-                   'ZojVSmK_3-c', '_W90dohDz1s', '_lRkDv7gelw', 'aKtHNlP0_zo', 'cN5S-fHGhAA',
-                   'co-YIaCO1ig', 'cxWJK8VJkoQ', 'e3yq5UBR0hQ', 'ejZan8kKjsY', 'fZLptuqF9pk',
-                   'iPNkYAA_f90', 'j33hMzdsq9k', 'jFvB1WleWNU', 'jtH_nLso2Gg', 'jztI5SZ6lEc',
-                   'm4zkuc_wU2s', 'mfZVElthNHA', 'oMr0y0hZ2HA', 'oag5Wb93ah0', 'oejeamt3akY',
-                   'sLz2CsN0NZU', 'sNuNR8v9MLU', 'thDKz6QQtQk', 'uk2c0qLhOaY', 'v0jb3Ld8bF8',
-                   'vaYdSkvJAdU', 'vw-we-8-vwc', 'w-l9a4KggYs', 'xoNDIBcNI-I', 'xxOcLcPrs2w',
-                   'yQ3pFBrZqak']:
-            player.playlist_append(f"ytdl://{yt}")
 
-        for nc in ['nm4624881']:
-            player.playlist_append(f"https://nico.ms/{nc}")
+        windll.kernel32.SetConsoleTitleW(player.media_title)
 
-        for bb in ['BV1Es41127k8', 'BV1Zs411C7K8', 'BV1ds411C7pL']:
-            player.playlist_append(f"https://www.bilibili.com/video/{bb}")
+    event_handler.append(test_handler)
 
     # noinspection SpellCheckingInspection
     def loop(url=None):
         """
         Loop with data
         :param url:
-        :return: No return
+        :return: None
         """
-        nonlocal player, event_handler, log, add_list, log_mpv
+
+        nonlocal player, event_handler, log, log_mpv
         if not url:
             return
 
-        # player.play(url)
-        # player.playlist_shuffle()
+        # noinspection SpellCheckingInspection
+        def add_list():
+            """
+            Playlist append
+
+            :return: playlist
+            :rtype: list
+            """
+            playlist = []
+
+            for yt in ['0mxpCgVE_4c', '14C7d1LO8bU', '340ZzONBHhQ', '4mbtk45j6rc', '5aFDb2aUI-o',
+                       '5gzJ7uk74UA', '6G5PS8alMuM', '6gBbpbRSRiY', '6it-y7zyt8s', '7U1qiS7B8Nk',
+                       '7kHDRCO43iw', '9avbb6e9eBw', '9c0gAfV7M_4', '9m3qeiAgZvA', 'B1g1djVfweY',
+                       'B5nzIG1B45g', 'BVGUA5vLsl8', 'BaB0e3O08I4', 'BahP4Pixv5w', 'E46l605KSlg',
+                       'EHY4GTg1wpM', 'FnVLrIV2Ook', 'I42W9RyGvF4', 'IHCrqdLTWKo', 'JDocJA7hDKY',
+                       'K0lw3qXBQ0g', 'Lk7t7m8uXgg', 'NgCGAIKdcYI', 'Oiud3DLGloA', 'OjYskFbYJTI',
+                       'PhbB4eGV-fI', 'QRcagfSTRE0', 'Q_as_NVMfB4', 'Rf9ppDaIxAI', 'SBlpxAxJkMA',
+                       'VLng2Eu1YyQ', 'WcNIJldE7U8', 'Xuf2Kt2CfkQ', 'Ys2p_bXOaAc', 'ZRWq2JFOSXw',
+                       'ZojVSmK_3-c', '_W90dohDz1s', '_lRkDv7gelw', 'aKtHNlP0_zo', 'cN5S-fHGhAA',
+                       'co-YIaCO1ig', 'cxWJK8VJkoQ', 'e3yq5UBR0hQ', 'ejZan8kKjsY', 'fZLptuqF9pk',
+                       'iPNkYAA_f90', 'j33hMzdsq9k', 'jFvB1WleWNU', 'jtH_nLso2Gg', 'jztI5SZ6lEc',
+                       'm4zkuc_wU2s', 'mfZVElthNHA', 'oMr0y0hZ2HA', 'oag5Wb93ah0', 'oejeamt3akY',
+                       'sLz2CsN0NZU', 'sNuNR8v9MLU', 'thDKz6QQtQk', 'uk2c0qLhOaY', 'v0jb3Ld8bF8',
+                       'vaYdSkvJAdU', 'vw-we-8-vwc', 'w-l9a4KggYs', 'xoNDIBcNI-I', 'xxOcLcPrs2w',
+                       'yQ3pFBrZqak']:
+                playlist.append(f"ytdl://{yt}")
+
+            for nc in ['nm4624881']:
+                playlist.append(f"https://nico.ms/{nc}")
+
+            for bb in ['BV1Es41127k8', 'BV1Zs411C7K8', 'BV1ds411C7pL']:
+                playlist.append(f"https://www.bilibili.com/video/{bb}")
+
+            return playlist
+
+        def start():
+            """
+            Predefined Start
+            :return None
+            """
+
+            player.play(url)
+            sleep(3)
+            add_list()
+            player.playlist_shuffle()
 
         def reader(prompt=""):
+            # noinspection PyUnusedReferences
+            # opts, other = getopt(argv, "a:m:t", ["arg=", "mpv=", "toggle"])
+
+            # self.parser = ArgumentParser(prog="mpv", description="mpv parser")
+            # self.parser.add_argument("type", help="execute type")
             return input(prompt)
 
         while not player.core_shutdown:
@@ -279,13 +300,7 @@ def setup():
                 print(e, file=stderr)
             del loc, glo
 
-    # noinspection PyUnusedReferences
-    # opts, other = getopt(argv, "a:m:t", ["arg=", "mpv=", "toggle"])
-
-    # self.parser = ArgumentParser(prog="mpv", description="mpv parser")
-    # self.parser.add_argument("type", help="execute type")
-
-    return player, loop, event_handler, log, add_list, log_mpv
+    return player, loop, event_handler, log
 
 
 # noinspection SpellCheckingInspection
@@ -294,7 +309,7 @@ def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
     play with setup
 
     :param url: Play URI
-    :return:
+    :return: None
     """
     data = setup()
     player = data[0]
