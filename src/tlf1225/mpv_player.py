@@ -261,7 +261,7 @@ def setup():
             """
             Predefined Start
 
-            :arg f: args
+            :arg f: 0: Path Remove, 1: Build Playlist, 2: Desktop Window, 3: Show KeyBindings. 4: Show Info, 5: Script Settings and Toggle KeyBindings
             :type: list or str
             :return None
             """
@@ -273,31 +273,32 @@ def setup():
                 except ValueError:
                     pass
 
-            player.play(url)
-            sleep(3)
-            for pid in add_list():
-                player.playlist_append(pid)
-            player.playlist_shuffle()
-            player.playlist_pos = 0
-
             if 1 in f:
-                player.command("cycle-values", "wid", windll.user32.GetDesktopWindow(), -1)
+                player.play(url)
+                sleep(3)
+                for pid in add_list():
+                    player.playlist_append(pid)
+                player.playlist_shuffle()
+                player.playlist_pos = 0
 
             if 2 in f:
+                player.command("cycle-values", "wid", windll.user32.GetDesktopWindow(), -1)
+
+            if 3 in f:
                 for x in player.input_bindings:
                     for i, j in x.items():
                         print(f"{i}: {j}", file=stderr)
 
             player.wait_until_playing()
 
-            if 3 in f:
+            if 4 in f:
                 player.command("osd-bar", "show-progress")
                 player.script_message_to("stats", "display-stats")
                 # player.script_message_to("stats", "display-stats-toggle")
                 # player.command("cycle-values", "osd-level", 3, 1)
                 print(player.time_pos, file=stderr)
 
-            if 4 in f:
+            if 5 in f:
                 player.osd_duration = 3000
                 player.script_opts = "osc-hidetimeout=3000,osc-fadeduration=1000,osc-visibility=always"
                 player.cycle("input-default-bindings")
