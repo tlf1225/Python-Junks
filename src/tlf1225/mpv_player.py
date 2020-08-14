@@ -265,6 +265,7 @@ def setup():
             :type: list or str
             :return None
             """
+
             if "path_remove" in f:
                 try:
                     path_list.remove(r"D:\Python\Scripts")
@@ -273,7 +274,6 @@ def setup():
                     pass
 
             player.play(url)
-            sleep(3)
             for pid in add_list():
                 player.playlist_append(pid)
             player.playlist_shuffle()
