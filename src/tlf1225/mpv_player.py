@@ -257,14 +257,15 @@ def setup():
 
             return playlist
 
-        def start(f=False):
+        def start(f=None):
             """
             Predefined Start
 
-            :arg f: Flag
+            :arg f: Flag List
+            :type: list or str
             :return None
             """
-            if f:
+            if "path_remove" in f:
                 try:
                     path_list.remove(r"D:\Python\Scripts")
                     environ["PATH"] = pathsep.join(path_list)
@@ -277,18 +278,25 @@ def setup():
                 player.playlist_append(pid)
             player.playlist_shuffle()
             player.playlist_pos = 0
-            if f:
-                player.wid = windll.user32.GetDesktopWindow()
-                player.wait_until_playing()
+
+            if "toggle_desktop" in f:
+                player.command("cycle-values", "wid", windll.user32.GetDesktopWindow(), -1)
+
+            if "display_keybindings" in f:
                 for x in player.input_bindings:
                     for i, j in x.items():
                         print(f"{i}: {j}", file=stderr)
+
+            player.wait_until_playing()
+
+            if "display_info" in f:
                 player.command("osd-bar", "show-progress")
                 player.script_message_to("stats", "display-stats")
                 # player.script_message_to("stats", "display-stats-toggle")
                 # player.command("cycle-values", "osd-level", 3, 1)
                 print(player.time_pos, file=stderr)
-                sleep(3)
+
+            if "toggle_input" in f:
                 player.osd_duration = 3000
                 player.script_opts = "osc-hidetimeout=3000,osc-fadeduration=1000,osc-visibility=always"
                 player.cycle("input-default-bindings")
