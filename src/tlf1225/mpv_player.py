@@ -274,6 +274,7 @@ def setup():
                     pass
 
             player.play(url)
+            sleep(3)
             for pid in add_list():
                 player.playlist_append(pid)
             player.playlist_shuffle()
