@@ -4,9 +4,10 @@ This file is implemented with mpv.
 
 # noinspection PyUnresolvedReferences
 from argparse import ArgumentParser
-from ctypes import windll
+from ctypes import byref, windll, WINFUNCTYPE
+from ctypes.wintypes import BOOL, DWORD, HWND, LPARAM
 from io import StringIO
-from os import scandir, environ, pathsep, sep
+from os import environ, getpid, pathsep, scandir, sep
 from os.path import isdir
 from re import search
 # noinspection PyUnresolvedReferences
@@ -158,7 +159,7 @@ def setup():
     """
     setup player with mpv
 
-    :returns: player, loop, event_handler, log, log_mpv
+    :returns: player, loop, event_handler, log
     :rtype: tuple
     """
 
@@ -196,7 +197,9 @@ def setup():
     player.input_media_keys = True
     player.ytdl_format = "bestvideo+bestaudio/best"
     player.ytdl_raw_options = "no-cache-dir="
+    player.volume = 50
     player.shuffle = True
+    player.config_dir = path[0]
 
     @player.event_callback("file-loaded")
     def test_handler(_):
@@ -232,7 +235,7 @@ def setup():
             """
             playlist = []
 
-            for yt in ['0mxpCgVE_4c', '14C7d1LO8bU', '340ZzONBHhQ', '4mbtk45j6rc', '5aFDb2aUI-o',
+            for yt in ('0mxpCgVE_4c', '14C7d1LO8bU', '340ZzONBHhQ', '4mbtk45j6rc', '5aFDb2aUI-o',
                        '5gzJ7uk74UA', '6G5PS8alMuM', '6gBbpbRSRiY', '6it-y7zyt8s', '7U1qiS7B8Nk',
                        '7kHDRCO43iw', '9avbb6e9eBw', '9c0gAfV7M_4', '9m3qeiAgZvA', 'B1g1djVfweY',
                        'B5nzIG1B45g', 'BVGUA5vLsl8', 'BaB0e3O08I4', 'BahP4Pixv5w', 'E46l605KSlg',
@@ -246,17 +249,19 @@ def setup():
                        'm4zkuc_wU2s', 'mfZVElthNHA', 'oMr0y0hZ2HA', 'oag5Wb93ah0', 'oejeamt3akY',
                        'sLz2CsN0NZU', 'sNuNR8v9MLU', 'thDKz6QQtQk', 'uk2c0qLhOaY', 'v0jb3Ld8bF8',
                        'vaYdSkvJAdU', 'vw-we-8-vwc', 'w-l9a4KggYs', 'xoNDIBcNI-I', 'xxOcLcPrs2w',
-                       'yQ3pFBrZqak']:
+                       'yQ3pFBrZqak', 'mg6PCPVUg7I', 'CH9cHp-QM1c', 'lg6RecLKxXU', 'DZgGQboLTm4',
+                       'i75oLwv286U', 'ZHUDc38ncAA'):
                 playlist.append(f"ytdl://{yt}")
 
             for nc in ['nm4624881']:
                 playlist.append(f"https://nico.ms/{nc}")
 
-            for bb in ['BV1Es41127k8', 'BV1Zs411C7K8', 'BV1ds411C7pL']:
+            for bb in ('BV1Es41127k8', 'BV1Zs411C7K8', 'BV1ds411C7pL'):
                 playlist.append(f"https://www.bilibili.com/video/{bb}")
 
             return playlist
 
+        # noinspection SpellCheckingInspection
         def start(*f):
             """
             Predefined Start
@@ -280,6 +285,7 @@ def setup():
                     player.playlist_append(pid)
                 player.playlist_shuffle()
                 player.playlist_pos = 0
+                player.wait_until_playing()
 
             if 2 in f:
                 player.command("cycle-values", "wid", windll.user32.GetDesktopWindow(), -1)
@@ -288,8 +294,6 @@ def setup():
                 for x in player.input_bindings:
                     for i, j in x.items():
                         print(f"{i}: {j}", file=stderr)
-
-            player.wait_until_playing()
 
             if 4 in f:
                 player.command("osd-bar", "show-progress")
@@ -304,13 +308,28 @@ def setup():
                 player.cycle("input-default-bindings")
                 player.cycle("input-vo-keyboard")
 
+        # noinspection PyUnusedReferences, SpellCheckingInspection
         def reader(prompt=""):
-            # noinspection PyUnusedReferences
             # opts, other = getopt(argv, "a:m:t", ["arg=", "mpv=", "toggle"])
 
             # self.parser = ArgumentParser(prog="mpv", description="mpv parser")
             # self.parser.add_argument("type", help="execute type")
             return input(prompt)
+
+        # noinspection PyTypeChecker
+        def topmost(hwnd_value):
+            def finder(hwnd, lp):
+                result = DWORD()
+                windll.user32.GetWindowThreadProcessId(hwnd, byref(result))
+                if result.value == lp:
+                    print(hwnd, file=stderr)
+                    windll.user32.SetWindowPos(hwnd, HWND(hwnd_value), 0, 0, 0, 0, 3)
+                    windll.user32.SetForegroundWindow(hwnd)
+                    return False
+                else:
+                    return True
+
+            windll.user32.EnumWindows(WINFUNCTYPE(BOOL, HWND, LPARAM)(finder), getpid())
 
         while not player.core_shutdown:
             loc = locals().copy()
@@ -319,7 +338,7 @@ def setup():
             try:
                 interact(banner="Interpreter", readfunc=reader, local=loc, exitmsg="Continue")
             except SystemExit as e:
-                if e.code is not None and e.code != 0:
+                if e.code is not None:
                     break
                 else:
                     player.wait_until_paused()
@@ -338,17 +357,21 @@ def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
     :param url: Play URI
     :return: None
     """
-    data = setup()
-    player = data[0]
-    loop = data[1]
-    event_handler = data[2]
+    player, loop, event_handler, _ = setup()
+    if not isinstance(player, MPV) or not callable(loop) or not isinstance(event_handler, list):
+        return
     sleep(1)
     loop(url)
     for x in event_handler:
-        if callable(x.unregister_mpv_events):
-            x.unregister_mpv_events()
+        for z in [y for y in dir(x) if y.startswith("unregister")]:
+            test = getattr(x, z)
+            if callable(test):
+                print(f"{x}.{z} Unregistering", file=stderr)
+                test()
+    event_handler.clear()
     player.quit()
     player.terminate()
+    del player, loop, event_handler
 
 
 if __name__ == '__main__':
