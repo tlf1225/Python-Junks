@@ -1,6 +1,7 @@
 # import threading
 # from subprocess import call
 from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures.process import BrokenProcessPool
 from email.utils import formatdate
 from http import HTTPStatus
 from http.server import ThreadingHTTPServer, CGIHTTPRequestHandler
@@ -33,9 +34,7 @@ class HTTPWorker(CGIHTTPRequestHandler):
 
     def is_cgi(self):
         if not super(HTTPWorker, self).is_cgi():
-            if self.path.find("cgi-bin"):
-                temp = self.path.split("/")
-                self.cgi_info = '/'.join(temp[1:3]), '/'.join(temp[3:])
+            if self.path.find("/cgi-bin/") > 0:
                 return True
             return False
         else:
@@ -200,7 +199,11 @@ def main():
              worker.submit(http, root=root),
              worker.submit(https, root=root)]
         for c in a:
-            print(c.result())
+            try:
+                c.exception()
+            except (FileNotFoundError, KeyboardInterrupt, BrokenProcessPool):
+                print("Cancelling")
+                c.cancel()
 
 
 if __name__ == '__main__':
