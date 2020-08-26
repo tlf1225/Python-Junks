@@ -1,0 +1,9 @@
+@import "default.css";
+
+div {
+    text-align: center;
+}
+
+article iframe {
+    border: hidden;
+}

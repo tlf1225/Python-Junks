@@ -1,5 +1,4 @@
 # import threading
-# from asyncio import get_event_loop, wait
 # from subprocess import call
 from concurrent.futures import ProcessPoolExecutor
 from email.utils import formatdate
@@ -14,6 +13,7 @@ from socketserver import ThreadingTCPServer, StreamRequestHandler, ThreadingMixI
 from ssl import create_default_context, Purpose
 from time import time
 
+# noinspection PyUnresolvedReferences
 from string import Template
 
 FORMAT = "%(levelname)s: %(asctime)s [%(funcName)s] {%(threadName)s:%(thread)d}: %(message)s"
@@ -33,7 +33,7 @@ class HTTPWorker(CGIHTTPRequestHandler):
 
     def is_cgi(self):
         if not super(HTTPWorker, self).is_cgi():
-            if self.path.startswith("/html/cgi-bin"):
+            if self.path.find("cgi-bin"):
                 temp = self.path.split("/")
                 self.cgi_info = '/'.join(temp[1:3]), '/'.join(temp[3:])
                 return True
@@ -147,7 +147,7 @@ class ThreadingStreamRequestHandler(ThreadingMixIn, StreamRequestHandler):
 def default_http(root=None):
     chdir(root)
     basicConfig(level=DEBUG, format=FORMAT)
-    with ThreadingHTTPServer(("0.0.0.0", 80), HTTPWorker) as httpd:
+    with ThreadingHTTPServer(("localhost", 80), HTTPWorker) as httpd:
         info("Running")
         httpd.serve_forever()
         error("Exit")
@@ -160,7 +160,7 @@ def default_https(root=None):
     ssl.set_alpn_protocols(["http/1.1"])
     chdir(root)
     basicConfig(level=DEBUG, format=FORMAT)
-    with ThreadingHTTPServer(("0.0.0.0", 443), HTTPWorker) as httpd:
+    with ThreadingHTTPServer(("localhost", 443), HTTPWorker) as httpd:
         info("Running")
         httpd.socket = ssl.wrap_socket(httpd.socket, server_side=True)
         httpd.serve_forever()
@@ -170,7 +170,7 @@ def default_https(root=None):
 def http(root=None):
     chdir(root)
     basicConfig(level=DEBUG, format=FORMAT)
-    with ThreadingTCPServer(("0.0.0.0", 8080), ThreadingStreamRequestHandler) as httpd:
+    with ThreadingTCPServer(("localhost", 8080), ThreadingStreamRequestHandler) as httpd:
         info("Running")
         httpd.serve_forever()
         error("Exit")
@@ -183,7 +183,7 @@ def https(root=None):
     ssl.set_alpn_protocols(["http/1.1"])
     chdir(root)
     basicConfig(level=DEBUG, format=FORMAT)
-    with ThreadingTCPServer(("0.0.0.0", 8443), ThreadingStreamRequestHandler) as httpd:
+    with ThreadingTCPServer(("localhost", 8443), ThreadingStreamRequestHandler) as httpd:
         info("Running")
         httpd.socket = ssl.wrap_socket(httpd.socket, server_side=True)
         httpd.serve_forever()
@@ -194,7 +194,7 @@ def main():
     chdir("root")
     add_type("text/javascript", ".js")
     with ProcessPoolExecutor(max_workers=5) as worker:
-        root = "Y:/Web_Root/"
+        root = "."
         a = [worker.submit(default_http, root=root),
              worker.submit(default_https, root=root),
              worker.submit(http, root=root),

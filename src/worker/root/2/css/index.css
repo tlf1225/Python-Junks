@@ -1,0 +1,93 @@
+@import "default.css";
+
+html,
+head,
+body {
+    margin: auto;
+    padding: 0;
+}
+
+body h1 {
+    text-align: center;
+    color: #00cf9f;
+}
+
+iframe {
+    border: hidden;
+    margin: auto;
+    padding: 20px;
+}
+
+div p {
+    text-align: center;
+}
+
+div#info,
+div#youtube {
+    text-align: center;
+}
+
+div#youtube {
+    padding: 10px;
+    margin: auto;
+}
+
+div#info p {
+    color: #00afaf;
+    font-size: 1.1em;
+}
+
+div#info p#modify {
+    color: #00cfcf;
+    font-size: 1.25em;
+}
+
+header p {
+    margin: auto;
+    padding: 10px;
+    text-align: left;
+    display: inline-block;
+}
+
+header ul {
+    display: inline-block;
+    list-style-type: none;
+}
+
+header ul li {
+    display: inline-block;
+}
+
+header ul li a {
+    display: inline-block;
+    text-decoration: none;
+    cursor: context-menu;
+    color: aqua;
+    font-size: 1.3em;
+    margin: 0 5px;
+    padding: 0;
+}
+
+header ul li a:hover {
+    color: red;
+}
+
+footer {
+    text-align: center;
+}
+
+footer p {
+    margin: auto;
+    padding: 0;
+}
+
+footer ul {
+    list-style-type: none;
+    margin: auto;
+    padding: 0;
+}
+
+footer ul li {
+    margin: 0 5px;
+    display: inline-block;
+}

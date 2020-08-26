@@ -1,0 +1,11 @@
+@charset "utf-8";
+@viewport {
+    height: device-height;
+    width: device-width;
+    user-zoom: fixed;
+    zoom: 1.0;
+    min-zoom: 1.0;
+    max-zoom: 1.0;
+    orientation: portrait;
+    viewport-fit: contain;
+}

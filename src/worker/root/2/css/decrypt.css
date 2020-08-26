@@ -1,0 +1,141 @@
+@import "default.css";
+
+div#youtube {
+    margin: 0 auto;
+    width: 75%;
+    border: 3px solid green;
+    padding: 10px;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+div#youtube p {
+    padding: 8px;
+}
+
+form[name="select"] {
+    width: 50%;
+    display: inline-block;
+}
+
+div#result {
+    display: inline-block;
+    width: 49%;
+    border: 2px solid yellow;
+}
+
+div#control {
+    position: absolute;
+    z-index: 3;
+    bottom: 0;
+    left: 25px;
+}
+
+div#control p#info {
+    display: inline-block;
+    color: black;
+}
+
+div#control button#play {
+    background-color: rgba(0, 0, 0, 0);
+    border: hidden;
+}
+
+div#control button#pause {
+    background-color: rgba(0, 0, 0, 0);
+    border: hidden;
+}
+
+div#control button#head {
+    background-color: rgba(0, 0, 0, 0);
+    border: hidden;
+}
+
+div#control button#full {
+    background-color: rgba(0, 0, 0, 0);
+    border: hidden;
+}
+
+div#control button#mute {
+    background-color: rgba(0, 0, 0, 0);
+    border: hidden;
+}
+
+div#control:not(:hover) {
+    animation: hide 0.3s ease 0s 1 forwards;
+}
+
+div#preview:hover div#control {
+    animation: show 0.3s ease 0s 1 forwards;
+}
+
+div#preview {
+    position: relative;
+    width: 80%;
+    z-index: 1;
+    margin: 0 auto;
+    border: 2px solid blue;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+div#preview:fullscreen {
+    border: none;
+}
+
+div#player {
+    position: inherit;
+    z-index: 2;
+}
+
+a.video,
+a.audio {
+    padding-left: 7px;
+}
+
+video#video {
+    display: block;
+    width: 100%;
+}
+
+audio#audio {
+    width: 0;
+    height: 0;
+}
+
+video::-webkit-media-controls,
+audio::-webkit-media-controls,
+video::-moz-media-controls,
+audio::-moz-media-controls {
+    display: none !important;
+}
+
+@keyframes hide {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 0;
+        display: none;
+    }
+}
+
+@keyframes show {
+    0% {
+        opacity: 0;
+        display: block;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}

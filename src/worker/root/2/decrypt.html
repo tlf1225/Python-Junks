@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Decrypt Signature</title>
+    <script src="js/platform.js"></script>
+</head>
+
+<body>
+<div id="youtube">
+    <p>Search Youtube Video</p>
+    <form name="query">
+        <input id="keyword" type="text"/>
+        <button id="search" type="button">Query</button>
+    </form>
+    <div id="query"></div>
+    <p>Youtube URL</p>
+    <form name="dialog">
+        <input id="data" type="text"/>
+        <button id="run" type="button">Execute</button>
+    </form>
+    <div id="selector">
+        <form name="select">
+            <label for="select_audio">Select Audio</label>
+            <div id="select_audio"></div>
+            <label for="select_video">Select Video</label>
+            <div id="select_video"></div>
+            <button id="execute" type="button">Preview</button>
+        </form>
+        <div id="result">
+            <p>Result is here.</p>
+        </div>
+    </div>
+    <dialog id="dialog"></dialog>
+</div>
+<br/>
+<div id="preview">
+    <div id="player">
+        <video id="video" preload="metadata"></video>
+        <audio id="audio" preload="metadata"></audio>
+    </div>
+    <div id="control">
+        <button id="play" type="button">
+            <svg height="32" width="32">
+                <polygon points="0,0 0,32 32,16" style="fill: black;"></polygon>
+            </svg>
+        </button>
+        <button id="pause" type="button">
+            <svg height="32" width="32">
+                <rect height="32" style="stroke:black;" width="5" x="5" y="0"></rect>
+                <rect height="32" style="stroke:black;" width="5" x="22" y="0"></rect>
+            </svg>
+        </button>
+        <button id="head" type="button">
+            <svg height="32" width="32">
+                <line style="stroke:black;stroke-width:3px;" x1="24" x2="3" y1="3" y2="16"></line>
+                <line style="stroke:black;stroke-width:3px;" x1="3" x2="24" y1="16" y2="29"></line>
+            </svg>
+        </button>
+        <button id="full" type="button">
+            <svg height="32" width="32">
+                <line style="stroke:black;stroke-width:3px;" x1="13" x2="0" y1="13" y2="0"></line>
+                <line style="stroke:black;stroke-width:3px;" x1="19" x2="32" y1="13" y2="0"></line>
+                <line style="stroke:black;stroke-width:3px;" x1="13" x2="0" y1="19" y2="32"></line>
+                <line style="stroke:black;stroke-width:3px;" x1="19" x2="32" y1="19" y2="32"></line>
+            </svg>
+        </button>
+        <input id="volume" max="1.0" step="0.01" type="range" value="1.0"/>
+        <button id="mute" type="button">
+            <svg height="32" width="32">
+                <line style="stroke:black;stroke-width:3px;" x1="0" x2="32" y1="0" y2="32"></line>
+                <line style="stroke:black;stroke-width:3px;" x1="32" x2="0" y1="0" y2="32"></line>
+            </svg>
+        </button>
+        <label for="time"></label>
+        <input id="time" type="range" value="0"/>
+        <p id="info">0.0</p>
+    </div>
+</div>
+</body>
+</html>

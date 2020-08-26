@@ -1,0 +1,11 @@
+@import "default.css";
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+iframe#ytplayer {
+    overflow: hidden;
+    background-color: #000000;
+}
