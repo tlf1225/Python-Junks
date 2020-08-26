@@ -11,14 +11,11 @@ from sys import stderr
 # noinspection PyUnresolvedReferences
 from typing import Tuple, Optional, Union
 
+# noinspection SpellCheckingInspection
 FORMAT = "%(levelname)s: %(asctime)s [%(funcName)s] {%(threadName)s:%(thread)d}: %(message)s"
 
 
 class HTTPWorker(CGIHTTPRequestHandler):
-
-    def setup(self):
-        super().setup()
-        self.cgi_directories += ["/2/cgi-bin"]
 
     def log_message(self, fmt: str, *args) -> None:
         print(f"{self.address_string()} [{self.log_date_time_string()}] {fmt % args}", file=stderr)

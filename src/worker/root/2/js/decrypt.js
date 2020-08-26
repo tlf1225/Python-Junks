@@ -35,7 +35,7 @@ document.query.search.onclick = () => {
     while (query.firstChild) {
         query.removeChild(query.firstChild);
     }
-    http.open("POST", "cgi-bin/youtube.py", true);
+    http.open("POST", "/cgi-bin/youtube.py", true);
     http.send(null);
 };
 
@@ -167,7 +167,7 @@ document.dialog.run.onclick = () => {
     const found = regex.exec(document.dialog.data.value);
 
     if (found && found.length == 2) {
-        http.open("POST", "cgi-bin/youtube.py", true);
+        http.open("POST", "/cgi-bin/youtube.py", true);
         http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         http.send(`id=${found[1]}`);
         return;
