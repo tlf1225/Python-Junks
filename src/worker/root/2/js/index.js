@@ -12,7 +12,7 @@ if (!window.timer_id) {
     }, 1000);
 } else {
     clearInterval(window.timer_id);
-    window.timer_id = undefined;
+    delete window.timer_id;
 }
 
 open.onclick = () => {
@@ -28,9 +28,7 @@ open.onclick = () => {
         info.removeAttribute("hidden");
         open.innerText = "Close";
     } else {
-        while (info.firstChild) {
-            info.removeChild(info.firstChild);
-        }
+        info.clearChildren();
         info.setAttribute("hidden", "");
         open.innerText = "Open";
     }

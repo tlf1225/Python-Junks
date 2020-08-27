@@ -7,6 +7,10 @@ const Base64 = {
     }
 };
 
+Object.defineProperty(Element.prototype, 'clearChildren', {
+configurable: true, enumerable: false, value: () => { while(this.firstChild) this.removeChild(this.lastChild);}
+});
+
 const charset = document.createElement("meta");
 charset.setAttribute("charset", "utf-8");
 

@@ -3,58 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Audio Spectrum</title>
-    <script defer src="https://cdn.jsdelivr.net/gh/ienaga/swf2js@master/swf2js.js"></script>
     <script defer src="main.js"></script>
-    <style>
-    body {
-      background-color: black;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    #display {
-      display: block;
-      margin: 1em 0;
-    }
-
-    #open-file {
-      background-color: rgb(112, 125, 198);
-      color: white;
-      text-align: center;
-      padding: 0.5em 1em;
-      cursor: pointer;
-    }
-
-    #file-input {
-      display: none;
-    }
-
-    #swclock {
-      border: none;
-      overflow: hidden;
-      display: block;
-      width: 1024px;
-      height: 768px;
-    }
-
-
-    </style>
+    <link href="main.css" rel="stylesheet">
 </head>
 <body>
 <canvas id="display"></canvas>
-<label id="open-file">音楽ファイルを開く<input accept="audio/*" id="file-input" type="file"></label>
+<label id="open-file"><input accept="audio/*" id="file-input" type="file">音楽ファイルを開く</label>
+<br/>
 <input id="link" type="text">
+<br/>
 <a href="https://heaven-burns-red.com/images/audio.mp3">Link</a>
 <a href="https://sbfl.net/blog/2019/01/07/javascript-audio-spectrum/">Source</a>
-<!--
-<script defer>
-  document.body.onload = () => {
-    // swf2js.load("http://swclock.loftimg.jp/blogparts/swf/swclock.swf?country=JPN");
-    swf2js.load("./swclock.swf?country=JPN", {"bgcolor": "#f5fafa", "quality": "high"});
-  };
-</script>
-<iframe id="swclock" src="http://swclock.loftimg.jp/blogparts/?country=JPN" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
--->
 </body>
 </html>

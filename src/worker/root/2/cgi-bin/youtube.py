@@ -25,31 +25,31 @@ formatting = Formatter("%(name)s %(message)s")
 handler.setFormatter(formatting)
 log.addHandler(handler)
 
-ydl = YoutubeDL({"cachedir": False, "noplaylist": True, "ignoreerrors": False, "quiet": True,
-                 "no_warnings": True, "verbose": False, "simulate": True, "logger": log, "logtostderr": True})
 result = {}
-output = ""
+output = None
 
+# noinspection PyBroadException
 try:
-    result.update(ydl.extract_info(
-        recieve.getvalue("id", ""), download=False) or {})
-    if "formats" in result:
-        for k, v in dict(result.items()).items():
-            if v is None:
-                del result[k]
-        output = dumps(result, sort_keys=True)
-    else:
-        print("Status: 500 Internal Server Error")
-except:
+    with YoutubeDL({"cachedir": False, "noplaylist": True, "ignoreerrors": False, "quiet": True,
+                    "no_warnings": True, "verbose": False, "simulate": True, "logger": log, "logtostderr": True}) as ydl:
+        result.update(ydl.extract_info(recieve.getvalue("id", ""), download=False) or {})
+        if "formats" in result:
+            for k, v in result.copy().items():
+                if v is None:
+                    del result[k]
+            output = dumps(result, sort_keys=True)
+        else:
+            print("Status: 500 Internal Server Error")
+except Exception as e:
     result.clear()
     result.update({
         "err": "Internal Server Error",
-        "message": buffer.getvalue()
+        "message": buffer.getvalue(),
+        "exception": str(e)
     })
-    if "verbose" in params and bool(params["verbose"]):
+    if "verbose" in params:
         result.update({"stacktrace": format_exc()})
     output = dumps(result, sort_keys=True)
-    output = dumps(result)
     print("Status: 500 Internal Server Error")
 print("Content-Type: application/json")
 print(f"Content-Length: {len(output)}")

@@ -17,26 +17,16 @@ const youtube = document.getElementById("youtube"),
       full = document.getElementById("full"),
       dialog = document.getElementById("dialog");
 
-let http = null,
-    clone = null;
-
-function QA() {
-    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-        const res = JSON.parse(this.responseText);
-        for (const c of res["items"]) {
-
-        }
-    }
-}
-
 document.query.search.onclick = () => {
-    http = new XMLHttpRequest();
-    http.onreadystatechange = QA;
-    while (query.firstChild) {
-        query.removeChild(query.firstChild);
-    }
+    const http = new XMLHttpRequest();
+    http.onreadystatechange = () => {
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            const res = JSON.parse(this.responseText);
+        }
+    };
+    query.clearChildren();
     http.open("POST", "/cgi-bin/youtube.py", true);
-    http.send(null);
+    http.send(`keyword=${document.query.keyword.value}`);
 };
 
 document.query.onsubmit = () => {
@@ -44,88 +34,86 @@ document.query.onsubmit = () => {
     return false;
 };
 
+function error_message(d){
+    if (d.hasOwnProperty("err")) {
+        const title = document.createElement("p");
+        title.style.color = "red";
+        title.style.textAlign = "center";
+        title.innerText = d["err"];
+        dialog.appendChild(title);
+        if (d.hasOwnProperty("message")) {
+            const verbose = document.createElement("p");
+            verbose.style.color = "blue";
+            verbose.innerText = d["message"];
+            if (d.hasOwnProperty("stacktrace")) {
+                verbose.innerText += `\n${d["stacktrace"]}`;
+            }
+            dialog.appendChild(verbose);
+        }
+        const panel = document.createElement("div");
+        panel.style.textAlign = "center";
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.innerText = "Close";
+        cancel.onclick = () => {
+            dialog.clearChildren();
+            dialog.close();
+        };
+        panel.appendChild(cancel);
+        dialog.appendChild(panel);
+        dialog.showModal();
+    }
+}
+
+function parser(data) {
+    for (const k in data) {
+        switch (k) {
+            case "title":
+                const title = document.createElement("p");
+                title.innerText = data[k];
+                result.append(title);
+                break;
+            case "formats":
+                for (const m in data[k]) {
+                    const url = document.createElement("a");
+                    const label = document.createElement("label");
+                    const add = document.createElement("input");
+                    add.value = url.href = data[k][m]["url"];
+                    url.innerText = label.innerText = data[k][m]["format"];
+                    add.type = "radio";
+                    if (d["vcodec"] === "none") {
+                        url.type = `audio/${data[k][m]["ext"]}`;
+                        label.htmlFor = add.name = url.className = "audio";
+                        select_audio.appendChild(label);
+                        select_audio.appendChild(add);
+                        select_audio.appendChild(document.createElement("br"));
+                    } else if (d["acodec"] === "none") {
+                        url.type = `video/${data[k][m]["ext"]}`;
+                        label.htmlFor = add.name = url.className = "video";
+                        select_video.appendChild(label);
+                        select_video.appendChild(add);
+                        select_video.appendChild(document.createElement("br"));
+                    }
+                    result.append(url);
+                    result.appendChild(document.createElement("br"));
+                }
+                break;
+        }
+    }
+    result.removeAttribute("hidden");
+}
+
+
 document.dialog.run.onclick = () => {
-    http = new XMLHttpRequest();
+    const http = new XMLHttpRequest();
     http.onreadystatechange = () => {
         if (http.readyState === XMLHttpRequest.DONE) {
             try {
                 const data = JSON.parse(http.responseText);
                 if (http.status === 500) {
-                    if (!!data["err"]) {
-                        const title = document.createElement("p");
-                        title.style.color = "red";
-                        title.style.textAlign = "center";
-                        title.innerText = data["err"];
-                        dialog.appendChild(title);
-                        if (!!data["message"]) {
-                            const verbose = document.createElement("p");
-                            verbose.style.color = "blue";
-                            verbose.innerText = data["message"];
-                            if (!!data["stacktrace"]) {
-                                verbose.innerText += `\n${data["stacktrace"]}`;
-                            }
-                            dialog.appendChild(verbose);
-                        }
-                        const panel = document.createElement("div");
-                        panel.style.textAlign = "center";
-                        const cancel = document.createElement("button");
-                        cancel.type = "button";
-                        cancel.innerText = "Close";
-                        cancel.onclick = () => {
-                            while (dialog.firstChild) {
-                                dialog.removeChild(dialog.firstChild);
-                            }
-                            dialog.close();
-                        };
-                        panel.appendChild(cancel);
-                        dialog.appendChild(panel);
-                        dialog.showModal();
-                        return;
-                    }
+                    error_message(data)
                 } else if (http.status === 200) {
-                    for (const k in data) {
-                        if (data.hasOwnProperty(k)) {
-                            const l = data[k];
-                            switch (k) {
-                                case "title":
-                                    const title = document.createElement("p");
-                                    title.innerText = l;
-                                    result.append(title);
-                                    break;
-                                case "formats":
-                                    for (const m in l) {
-                                        if (l.hasOwnProperty(m)) {
-                                            const d = l[m];
-                                            if (typeof d["url"] === "string") {
-                                                const url = document.createElement("a");
-                                                const label = document.createElement("label");
-                                                const add = document.createElement("input");
-                                                add.value = url.href = d["url"];
-                                                url.innerText = label.innerText = d["format"];
-                                                add.type = "radio";
-                                                if (d["vcodec"] === "none") {
-                                                    url.type = `audio/${d["ext"]}`;
-                                                    label.htmlFor = add.name = url.className = "audio";
-                                                    select_audio.appendChild(label);
-                                                    select_audio.appendChild(add);
-                                                    select_audio.appendChild(document.createElement("br"));
-                                                } else if (d["acodec"] === "none") {
-                                                    url.type = `video/${d["ext"]}`;
-                                                    label.htmlFor = add.name = url.className = "video";
-                                                    select_video.appendChild(label);
-                                                    select_video.appendChild(add);
-                                                    select_video.appendChild(document.createElement("br"));
-                                                }
-                                                result.append(url);
-                                            }
-                                        }
-                                        result.appendChild(document.createElement("br"));
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                    result.removeAttribute("hidden");
+                    parser(data)
                 }
             } catch (error) {
                 if (error === SyntaxError) {
@@ -140,9 +128,7 @@ document.dialog.run.onclick = () => {
                     cancel.type = "button";
                     cancel.innerText = "Close";
                     cancel.onclick = () => {
-                        while (dialog.firstChild) {
-                            dialog.removeChild(dialog.firstChild);
-                        }
+                        dialog.clearChildren();
                         dialog.close();
                     };
                     panel.appendChild(cancel);
@@ -152,17 +138,9 @@ document.dialog.run.onclick = () => {
             }
         }
     };
-    while (result.firstChild) {
-        result.removeChild(result.firstChild);
-    }
-
-    while (select_video.firstChild) {
-        select_video.removeChild(select_video.firstChild);
-    }
-
-    while (select_audio.firstChild) {
-        select_audio.removeChild(select_audio.firstChild);
-    }
+    result.clearChildren();
+    select_video.clearChildren();
+    select_audio.clearChildren();
 
     const found = regex.exec(document.dialog.data.value);
 
@@ -170,9 +148,9 @@ document.dialog.run.onclick = () => {
         http.open("POST", "/cgi-bin/youtube.py", true);
         http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         http.send(`id=${found[1]}`);
-        return;
+    } else {
+        alert("This url is incorrect");
     }
-    alert("This url is incorrect");
 };
 
 document.dialog.onsubmit = () => {
@@ -181,32 +159,23 @@ document.dialog.onsubmit = () => {
 };
 
 document.select.execute.onclick = () => {
-    let soc = null;
-    while (video.firstChild) {
-        video.removeChild(video.firstChild);
+    video.clearChildren();
+    audio.clearChildren();
+    const test1 = document.createNodeIterator(select_video, NodeFilter.SHOW_ELEMENT,
+        code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT);
+    const test2 = document.createNodeIterator(select_audio, NodeFilter.SHOW_ELEMENT,
+        code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT);
+    let test = test1.nextNode()
+    if (test) {
+        const soc = document.createElement("source");
+        soc.src = test.value;
+        video.appendChild(soc);
     }
-    while (audio.firstChild) {
-        audio.removeChild(audio.firstChild);
-    }
-    for (const c of select_video.children) {
-        if (c instanceof HTMLInputElement) {
-            if (c.checked) {
-                soc = document.createElement("source");
-                soc.src = c.value;
-                video.appendChild(soc);
-                break;
-            }
-        }
-    }
-    for (const c of select_audio.children) {
-        if (c instanceof HTMLInputElement) {
-            if (c.checked) {
-                soc = document.createElement("source");
-                soc.src = c.value;
-                audio.appendChild(soc);
-                break;
-            }
-        }
+    test = test2.nextNode();
+    if (test) {
+        const soc = document.createElement("source");
+        soc.src = test.value;
+        audio.appendChild(soc);
     }
     if (video.childElementCount <= 0 && audio.childElementCount <= 0) return;
     video.load();
@@ -233,23 +202,10 @@ document.select.execute.onclick = () => {
         volume.value = video.volume = audio.volume = (video.muted = audio.muted = !video.muted) ? 1 : 0;
     };
     full.onclick = () => {
-        const isInFullScreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
-        if (!isInFullScreen) {
-            if (preview.requestFullscreen) {
-                preview.requestFullscreen();
-            } else if (preview.mozRequestFullScreen) {
-                preview.mozRequestFullScreen();
-            } else if (video.webkitRequestFullScreen) {
-                preview.webkitRequestFullScreen();
-            }
+        if (!document.fullscreenElement) {
+            preview.requestFullScreen();
         } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            }
+            document.exitFullscreen(document);
         }
     };
     video.onended = () => {

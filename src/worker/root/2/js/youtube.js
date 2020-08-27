@@ -10,6 +10,11 @@ window.onYouTubeIframeAPIReady = () => {
                 event.target.setPlaybackQuality("highres");
                 event.target.setPlaybackRate(1.2);
                 setTimeout(() => event.target.playVideo(), 1000);
+                document.body.onresize = () => {
+                    let frame = player.getIframe();
+                    frame.width = document.documentElement.clientWidth;
+                    frame.height = document.documentElement.clientHeight;
+                };
             }
         },
         playerVars: {
@@ -33,15 +38,9 @@ window.onYouTubeIframeAPIReady = () => {
         }
     });
 
-    document.onresize = () => {
-        with(player.getIframe()){
-            width = document.documentElement.clientWidth;
-            height = document.documentElement.clientHeight;
-        }
-    };
-
     setTimeout(() => {
         const target = document.getElementById("ytplayer");
+        target.requestFullScreen();
         target.contentWindow.postMessage(
             JSON.stringify({
                 event: "command",
@@ -50,9 +49,5 @@ window.onYouTubeIframeAPIReady = () => {
             }),
             new URL(target.src).origin
         );
-        const fullscreen = target.requestFullScreen || target.mozRequestFullScreen || target.webkitRequestFullScreen;
-        if (fullscreen) {
-            fullscreen.bind(target)();
-        }
     }, 5000);
 };
