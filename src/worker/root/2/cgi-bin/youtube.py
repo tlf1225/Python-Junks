@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-# coding=utf-8
 from cgi import FieldStorage, parse
+from cgitb import enable
 from io import StringIO
 from json import dumps
 from logging import getLogger, StreamHandler, Formatter, ERROR, INFO
 from os import environ
-
-from cgitb import enable
 from traceback import format_exc
+
 from youtube_dl import YoutubeDL
 
 enable(display=False, logdir="../logs/")
 
 buffer = StringIO()
 header = environ
-recieve = FieldStorage()
+receive = FieldStorage()
 params = parse()
 
 log = getLogger("cgi: youtube")
@@ -30,9 +29,10 @@ output = None
 
 # noinspection PyBroadException
 try:
+    # noinspection SpellCheckingInspection
     with YoutubeDL({"cachedir": False, "noplaylist": True, "ignoreerrors": False, "quiet": True,
                     "no_warnings": True, "verbose": False, "simulate": True, "logger": log, "logtostderr": True}) as ydl:
-        result.update(ydl.extract_info(recieve.getvalue("id", ""), download=False) or {})
+        result.update(ydl.extract_info(receive.getvalue("id", ""), download=False) or {})
         if "formats" in result:
             for k, v in result.copy().items():
                 if v is None:
