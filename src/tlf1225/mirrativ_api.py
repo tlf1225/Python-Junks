@@ -1,11 +1,10 @@
-from json import loads
+from code import interact
+from datetime import datetime, timezone, timedelta
+from json import loads, dumps
+# noinspection PyUnresolvedReferences
+from mpv_player import setup
 from urllib.request import urlopen
 
-# noinspection PyUnresolvedReferences
-from code import interact
-
-
-# from mpv_player import Player
 
 # noinspection SpellCheckingInspection
 class MirrativAPI:
@@ -15,27 +14,27 @@ class MirrativAPI:
         self.id = identify
 
     def load_userprofile(self):
-        with urlopen(f"https://www.mirrativ.com/api/user/profile?user_id={self.id}") as temp:
-            return loads(temp.read())
+        with urlopen(f"https://www.mirrativ.com/api/user/profile?user_id={self.id}") as lu:
+            return loads(lu.read())
 
     def load_live_history(self, page=1):
-        with urlopen(f"https://www.mirrativ.com/api/live/live_history?user_id={self.id}&page={page}") as temp:
-            return loads(temp.read())
+        with urlopen(f"https://www.mirrativ.com/api/live/live_history?user_id={self.id}&page={page}") as llh:
+            return loads(llh.read())
 
     @staticmethod
     def load_live(live_id):
-        with urlopen(f"https://www.mirrativ.com/api/live/live?live_id={live_id}") as temp:
-            return loads(temp.read())
+        with urlopen(f"https://www.mirrativ.com/api/live/live?live_id={live_id}") as ll:
+            return loads(ll.read())
 
     @staticmethod
     def load_live_comments(live_id):
-        with urlopen(f"https://www.mirrativ.com/api/live/live_comments?live_id={live_id}") as temp:
-            return loads(temp.read())
+        with urlopen(f"https://www.mirrativ.com/api/live/live_comments?live_id={live_id}") as llc:
+            return loads(llc.read())
 
     @staticmethod
     def load_live_polling(live_id):
-        with urlopen(f"https://www.mirrativ.com/api/live/live_polling?live_id={live_id}") as temp:
-            return loads(temp.read())
+        with urlopen(f"https://www.mirrativ.com/api/live/live_polling?live_id={live_id}") as llp:
+            return loads(llp.read())
 
     @staticmethod
     def itsukaralink():
@@ -57,9 +56,9 @@ if __name__ == '__main__':
 
     d = c["lives"]
 
-    # print(dumps(d[0], indent=4, sort_keys=True))
-    # print(datetime.fromtimestamp(d[0]["started_at"], timezone(timedelta(hours=9), "JST")))
-    # print(dumps(d[0]["owner"], indent=4, sort_keys=True))
+    print(dumps(d[0], indent=4, sort_keys=True))
+    print(datetime.fromtimestamp(d[0]["started_at"], timezone(timedelta(hours=9), "JST")))
+    print(dumps(d[0]["owner"], indent=4, sort_keys=True))
 
     with open(__file__) as temp:
         print(temp.read())

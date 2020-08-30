@@ -9,8 +9,8 @@ const pictures = document.getElementById("pictures");
 
 window.onYouTubeIframeAPIReady = () => {
     window.player = new YT.Player("yt-pre", {
-        height: window.innerHeight / 2,
-        width: window.innerWidth / 2,
+        height: innerHeight / 2,
+        width: innerWidth / 2,
         videoId: "lSqnqSSXTUI",
         wmode: "transparent",
         host: "https://www.youtube-nocookie.com",
@@ -35,7 +35,6 @@ window.onYouTubeIframeAPIReady = () => {
             origin: location.origin,
             playsinline: 1,
             rel: 0,
-            showinfo: 0,
             widget_referrer: location.href
         }
     });
@@ -48,8 +47,7 @@ window.onYouTubeIframeAPIReady = () => {
             autoplay: 1,
             list: "PLRBp0Fe2GpgmsW46rJyudVFlY6IYjFBIK",
             listType: "playlist",
-            controls: 0,
-            showinfo: 0
+            controls: 0
         }
     });
 };

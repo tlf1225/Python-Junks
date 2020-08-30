@@ -1,11 +1,9 @@
 from ctypes import windll, create_unicode_buffer, byref, Structure, POINTER
 from ctypes.wintypes import DWORD, LONG, HANDLE, PHANDLE, LPWSTR
+from getpass import getpass
 from os import environ
 from sys import argv, executable, stderr
 from time import sleep
-
-# noinspection PyUnresolvedReferences
-from getpass import getpass
 
 
 class LuID(Structure):

@@ -8,9 +8,6 @@ from os import chdir
 from ssl import create_default_context, wrap_socket, Purpose
 from sys import stderr
 
-# noinspection PyUnresolvedReferences
-from typing import Tuple, Optional, Union
-
 # noinspection SpellCheckingInspection
 FORMAT = "%(levelname)s: %(asctime)s [%(funcName)s] {%(threadName)s:%(thread)d}: %(message)s"
 

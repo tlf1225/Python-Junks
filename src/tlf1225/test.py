@@ -3,71 +3,83 @@ from ctypes.wintypes import *
 from os.path import basename
 from sys import exit, argv
 
-# noinspection SpellCheckingInspection
 try:
     MAX_PATH = 260
     PROCESS_TERMINATE = 0x0001
     PROCESS_QUERY_INFORMATION = 0x0400
     HWND_TOPMOST = HWND(-1)
+    # noinspection SpellCheckingInspection
     HWND_NOTOPMOST = HWND(-2)
+    # noinspection SpellCheckingInspection
     SWP_NOSIZE = 0x1
+    # noinspection SpellCheckingInspection
     SWP_NOMOVE = 0x2
     WS_EX_TOPMOST = 0x8
+    # noinspection SpellCheckingInspection
     WNDENUMPROC = WINFUNCTYPE(BOOL, HWND, LPARAM)
 
+    # noinspection SpellCheckingInspection
     PSAPI = windll.psapi
     KERNEL32 = windll.kernel32
     USER32 = windll.user32
 
     EnumProcesses = PSAPI.EnumProcesses
     EnumProcesses.restype = BOOL
+    # noinspection SpellCheckingInspection
     EnumProcesses.argtypes = [LPDWORD, DWORD, LPDWORD]
 
     GetProcessImageFileName = PSAPI.GetProcessImageFileNameW
     GetProcessImageFileName.restype = DWORD
+    # noinspection SpellCheckingInspection
     GetProcessImageFileName.argtypes = [HANDLE, LPWSTR, DWORD]
 
     OpenProcess = KERNEL32.OpenProcess
     OpenProcess.restype = HANDLE
+    # noinspection SpellCheckingInspection
     OpenProcess.argtypes = [DWORD, BOOL, DWORD]
 
     TerminateProcess = KERNEL32.TerminateProcess
     TerminateProcess.restype = BOOL
+    # noinspection SpellCheckingInspection
     TerminateProcess.argtypes = [HANDLE, UINT]
 
     CloseHandle = KERNEL32.CloseHandle
     CloseHandle.restype = BOOL
+    # noinspection SpellCheckingInspection
     CloseHandle.argtypes = [HANDLE]
 
     SetWindowPos = USER32.SetWindowPos
     SetWindowPos.restype = BOOL
+    # noinspection SpellCheckingInspection
     SetWindowPos.argtypes = [HWND, HWND, INT, INT, INT, INT, UINT]
 
     EnumWindows = USER32.EnumWindows
     EnumWindows.restype = BOOL
+    # noinspection SpellCheckingInspection
     EnumWindows.argtypes = [WNDENUMPROC, LPARAM]
 
     EnumThreadWindows = USER32.EnumThreadWindows
     EnumThreadWindows.restype = BOOL
+    # noinspection SpellCheckingInspection
     EnumThreadWindows.argtypes = [DWORD, WNDENUMPROC, LPARAM]
 
     GetWindowThreadProcessId = USER32.GetWindowThreadProcessId
     GetWindowThreadProcessId.restype = DWORD
+    # noinspection SpellCheckingInspection
     GetWindowThreadProcessId.argtypes = [HWND, LPDWORD]
 
     GetWindowText = USER32.GetWindowTextW
     GetWindowText.restype = INT
+    # noinspection SpellCheckingInspection
     GetWindowText.argtypes = [HWND, LPWSTR, INT]
 
 
-    # noinspection PyTypeChecker
     def perform(name=None, pid=None, flag=False):
-        # noinspection PyTypeChecker
         def worker(hwnd, lp):
             res = DWORD()
+            # noinspection PyTypeChecker
             if GetWindowThreadProcessId(hwnd, byref(res)) \
                     and EnumThreadWindows(res, WNDENUMPROC(worker), lp) and res.value == lp:
-                # noinspection PyTypeChecker
                 text = create_unicode_buffer(1024)
                 GetWindowText(hwnd, text, sizeof(text))
                 if len(text.value) > 0:
@@ -80,6 +92,7 @@ try:
                         return False
             return True
 
+        # noinspection PyTypeChecker
         EnumWindows(WNDENUMPROC(worker), pid)
 
 except OSError as e:

@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
+import copy
+import platform
 import sys
 from hashlib import sha3_256
-
-# noinspection PyUnresolvedReferences
-import copy
-# noinspection PyUnresolvedReferences
-import platform
 
 validate = '1e90ce9cb0f0203e2403437c28a97300ac35ab388b3e5b9e411958d3fc3264fe'
 

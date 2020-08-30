@@ -10,7 +10,7 @@ if __name__ == '__main__':
             keyOffset = 52
             i = 24
             # noinspection SpellCheckingInspection
-            Chars = "BCDFGHJKMPQRTVWXY2346789"
+            chars = "BCDFGHJKMPQRTVWXY2346789"
             after = (value[66] // 6) & 1
             value[66] = (value[66] & 0xF7) | ((after & 2) * 4)
             out = ""
@@ -25,7 +25,7 @@ if __name__ == '__main__':
                     cur %= 24
                     x -= 1
                 i -= 1
-                out = Chars[cur] + out
+                out = chars[cur] + out
                 last = cur
             if after:
                 part = out[1:last + 1]

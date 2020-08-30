@@ -2,6 +2,7 @@ from ctypes import windll
 from ctypes.wintypes import ULONG, LONG, BOOLEAN, PBOOLEAN, PULONG, LPVOID
 
 
+# noinspection SpellCheckingInspection
 def main():
     ntdll = windll.ntdll
     ntdll.RtlAdjustPrivilege.restype = LONG

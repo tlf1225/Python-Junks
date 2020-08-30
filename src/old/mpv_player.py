@@ -19,6 +19,7 @@ def update_check():
     return down_youtube_dl, down_mpv
 
 
+# noinspection SpellCheckingInspection
 def add_playlist(play):
     """
     Player Class Execute Function Replace
@@ -37,6 +38,7 @@ def add_playlist(play):
         play.player.playlist_append(f"ytdl://{t}")
 
 
+# noinspection SpellCheckingInspection
 class Player:
     """
     MPV Player Wrapper
@@ -137,7 +139,6 @@ class Player:
         """
         data = input(prompt)
         if data.startswith("/"):
-            # noinspection PyUnresolvedReferences
             parser = self.parser.parse_args(data[1::].split(" "))
             if parser[""]:
                 pass
@@ -155,6 +156,7 @@ class Player:
         else:
             return data
         """
+        self.player.command("loadfile")
         return input(prompt)
 
     def wait_loop(self) -> None:
@@ -164,7 +166,6 @@ class Player:
         :return: None
         """
 
-        # noinspection PyUnresolvedReferences
         from code import interact
         from sys import stderr
         while not self.player.core_shutdown:
@@ -256,7 +257,9 @@ class Player:
             del self.log
 
 
+# noinspection SpellCheckingInspection
 def load_with_ffmpeg(p=Player(), url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
+    # noinspection SpellCheckingInspection
     @p.player.python_stream("abcd")
     def reader():
         """
@@ -295,6 +298,7 @@ def load_with_ffmpeg(p=Player(), url="https://www.youtube.com/watch?v=YoPx9EhxR0
     p.stop_mpv()
 
 
+# noinspection SpellCheckingInspection
 def main():
     ax = Player()
     if hasattr(ax, "player"):

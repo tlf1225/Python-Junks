@@ -1,42 +1,61 @@
+from code import interact
 from ctypes import cdll, c_void_p, c_char_p, c_int64, c_int, c_long, POINTER
 
-# noinspection PyUnresolvedReferences
-from code import interact
-
 if __name__ == '__main__':
-    mpv = cdll.LoadLibrary("D:/Depends/mpv/mpv-1.dll")
+    # noinspection SpellCheckingInspection
+    mpv = cdll.LoadLibrary("D:/Python/libmpv/mpv-1.dll")
     mpv.mpv_client_api_version.restype = c_long
+    # noinspection SpellCheckingInspection
     mpv.mpv_initialize.argtypes = [c_void_p]
     mpv.mpv_create.restype = c_void_p
+
+    # noinspection SpellCheckingInspection
     mpv.mpv_create_client.argtypes = [c_void_p, c_char_p]
     mpv.mpv_create_client.restype = c_void_p
+
+    # noinspection SpellCheckingInspection
     mpv.mpv_create_weak_client.argtypes = [c_void_p, c_char_p]
     mpv.mpv_create_weak_client.restype = c_void_p
 
+    # noinspection SpellCheckingInspection
     mpv.mpv_client_name.argtypes = [c_void_p]
     mpv.mpv_client_name.restype = c_char_p
+
+    # noinspection SpellCheckingInspection
     mpv.mpv_client_id.argtypes = [c_void_p]
     mpv.mpv_client_id.restype = c_int64
 
+    # noinspection SpellCheckingInspection
     mpv.mpv_terminate_destroy.argtypes = [c_void_p]
+    # noinspection SpellCheckingInspection
     mpv.mpv_destroy.argtypes = [c_void_p]
+    # noinspection SpellCheckingInspection
     mpv.mpv_free.argtypes = [c_void_p]
 
+    # noinspection SpellCheckingInspection
     mpv.mpv_error_string.argtypes = [c_int]
     mpv.mpv_error_string.restype = c_char_p
 
+    # noinspection SpellCheckingInspection
     mpv.mpv_set_option_string.argtypes = [c_void_p, c_char_p, c_char_p]
+    # noinspection SpellCheckingInspection
     mpv.mpv_load_config_file.argtypes = [c_void_p, c_char_p]
+    # noinspection SpellCheckingInspection
     mpv.mpv_get_time_us.argtypes = [c_void_p]
     mpv.mpv_get_time_us.restype = c_int64
 
+    # noinspection SpellCheckingInspection
     mpv.mpv_command.argtypes = [c_void_p, POINTER(c_char_p)]
+    # noinspection SpellCheckingInspection
     mpv.mpv_command_string.argtypes = [c_void_p, c_char_p]
 
+    # noinspection SpellCheckingInspection
     mpv.mpv_set_property_string.argtypes = [c_void_p, c_char_p, c_char_p]
+    # noinspection SpellCheckingInspection
     mpv.mpv_get_property_string.argtypes = [c_void_p, c_char_p]
     mpv.mpv_get_property_string.restype = c_char_p
 
+    # noinspection SpellCheckingInspection
     mpv.mpv_get_property_osd_string.argtypes = [c_void_p, c_char_p]
     mpv.mpv_get_property_osd_string.restype = c_char_p
 
@@ -56,6 +75,7 @@ if __name__ == '__main__':
     print(client_name)
     print(client_id)
 
+    # noinspection SpellCheckingInspection
     mpv.mpv_command(mpv_handle, (c_char_p * 2)(c_char_p(b"loadfile"), c_char_p(b"ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")))
 
     interact(banner="Mpv Player", local=locals(), exitmsg="Exit")

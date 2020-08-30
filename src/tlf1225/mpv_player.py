@@ -1,25 +1,21 @@
 """
 This file is implemented with mpv.
 """
-
 # noinspection PyUnresolvedReferences
 from argparse import ArgumentParser
+from code import interact
 from ctypes import byref, windll, WINFUNCTYPE
 from ctypes.wintypes import BOOL, DWORD, HWND, LPARAM
+# noinspection PyUnresolvedReferences
+from getopt import getopt
 from io import StringIO
 from os import environ, getpid, pathsep, scandir, sep
 from os.path import isdir
 from re import search
-# noinspection PyUnresolvedReferences
 from sys import argv, path, stderr
 from time import sleep
 from urllib.request import urlopen
 from xml.etree.ElementTree import fromstring
-
-# noinspection PyUnresolvedReferences
-from code import interact
-# noinspection PyUnresolvedReferences
-from getopt import getopt
 
 try:
     path_list = environ["PATH"].split(pathsep)
@@ -377,4 +373,7 @@ def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
 if __name__ == '__main__':
     with open(__file__) as file:
         print(file.read(), file=stderr)
-    main()
+    if len(argv) > 1:
+        main(argv[1])
+    else:
+        main()

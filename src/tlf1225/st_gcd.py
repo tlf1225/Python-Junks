@@ -1,8 +1,6 @@
+from code import interact
 from math import gcd
 from sys import argv
-
-# noinspection PyUnresolvedReferences
-from code import interact
 
 
 def euclid(alpha=0, beta=0, s_list=None, t_list=None):

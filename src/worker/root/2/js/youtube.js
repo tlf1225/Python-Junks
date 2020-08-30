@@ -1,7 +1,7 @@
 window.onYouTubeIframeAPIReady = () => {
     window.player = new YT.Player("ytplayer", {
-        width: document.documentElement.clientWidth,
-        height: document.documentElement.clientHeight,
+        width: innerWidth,
+        height: innerHeight,
         videoId: "Stwkoa3QYNE",
         host: "https://www.youtube-nocookie.com",
         events: {
@@ -11,9 +11,7 @@ window.onYouTubeIframeAPIReady = () => {
                 event.target.setPlaybackRate(1.2);
                 setTimeout(() => event.target.playVideo(), 1000);
                 document.body.onresize = () => {
-                    let frame = player.getIframe();
-                    frame.width = document.documentElement.clientWidth;
-                    frame.height = document.documentElement.clientHeight;
+                    player.setSize(innerWidth, innerHeight);
                 };
             }
         },
@@ -33,14 +31,13 @@ window.onYouTubeIframeAPIReady = () => {
             origin: location.origin,
             playsinline: 1,
             rel: 0,
-            showinfo: 0,
             widget_referrer: location.href
         }
     });
 
     setTimeout(() => {
         const target = document.getElementById("ytplayer");
-        target.requestFullScreen();
+        target.requestFullscreen();
         target.contentWindow.postMessage(
             JSON.stringify({
                 event: "command",
