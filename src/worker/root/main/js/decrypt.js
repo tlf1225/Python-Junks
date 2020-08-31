@@ -154,12 +154,12 @@ document.sel.execute.onclick = () => {
         code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT).nextNode();
     if (test1) {
         const soc = document.createElement("source");
-        soc.src = test.value;
+        soc.src = test1.value;
         video.appendChild(soc);
     }
     if (test2) {
         const soc = document.createElement("source");
-        soc.src = test.value;
+        soc.src = test2.value;
         audio.appendChild(soc);
     }
     if (video.childElementCount <= 0 && audio.childElementCount <= 0) return;
