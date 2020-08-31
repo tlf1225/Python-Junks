@@ -4,7 +4,12 @@ const base64 = {
 };
 
 Object.defineProperty(Element.prototype, 'clearChildren', {
-configurable: true, enumerable: false, value: () => { while(this.firstChild) this.removeChild(this.lastChild);}
+    configurable: true,
+    enumerable: false,
+    value: function () {
+        while (this.firstChild)
+            this.removeChild(this.lastChild);
+    }
 });
 
 const description = document.createElement("meta");

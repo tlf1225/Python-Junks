@@ -4,6 +4,7 @@ const result = document.getElementById("result"),
       preview = document.getElementById("preview");
 
 document.query.search.onclick = () => {
+/*
     const http = new XMLHttpRequest();
     http.onreadystatechange = () => {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
@@ -13,6 +14,7 @@ document.query.search.onclick = () => {
     document.getElementById("query").clearChildren();
     http.open("POST", "/cgi-bin/youtube.py", true);
     http.send(`keyword=${document.query.keyword.value}`);
+*/
 };
 
 document.query.onsubmit = () => {
@@ -114,14 +116,16 @@ document.dialog.run.onclick = () => {
     selvd.clearChildren();
     selad.clearChildren();
 
-    const found = /(?:(?:https?:\/\/)?(?:(?:(?:www|m)\.)?youtube(?:-nocookie)?\.com|youtu\.be)\/(?:embed\/|watch\?v=|v\/)?)?((?:\w|-){11,11})/.exec(document.dialog.data.value);
+    const found = /(?:(?:https?:\/\/)?(?:(?:(?:www|m)\.)?youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?v=)|youtu\.be\/))?((?:\w|-){11})/.exec(document.dialog.data.value);
 
-    if (found && found.length == 2) {
-        http.open("POST", "/cgi-bin/youtube.py", true);
-        http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        http.send(`id=${found[1]}`);
+    if (found) {
+        if (found.length == 2){
+            http.open("POST", "/cgi-bin/youtube.py", true);
+            http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            http.send(`id=${found[1]}`);
+        }
     } else {
-        alert("This url is incorrect");
+        error_message({err: "This url is incorrect"})
     }
 };
 
