@@ -111,10 +111,6 @@ document.dialog.run.onclick = () => {
             }
         }
     };
-    result.clearChildren();
-    result.hidden = true;
-    selvd.clearChildren();
-    selad.clearChildren();
 
     const found = /(?:(?:https?:\/\/)?(?:(?:(?:www|m)\.)?youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?v=)|youtu\.be\/))?((?:\w|-){11})/.exec(document.dialog.data.value);
 
@@ -123,6 +119,11 @@ document.dialog.run.onclick = () => {
             http.open("POST", "/cgi-bin/youtube.py", true);
             http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             http.send(`id=${found[1]}`);
+            
+            result.clearChildren();
+            result.hidden = true;
+            selvd.clearChildren();
+            selad.clearChildren();
         }
     } else {
         error_message({err: "This url is incorrect"})
