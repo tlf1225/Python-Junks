@@ -24,7 +24,7 @@ class HTTPWorker(CGIHTTPRequestHandler):
 def http(root=None):
     chdir(root)
     basicConfig(level=DEBUG, format=FORMAT)
-    with ThreadingHTTPServer(("localhost", 80), HTTPWorker) as httpd:
+    with ThreadingHTTPServer(("", 80), HTTPWorker) as httpd:
         info("Running")
         httpd.serve_forever()
         error("Exit")
@@ -37,7 +37,7 @@ def https(root=None):
     ssl.set_alpn_protocols(["http/1.1", "h2", "h3"])
     chdir(root)
     basicConfig(level=DEBUG, format=FORMAT)
-    with ThreadingHTTPServer(("localhost", 443), HTTPWorker) as httpd:
+    with ThreadingHTTPServer(("", 443), HTTPWorker) as httpd:
         info("Running")
         httpd.socket = wrap_socket(httpd.socket, server_side=True)
         httpd.serve_forever()

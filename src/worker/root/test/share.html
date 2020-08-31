@@ -1,0 +1,108 @@
+<html>
+<head>
+    <title>Youtube Shared by console tlf</title>
+    <style>
+body {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+div {
+    position: absolute;
+    top: 30vh;
+    left: 40vw;
+}
+label {
+    float: left;
+    font-weight: bolder;
+    animation: random 30s infinite;
+}
+@keyframes  random {
+     0% { color: black; }
+    15% { color: red; } 
+    30% { color: yellow; } 
+    45% { color: green; } 
+    60% { color: blue; }
+    75% { color: white; }  
+    90% { color: gray; }
+}
+input {
+    float: left;
+    margin-left: 20px;
+}
+
+    </style>
+</head>
+<body>
+<div id="ytplayer"></div>
+<div>
+    <label for="keys">Base64</label>
+    <input id="keys" minlength="4" name="base64" pattern="^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$" placeholder="base64 code"
+           title="Test" type="text">
+</div>
+<script>
+const list = ["0mxpCgVE_4c", "14C7d1LO8bU", "340ZzONBHhQ", "4mbtk45j6rc", "5aFDb2aUI-o", "5gzJ7uk74UA", "6G5PS8alMuM", "6gBbpbRSRiY", "6it-y7zyt8s", "7U1qiS7B8Nk", "7kHDRCO43iw", "9avbb6e9eBw", "9c0gAfV7M_4", "9m3qeiAgZvA", "B1g1djVfweY", "B5nzIG1B45g", "BVGUA5vLsl8", "BaB0e3O08I4", "BahP4Pixv5w", "E46l605KSlg", "EHY4GTg1wpM", "FnVLrIV2Ook", "I42W9RyGvF4", "IHCrqdLTWKo", "JDocJA7hDKY", "K0lw3qXBQ0g", "Lk7t7m8uXgg", "NgCGAIKdcYI", "Oiud3DLGloA", "OjYskFbYJTI", "PhbB4eGV-fI", "QRcagfSTRE0", "Q_as_NVMfB4", "Rf9ppDaIxAI", "SBlpxAxJkMA", "VLng2Eu1YyQ", "WcNIJldE7U8", "Xuf2Kt2CfkQ", "Ys2p_bXOaAc", "ZRWq2JFOSXw", "ZojVSmK_3-c", "_W90dohDz1s", "_lRkDv7gelw", "aKtHNlP0_zo", "cN5S-fHGhAA", "co-YIaCO1ig", "cxWJK8VJkoQ", "e3yq5UBR0hQ", "ejZan8kKjsY", "fZLptuqF9pk", "iPNkYAA_f90", "j33hMzdsq9k", "jFvB1WleWNU", "jtH_nLso2Gg", "jztI5SZ6lEc", "m4zkuc_wU2s", "mfZVElthNHA", "oMr0y0hZ2HA", "oag5Wb93ah0", "oejeamt3akY", "sLz2CsN0NZU", "sNuNR8v9MLU", "thDKz6QQtQk", "uk2c0qLhOaY", "v0jb3Ld8bF8", "vaYdSkvJAdU", "vw-we-8-vwc", "w-l9a4KggYs", "xoNDIBcNI-I", "xxOcLcPrs2w", "yQ3pFBrZqak", "mg6PCPVUg7I", "CH9cHp-QM1c", "lg6RecLKxXU", "DZgGQboLTm4", "i75oLwv286U", "ZHUDc38ncAA"];
+
+window.onYouTubeIframeAPIReady = () => {
+    window.player = new YT.Player("ytplayer", {
+        width: innerWidth,
+        height: innerHeight,
+        videoId: list[0],
+        host: "https://www.youtube-nocookie.com",
+        events: {
+            onReady: event => {
+                event.target.setVolume(100);
+                event.target.setPlaybackQuality("highres");
+		setTimeout(() => player.playVideo(), 1000);
+                document.body.onresize = () => {
+                    player.setSize(innerWidth, innerHeight);
+                };
+            }
+        },
+        playerVars: {
+            autoplay: 1,
+            cc_lang_pref: "en",
+            cc_load_policy: 1,
+            fs: 0,
+            hl: "en",
+            iv_load_policy: 3,
+            playlist: list.slice(1).join(","),
+            loop: 1,
+            modestbranding: 1,
+            playsinline: 1,
+            rel: 0
+        }
+    });
+};
+
+setTimeout(() => {
+    const yt_js = document.createElement("script");
+    yt_js.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(yt_js);
+}, 500);
+
+var key = document.getElementById("keys");
+key.onkeypress = (event) => {
+    if (event.keyCode == 13) {
+        if (event.target.reportValidity()) {
+            reset_list(event.target.value);
+        }
+    }
+};
+
+function reset_list(value) {
+    try {
+        data = atob(value).split(",").filter((e, i, a) => /[\w\-]{11}/.test(e));
+        if (0 < data.length) {
+            player.loadPlaylist(data.join(","));
+        } else {
+            alert("Not Found Video ID");
+        }
+    } catch (e) {
+        alert(e);
+    }
+}
+
+</script>
+</body>
+</html>
