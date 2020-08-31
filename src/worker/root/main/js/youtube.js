@@ -36,8 +36,7 @@ function onYouTubeIframeAPIReady() {
     });
 
     setTimeout(() => {
-        const target = document.getElementById("ytplayer");
-        target.requestFullscreen();
+        ytplayer.requestFullscreen();
         target.contentWindow.postMessage(
             JSON.stringify({
                 event: "command",
@@ -50,7 +49,7 @@ function onYouTubeIframeAPIReady() {
 }
 
 setTimeout(() => {
-    const yt_js = document.createElement("script");
+    yt_js = document.createElement("script");
     yt_js.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(yt_js);
 }, 500);

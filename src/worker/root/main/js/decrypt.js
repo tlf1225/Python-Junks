@@ -1,17 +1,12 @@
-const result = document.getElementById("result"),
-      selvd = document.getElementById("selvd"),
-      selad = document.getElementById("selad"),
-      preview = document.getElementById("preview");
-
 document.query.search.onclick = () => {
 /*
-    const http = new XMLHttpRequest();
+    http = new XMLHttpRequest();
     http.onreadystatechange = () => {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-            const res = JSON.parse(this.responseText);
+            res = JSON.parse(this.responseText);
         }
     };
-    document.getElementById("query").clearChildren();
+    query.clearChildren();
     http.open("POST", "/cgi-bin/youtube.py", true);
     http.send(`keyword=${document.query.keyword.value}`);
 */
@@ -23,16 +18,15 @@ document.query.onsubmit = () => {
 };
 
 function error_message(d){
-    const error = document.getElementById("error");
     if (d.hasOwnProperty("err")) {
-        const title = document.createElement("p");
+        title = document.createElement("p");
         title.style.color = "red";
         title.style.textAlign = "center";
         title.innerText = d["err"];
         error.appendChild(title);
     }
     if (d.hasOwnProperty("message")) {
-        const verbose = document.createElement("p");
+        verbose = document.createElement("p");
         verbose.style.color = "blue";
         verbose.innerText = d["message"];
         if (d.hasOwnProperty("stacktrace")) {
@@ -40,9 +34,9 @@ function error_message(d){
         }
         error.appendChild(verbose);
     }
-    const panel = document.createElement("div");
+    panel = document.createElement("div");
     panel.style.textAlign = "center";
-    const cancel = document.createElement("button");
+    cancel = document.createElement("button");
     cancel.type = "button";
     cancel.innerText = "Close";
     cancel.onclick = () => {
@@ -55,29 +49,29 @@ function error_message(d){
 }
 
 function parser(data) {
-    for (const k in data) {
+    for (k in data) {
         switch (k) {
             case "title":
-                const title = document.createElement("p");
+                title = document.createElement("p");
                 title.innerText = data[k];
                 result.append(title);
                 break;
             case "formats":
-                for (const m in data[k]) {
-                    const url = document.createElement("a");
-                    const label = document.createElement("label");
-                    const add = document.createElement("input");
-                    add.value = url.href = data[k][m]["url"];
-                    url.innerText = label.innerText = data[k][m]["format"];
+                for (m of data[k]) {
+                    url = document.createElement("a");
+                    label = document.createElement("label");
+                    add = document.createElement("input");
+                    add.value = url.href = m["url"];
+                    url.innerText = label.innerText = m["format"];
                     add.type = "radio";
-                    if (data[k][m]["vcodec"] === "none") {
-                        url.type = `audio/${data[k][m]["ext"]}`;
+                    if (m["vcodec"] === "none") {
+                        url.type = `audio/${m["ext"]}`;
                         label.htmlFor = add.name = url.className = "audio";
                         selad.appendChild(label);
                         selad.appendChild(add);
                         selad.appendChild(document.createElement("br"));
-                    } else if (data[k][m]["acodec"] === "none") {
-                        url.type = `video/${data[k][m]["ext"]}`;
+                    } else if (m["acodec"] === "none") {
+                        url.type = `video/${m["ext"]}`;
                         label.htmlFor = add.name = url.className = "video";
                         selvd.appendChild(label);
                         selvd.appendChild(add);
@@ -94,7 +88,7 @@ function parser(data) {
 
 
 document.dialog.run.onclick = () => {
-    const http = new XMLHttpRequest();
+    http = new XMLHttpRequest();
     http.onreadystatechange = () => {
         if (http.readyState === XMLHttpRequest.DONE) {
             try {
@@ -136,16 +130,6 @@ document.dialog.onsubmit = () => {
 };
 
 document.sel.execute.onclick = () => {
-    const video = document.getElementById("video"),
-            audio = document.getElementById("audio"),
-            time = document.getElementById("time"),
-            info = document.getElementById("info"),
-            play = document.getElementById("play"),
-            pause = document.getElementById("pause"),
-            head = document.getElementById("head"),
-            volume = document.getElementById("volume"),
-            mute = document.getElementById("mute"),
-            full = document.getElementById("full");
     video.clearChildren();
     audio.clearChildren();
     const test1 = document.createNodeIterator(selvd, NodeFilter.SHOW_ELEMENT,
@@ -211,4 +195,31 @@ document.sel.onsubmit = () => {
     return false;
 };
 
-document.getElementById("youtube").oncontextmenu = preview.oncontextmenu = e => e.preventDefault();
+youtube.oncontextmenu = preview.oncontextmenu = e => e.preventDefault();
+
+function test() {
+    test = new DOMParser();
+    for (w of img) {
+        temp = /data:(.+?);?(?:base64)?,(.+)/.exec(w.src);
+        data = test.parseFromString(base64.decode(temp[2]), temp[1])
+
+        p = data.getElementsByTagName("svg");
+        a = data.getElementsByTagName("polygon");
+        b = data.getElementsByTagName("line");
+        c = data.getElementsByTagName("rect");
+
+        for (x of a) {
+            x.style.fill = "red";
+        }
+
+        for (y of b) {
+           y.style.stroke = "red";
+        }
+
+        for (z of c) {
+           z.style.stroke = "red"
+        }
+
+        w.src = `data:${data[1]};base64,${base64.encode(p[0].outerHTML)}`
+    }
+}
