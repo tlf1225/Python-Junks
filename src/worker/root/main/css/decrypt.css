@@ -15,7 +15,7 @@ div#youtube p {
     padding: 8px;
 }
 
-form[name="select"] {
+form[name="sel"] {
     width: 50%;
     display: inline-block;
 }
@@ -78,9 +78,6 @@ div#preview {
     margin: 0 auto;
     border: 2px solid blue;
     user-select: none;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
 }
 
 div#preview:fullscreen {

@@ -130,7 +130,7 @@ document.dialog.onsubmit = () => {
     return false;
 };
 
-document.select.execute.onclick = () => {
+document.sel.execute.onclick = () => {
     const video = document.getElementById("video"),
             audio = document.getElementById("audio"),
             time = document.getElementById("time"),
@@ -203,7 +203,7 @@ document.select.execute.onclick = () => {
     };
 };
 
-document.select.onsubmit = () => {
+document.sel.onsubmit = () => {
     preview.click();
     return false;
 };
