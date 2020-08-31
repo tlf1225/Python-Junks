@@ -37,3 +37,9 @@ try {
 } catch (err) {
     console.log(err.message);
 }
+
+function youtube_iframe() {
+    yt_js = document.createElement("script");
+    yt_js.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(yt_js);
+}

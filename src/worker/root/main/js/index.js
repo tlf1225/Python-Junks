@@ -1,41 +1,85 @@
-if (!time_timer) {
-    time_timer = setInterval(() => {
+time_timer = setInterval(() => {
     date = new Date();
     modify.textContent = `${date.toLocaleString("ja-JP", {
         weekday: "short", year: "numeric", month: "long", day: "numeric",
          hour: "numeric", minute: "numeric", second: "numeric", timeZone: "Asia/Tokyo"})}`;
-    }, 1000);
-}
+}, 1000);
+
+yt_list = []
 
 function onYouTubeIframeAPIReady() {
-    open.onclick = () => {
-        if (youtube.childElementCount === 0) {
-            ["https://www.youtube-nocookie.com/embed/?rel=0&disablekb=1&controls=0&modestbranding=1", "https://www.youtube-nocookie.com/embed/ikgFvU_4rI8?rel=0&showinfo=0&controls=0&modestbranding=1&disablekb=1", "https://www.youtube-nocookie.com/embed/videoseries?list=PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"].forEach(i => {
-                const add = document.createElement("iframe");
-                add.width = 560;
-                add.height = 315;
-                add.src = i;
-                add.allowFullscreen = true;
-                youtube.appendChild(add);
-            });
+    document.getElementById("open").onclick = () => {
+        if (youtube.childElementCount == 0) {
+            a = document.createElement("div");
+            a.id = "abc";
+            youtube.appendChild(a);
+            yt_list.push(new YT.Player("abc", {
+                width: innerWidth / 3,
+                height: innerHeight / 3,
+                videoId: "videoseries",
+                host: "https://www.youtube-nocookie.com",
+                playerVars: {
+                    list: "PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr",
+                    loop: 1,
+                    rel: 0,
+                    disablekb: 1,
+                    controls: 0,
+                    modestbranding: 1,
+                    widget_referrer: location.href
+                }
+            }));
+            b = document.createElement("div");
+            b.id = "def";
+            youtube.appendChild(b);
+            yt_list.push(new YT.Player("def", {
+                width: innerWidth / 3,
+                height: innerHeight / 3,
+                videoId: "ikgFvU_4rI8",
+                host: "https://www.youtube-nocookie.com",
+                playerVars: {
+                    rel: 0,
+                    disablekb: 1,
+                    controls: 0,
+                    modestbranding: 1,
+                    widget_referrer: location.href
+                }
+            }));
+            /*
+            c = document.createElement("div");
+            c.id = "ghi";
+            youtube.appendChild(c);
+            yt_list.push(new YT.Player("ghi", {
+                width: innerWidth / 3,
+                height: innerHeight / 3,
+                videoId: "ikgFvU_4rI8",
+                host: "https://www.youtube-nocookie.com",
+                playerVars: {
+                    rel: 0,
+                    disablekb: 1,
+                    controls: 0,
+                    modestbranding: 1,
+                    widget_referrer: location.href
+                }
+            }));
+            */
             youtube.hidden = false;
-            open.innerText = "Close";
+            document.getElementById("open").innerText = "Close";
         } else {
+            for (z of yt_list) {
+                z.destroy();
+            }
+            yt_list.length = 0;
             youtube.clearChildren();
             youtube.hidden = true;
-            open.innerText = "Open";
+            document.getElementById("open").innerText = "Open";
         }
     };
 }
 
-speak.onclick = () => {
-    const ssu = new SpeechSynthesisUtterance("Welcome to console tlf server.");
+document.getElementById("speak").onclick = () => {
+    ssu = new SpeechSynthesisUtterance("Welcome to console tlf server.");
     ssu.lang = "en-US";
     speechSynthesis.speak(ssu);
 };
 
-setTimeout(() => {
-    const yt_js = document.createElement("script");
-    yt_js.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(yt_js);
-}, 500);
+setTimeout(youtube_iframe, 500);

@@ -28,7 +28,6 @@ function onYouTubeIframeAPIReady() {
             list: "UUtHRR8yqk-4YFFWjtUH8n1g",
             loop: 1,
             modestbranding: 1,
-            origin: location.origin,
             playsinline: 1,
             rel: 0,
             widget_referrer: location.href
@@ -37,19 +36,15 @@ function onYouTubeIframeAPIReady() {
 
     setTimeout(() => {
         ytplayer.requestFullscreen();
-        target.contentWindow.postMessage(
+        ytplayer.contentWindow.postMessage(
             JSON.stringify({
                 event: "command",
                 func: "seekTo",
                 args: [64]
             }),
-            new URL(target.src).origin
+            new URL(ytplayer.src).origin
         );
     }, 5000);
 }
 
-setTimeout(() => {
-    yt_js = document.createElement("script");
-    yt_js.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(yt_js);
-}, 500);
+setTimeout(youtube_iframe, 500);

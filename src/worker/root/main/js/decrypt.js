@@ -92,7 +92,7 @@ document.dialog.run.onclick = () => {
     http.onreadystatechange = () => {
         if (http.readyState === XMLHttpRequest.DONE) {
             try {
-                const data = JSON.parse(http.responseText);
+                data = JSON.parse(http.responseText);
                 if (http.status === 500) {
                     error_message(data)
                 } else if (http.status === 200) {
@@ -106,7 +106,7 @@ document.dialog.run.onclick = () => {
         }
     };
 
-    const found = /(?:(?:https?:\/\/)?(?:(?:(?:www|m)\.)?youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?v=)|youtu\.be\/))?((?:\w|-){11})/.exec(document.dialog.data.value);
+    found = /(?:(?:https?:\/\/)?(?:(?:(?:www|m)\.)?youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?v=)|youtu\.be\/))?((?:\w|-){11})/.exec(document.dialog.data.value);
 
     if (found) {
         if (found.length == 2){
@@ -132,17 +132,17 @@ document.dialog.onsubmit = () => {
 document.sel.execute.onclick = () => {
     video.clearChildren();
     audio.clearChildren();
-    const test1 = document.createNodeIterator(selvd, NodeFilter.SHOW_ELEMENT,
+    test1 = document.createNodeIterator(selvd, NodeFilter.SHOW_ELEMENT,
         code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT).nextNode();
-    const test2 = document.createNodeIterator(selad, NodeFilter.SHOW_ELEMENT,
+    test2 = document.createNodeIterator(selad, NodeFilter.SHOW_ELEMENT,
         code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT).nextNode();
     if (test1) {
-        const soc = document.createElement("source");
+        soc = document.createElement("source");
         soc.src = test1.value;
         video.appendChild(soc);
     }
     if (test2) {
-        const soc = document.createElement("source");
+        soc = document.createElement("source");
         soc.src = test2.value;
         audio.appendChild(soc);
     }
@@ -217,7 +217,7 @@ function test() {
         }
 
         for (z of c) {
-           z.style.stroke = "red"
+           z.style.stroke = "red";
         }
 
         w.src = `data:${data[1]};base64,${base64.encode(p[0].outerHTML)}`

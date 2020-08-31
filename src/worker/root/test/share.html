@@ -76,11 +76,7 @@ window.onYouTubeIframeAPIReady = () => {
     });
 };
 
-setTimeout(() => {
-    const yt_js = document.createElement("script");
-    yt_js.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(yt_js);
-}, 500);
+setTimeout(youtube_iframe, 500);
 
 keys.onkeypress = (event) => {
     if (event.keyCode == 13) {

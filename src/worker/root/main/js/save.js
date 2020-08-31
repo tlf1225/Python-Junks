@@ -23,7 +23,6 @@ function onYouTubeIframeAPIReady() {
             iv_load_policy: 3,
             loop: 1,
             modestbranding: 1,
-            origin: location.origin,
             playsinline: 1,
             rel: 0,
             widget_referrer: location.href
@@ -38,19 +37,16 @@ function onYouTubeIframeAPIReady() {
             autoplay: 1,
             list: "PLRBp0Fe2GpgmsW46rJyudVFlY6IYjFBIK",
             listType: "playlist",
-            controls: 0
+            controls: 0,
+            widget_referrer: location.href
         }
     });
 }
 
-setTimeout(() => {
-    yt_js = document.createElement("script");
-    yt_js.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(yt_js);
-}, 500);
+setTimeout(youtube_iframe, 500);
 
 ["http://qualia.clearrave.co.jp/images/gallery/06_b.jpg", "http://qualia.clearrave.co.jp/images/gallery/17_b.jpg", "http://palette.clearrave.co.jp/product/sakusaku/img/gallery/gal_b_14.jpg", "http://sweet.clearrave.co.jp/karehana/img/gallery/img_05.jpg", "http://recette.clearrave.co.jp/img/gallery/img_04.jpg", "http://qualia.clearrave.co.jp/images/gallery/11_b.jpg"].forEach(i => {
-    const img = document.createElement("img");
+    img = document.createElement("img");
     img.src = i;
     img.alt = "This image has been moved";
     pictures.appendChild(img);
