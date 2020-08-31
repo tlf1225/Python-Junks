@@ -119,7 +119,7 @@ document.dialog.run.onclick = () => {
             http.open("POST", "/cgi-bin/youtube.py", true);
             http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             http.send(`id=${found[1]}`);
-            
+
             result.clearChildren();
             result.hidden = true;
             selvd.clearChildren();
@@ -149,17 +149,15 @@ document.sel.execute.onclick = () => {
     video.clearChildren();
     audio.clearChildren();
     const test1 = document.createNodeIterator(selvd, NodeFilter.SHOW_ELEMENT,
-        code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT);
+        code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT).nextNode();
     const test2 = document.createNodeIterator(selad, NodeFilter.SHOW_ELEMENT,
-        code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT);
-    let test = test1.nextNode()
-    if (test) {
+        code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT).nextNode();
+    if (test1) {
         const soc = document.createElement("source");
         soc.src = test.value;
         video.appendChild(soc);
     }
-    test = test2.nextNode();
-    if (test) {
+    if (test2) {
         const soc = document.createElement("source");
         soc.src = test.value;
         audio.appendChild(soc);
@@ -186,11 +184,11 @@ document.sel.execute.onclick = () => {
         video.volume = audio.volume = volume.value;
     };
     mute.onclick = () => {
-        volume.value = video.volume = audio.volume = (video.muted = audio.muted = !video.muted) ? 1 : 0;
+        video.muted = audio.muted = !video.muted;
     };
     full.onclick = () => {
         if (!document.fullscreenElement) {
-            preview.requestFullScreen();
+            preview.requestFullscreen();
         } else {
             document.exitFullscreen(document);
         }
