@@ -1,35 +1,21 @@
-const Base64 = {
-    encode: str => {
-        return btoa(unescape(encodeURIComponent(str)));
-    },
-    decode: str => {
-        return decodeURIComponent(escape(atob(str)));
-    }
+const base64 = {
+    encode: (str) => btoa(unescape(encodeURIComponent(str))),
+    decode: (str) => decodeURIComponent(escape(atob(str)))
 };
 
 Object.defineProperty(Element.prototype, 'clearChildren', {
 configurable: true, enumerable: false, value: () => { while(this.firstChild) this.removeChild(this.lastChild);}
 });
 
-const author = document.createElement("meta");
-author.name = "author";
-author.content = "honda";
-
 const description = document.createElement("meta");
 description.name = "description";
 description.content = "This page is test by tlf";
-
-const keywords = document.createElement("meta");
-keywords.name = "keywords";
-keywords.content = "minecraft server with development web";
 
 const viewport = document.createElement("meta");
 viewport.name = "viewport";
 viewport.content = "width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no";
 
-document.head.appendChild(author);
 document.head.appendChild(description);
-document.head.appendChild(keywords);
 document.head.appendChild(viewport);
 
 try {
