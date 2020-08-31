@@ -1,4 +1,4 @@
-window.onYouTubeIframeAPIReady = () => {
+function onYouTubeIframeAPIReady() {
     window.player = new YT.Player("ytplayer", {
         width: innerWidth,
         height: innerHeight,
@@ -47,4 +47,10 @@ window.onYouTubeIframeAPIReady = () => {
             new URL(target.src).origin
         );
     }, 5000);
-};
+}
+
+setTimeout(() => {
+    const yt_js = document.createElement("script");
+    yt_js.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(yt_js);
+}, 500);

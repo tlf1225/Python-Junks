@@ -1,21 +1,7 @@
-const regex = /(?:(?:https?:\/\/)?(?:(?:(?:www|m)\.)?youtube(?:-nocookie)?\.com|youtu\.be)\/(?:embed\/|watch\?v=|v\/)?)?((?:\w|-){11,11})/;
-const youtube = document.getElementById("youtube"),
-      query = document.getElementById("query"),
-      result = document.getElementById("result"),
-      select_video = document.getElementById("select_video"),
-      select_audio = document.getElementById("select_audio"),
-      preview = document.getElementById("preview"),
-      video = document.getElementById("video"),
-      audio = document.getElementById("audio"),
-      time = document.getElementById("time"),
-      info = document.getElementById("info"),
-      play = document.getElementById("play"),
-      pause = document.getElementById("pause"),
-      head = document.getElementById("head"),
-      volume = document.getElementById("volume"),
-      mute = document.getElementById("mute"),
-      full = document.getElementById("full"),
-      dialog = document.getElementById("dialog");
+const result = document.getElementById("result"),
+      selvd = document.getElementById("selvd"),
+      selad = document.getElementById("selad"),
+      preview = document.getElementById("preview");
 
 document.query.search.onclick = () => {
     const http = new XMLHttpRequest();
@@ -24,7 +10,7 @@ document.query.search.onclick = () => {
             const res = JSON.parse(this.responseText);
         }
     };
-    query.clearChildren();
+    document.getElementById("query").clearChildren();
     http.open("POST", "/cgi-bin/youtube.py", true);
     http.send(`keyword=${document.query.keyword.value}`);
 };
@@ -35,34 +21,35 @@ document.query.onsubmit = () => {
 };
 
 function error_message(d){
+    const error = document.getElementById("error");
     if (d.hasOwnProperty("err")) {
         const title = document.createElement("p");
         title.style.color = "red";
         title.style.textAlign = "center";
         title.innerText = d["err"];
-        dialog.appendChild(title);
-        if (d.hasOwnProperty("message")) {
-            const verbose = document.createElement("p");
-            verbose.style.color = "blue";
-            verbose.innerText = d["message"];
-            if (d.hasOwnProperty("stacktrace")) {
-                verbose.innerText += `\n${d["stacktrace"]}`;
-            }
-            dialog.appendChild(verbose);
-        }
-        const panel = document.createElement("div");
-        panel.style.textAlign = "center";
-        const cancel = document.createElement("button");
-        cancel.type = "button";
-        cancel.innerText = "Close";
-        cancel.onclick = () => {
-            dialog.clearChildren();
-            dialog.close();
-        };
-        panel.appendChild(cancel);
-        dialog.appendChild(panel);
-        dialog.showModal();
+        error.appendChild(title);
     }
+    if (d.hasOwnProperty("message")) {
+        const verbose = document.createElement("p");
+        verbose.style.color = "blue";
+        verbose.innerText = d["message"];
+        if (d.hasOwnProperty("stacktrace")) {
+            verbose.innerText += `\n${d["stacktrace"]}`;
+        }
+        error.appendChild(verbose);
+    }
+    const panel = document.createElement("div");
+    panel.style.textAlign = "center";
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.innerText = "Close";
+    cancel.onclick = () => {
+        error.clearChildren();
+        error.close();
+    };
+    panel.appendChild(cancel);
+    error.appendChild(panel);
+    error.showModal();
 }
 
 function parser(data) {
@@ -81,18 +68,18 @@ function parser(data) {
                     add.value = url.href = data[k][m]["url"];
                     url.innerText = label.innerText = data[k][m]["format"];
                     add.type = "radio";
-                    if (d["vcodec"] === "none") {
+                    if (data[k][m]["vcodec"] === "none") {
                         url.type = `audio/${data[k][m]["ext"]}`;
                         label.htmlFor = add.name = url.className = "audio";
-                        select_audio.appendChild(label);
-                        select_audio.appendChild(add);
-                        select_audio.appendChild(document.createElement("br"));
-                    } else if (d["acodec"] === "none") {
+                        selad.appendChild(label);
+                        selad.appendChild(add);
+                        selad.appendChild(document.createElement("br"));
+                    } else if (data[k][m]["acodec"] === "none") {
                         url.type = `video/${data[k][m]["ext"]}`;
                         label.htmlFor = add.name = url.className = "video";
-                        select_video.appendChild(label);
-                        select_video.appendChild(add);
-                        select_video.appendChild(document.createElement("br"));
+                        selvd.appendChild(label);
+                        selvd.appendChild(add);
+                        selvd.appendChild(document.createElement("br"));
                     }
                     result.append(url);
                     result.appendChild(document.createElement("br"));
@@ -100,7 +87,7 @@ function parser(data) {
                 break;
         }
     }
-    result.removeAttribute("hidden");
+    result.hidden = false;
 }
 
 
@@ -117,32 +104,17 @@ document.dialog.run.onclick = () => {
                 }
             } catch (error) {
                 if (error === SyntaxError) {
-                    const title = document.createElement("p");
-                    title.style.color = "red";
-                    title.style.textAlign = "center";
-                    title.innerText = "Error: Try Again.";
-                    dialog.appendChild(title);
-                    const panel = document.createElement("div");
-                    panel.style.textAlign = "center";
-                    const cancel = document.createElement("button");
-                    cancel.type = "button";
-                    cancel.innerText = "Close";
-                    cancel.onclick = () => {
-                        dialog.clearChildren();
-                        dialog.close();
-                    };
-                    panel.appendChild(cancel);
-                    dialog.appendChild(panel);
-                    dialog.showModal();
+                    error_message({err: "Error: Try Again."});
                 }
             }
         }
     };
     result.clearChildren();
-    select_video.clearChildren();
-    select_audio.clearChildren();
+    result.hidden = true;
+    selvd.clearChildren();
+    selad.clearChildren();
 
-    const found = regex.exec(document.dialog.data.value);
+    const found = /(?:(?:https?:\/\/)?(?:(?:(?:www|m)\.)?youtube(?:-nocookie)?\.com|youtu\.be)\/(?:embed\/|watch\?v=|v\/)?)?((?:\w|-){11,11})/.exec(document.dialog.data.value);
 
     if (found && found.length == 2) {
         http.open("POST", "/cgi-bin/youtube.py", true);
@@ -159,11 +131,21 @@ document.dialog.onsubmit = () => {
 };
 
 document.select.execute.onclick = () => {
+    const video = document.getElementById("video"),
+            audio = document.getElementById("audio"),
+            time = document.getElementById("time"),
+            info = document.getElementById("info"),
+            play = document.getElementById("play"),
+            pause = document.getElementById("pause"),
+            head = document.getElementById("head"),
+            volume = document.getElementById("volume"),
+            mute = document.getElementById("mute"),
+            full = document.getElementById("full");
     video.clearChildren();
     audio.clearChildren();
-    const test1 = document.createNodeIterator(select_video, NodeFilter.SHOW_ELEMENT,
+    const test1 = document.createNodeIterator(selvd, NodeFilter.SHOW_ELEMENT,
         code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT);
-    const test2 = document.createNodeIterator(select_audio, NodeFilter.SHOW_ELEMENT,
+    const test2 = document.createNodeIterator(selad, NodeFilter.SHOW_ELEMENT,
         code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT);
     let test = test1.nextNode()
     if (test) {
@@ -226,4 +208,4 @@ document.select.onsubmit = () => {
     return false;
 };
 
-youtube.oncontextmenu = preview.oncontextmenu = e => e.preventDefault();
+document.getElementById("youtube").oncontextmenu = preview.oncontextmenu = e => e.preventDefault();

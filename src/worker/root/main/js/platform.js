@@ -1,6 +1,6 @@
 const base64 = {
-    encode: (str) => btoa(unescape(encodeURIComponent(str))),
-    decode: (str) => decodeURIComponent(escape(atob(str)))
+    encode: str => btoa(unescape(encodeURIComponent(str))),
+    decode: str => decodeURIComponent(escape(atob(str)))
 };
 
 Object.defineProperty(Element.prototype, 'clearChildren', {
@@ -23,7 +23,6 @@ try {
     if (loader) {
         const sc_elm = document.createElement("script");
         sc_elm.src = `js/${loader}.js`;
-        sc_elm.defer = true;
         const cs_elm = document.createElement("link");
         cs_elm.href = `css/${loader}.css`;
         cs_elm.rel = "stylesheet";
@@ -33,9 +32,3 @@ try {
 } catch (err) {
     console.log(err.message);
 }
-
-setTimeout(() => {
-    const yt_js = document.createElement("script");
-    yt_js.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(yt_js);
-}, 500);
