@@ -11,13 +11,6 @@ Object.defineProperty(Element.prototype, 'clearChildren', {
 configurable: true, enumerable: false, value: () => { while(this.firstChild) this.removeChild(this.lastChild);}
 });
 
-const charset = document.createElement("meta");
-charset.setAttribute("charset", "utf-8");
-
-const icon = document.createElement("link");
-icon.href = "favicon.ico";
-icon.rel = "icon";
-
 const author = document.createElement("meta");
 author.name = "author";
 author.content = "honda";
@@ -34,8 +27,6 @@ const viewport = document.createElement("meta");
 viewport.name = "viewport";
 viewport.content = "width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no";
 
-document.head.appendChild(charset);
-document.head.appendChild(icon);
 document.head.appendChild(author);
 document.head.appendChild(description);
 document.head.appendChild(keywords);
