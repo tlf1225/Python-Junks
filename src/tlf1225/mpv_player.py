@@ -221,84 +221,71 @@ def setup():
         if not url:
             return
 
-        # noinspection SpellCheckingInspection
-        def add_list():
-            """
-            Playlist append
-
-            :return: playlist
-            :rtype: list
-            """
-            playlist = []
-
-            for yt in ('0mxpCgVE_4c', '14C7d1LO8bU', '340ZzONBHhQ', '4mbtk45j6rc', '5aFDb2aUI-o',
-                       '5gzJ7uk74UA', '6G5PS8alMuM', '6gBbpbRSRiY', '6it-y7zyt8s', '7U1qiS7B8Nk',
-                       '7kHDRCO43iw', '9avbb6e9eBw', '9c0gAfV7M_4', '9m3qeiAgZvA', 'B1g1djVfweY',
-                       'B5nzIG1B45g', 'BVGUA5vLsl8', 'BaB0e3O08I4', 'BahP4Pixv5w', 'E46l605KSlg',
-                       'EHY4GTg1wpM', 'FnVLrIV2Ook', 'I42W9RyGvF4', 'IHCrqdLTWKo', 'JDocJA7hDKY',
-                       'K0lw3qXBQ0g', 'Lk7t7m8uXgg', 'NgCGAIKdcYI', 'Oiud3DLGloA', 'OjYskFbYJTI',
-                       'PhbB4eGV-fI', 'QRcagfSTRE0', 'Q_as_NVMfB4', 'Rf9ppDaIxAI', 'SBlpxAxJkMA',
-                       'VLng2Eu1YyQ', 'WcNIJldE7U8', 'Xuf2Kt2CfkQ', 'Ys2p_bXOaAc', 'ZRWq2JFOSXw',
-                       'ZojVSmK_3-c', '_W90dohDz1s', '_lRkDv7gelw', 'aKtHNlP0_zo', 'cN5S-fHGhAA',
-                       'co-YIaCO1ig', 'cxWJK8VJkoQ', 'e3yq5UBR0hQ', 'ejZan8kKjsY', 'fZLptuqF9pk',
-                       'iPNkYAA_f90', 'j33hMzdsq9k', 'jFvB1WleWNU', 'jtH_nLso2Gg', 'jztI5SZ6lEc',
-                       'm4zkuc_wU2s', 'mfZVElthNHA', 'oMr0y0hZ2HA', 'oag5Wb93ah0', 'oejeamt3akY',
-                       'sLz2CsN0NZU', 'sNuNR8v9MLU', 'thDKz6QQtQk', 'uk2c0qLhOaY', 'v0jb3Ld8bF8',
-                       'vaYdSkvJAdU', 'vw-we-8-vwc', 'w-l9a4KggYs', 'xoNDIBcNI-I', 'xxOcLcPrs2w',
-                       'yQ3pFBrZqak', 'mg6PCPVUg7I', 'CH9cHp-QM1c', 'lg6RecLKxXU', 'DZgGQboLTm4',
-                       'i75oLwv286U', 'ZHUDc38ncAA'):
-                playlist.append(f"ytdl://{yt}")
-
-            for nc in ['nm4624881']:
-                playlist.append(f"https://nico.ms/{nc}")
-
-            for bb in ('BV1Es41127k8', 'BV1Zs411C7K8', 'BV1ds411C7pL'):
-                playlist.append(f"https://www.bilibili.com/video/{bb}")
-
-            return playlist
+        playlist = [f"ytdl://{yt}" for yt in
+                    ('0mxpCgVE_4c', '14C7d1LO8bU', '340ZzONBHhQ', '4mbtk45j6rc', '5aFDb2aUI-o',
+                     '5gzJ7uk74UA', '6G5PS8alMuM', '6gBbpbRSRiY', '6it-y7zyt8s', '7U1qiS7B8Nk',
+                     '7kHDRCO43iw', '9avbb6e9eBw', '9c0gAfV7M_4', '9m3qeiAgZvA', 'B1g1djVfweY',
+                     'B5nzIG1B45g', 'BVGUA5vLsl8', 'BaB0e3O08I4', 'BahP4Pixv5w', 'E46l605KSlg',
+                     'EHY4GTg1wpM', 'FnVLrIV2Ook', 'I42W9RyGvF4', 'IHCrqdLTWKo', 'JDocJA7hDKY',
+                     'K0lw3qXBQ0g', 'Lk7t7m8uXgg', 'NgCGAIKdcYI', 'Oiud3DLGloA', 'OjYskFbYJTI',
+                     'PhbB4eGV-fI', 'QRcagfSTRE0', 'Q_as_NVMfB4', 'Rf9ppDaIxAI', 'SBlpxAxJkMA',
+                     'VLng2Eu1YyQ', 'WcNIJldE7U8', 'Xuf2Kt2CfkQ', 'Ys2p_bXOaAc', 'ZRWq2JFOSXw',
+                     'ZojVSmK_3-c', '_W90dohDz1s', '_lRkDv7gelw', 'aKtHNlP0_zo', 'cN5S-fHGhAA',
+                     'co-YIaCO1ig', 'cxWJK8VJkoQ', 'e3yq5UBR0hQ', 'ejZan8kKjsY', 'fZLptuqF9pk',
+                     'iPNkYAA_f90', 'j33hMzdsq9k', 'jFvB1WleWNU', 'jtH_nLso2Gg', 'jztI5SZ6lEc',
+                     'm4zkuc_wU2s', 'mfZVElthNHA', 'oMr0y0hZ2HA', 'oag5Wb93ah0', 'oejeamt3akY',
+                     'sLz2CsN0NZU', 'sNuNR8v9MLU', 'thDKz6QQtQk', 'uk2c0qLhOaY', 'v0jb3Ld8bF8',
+                     'vaYdSkvJAdU', 'vw-we-8-vwc', 'w-l9a4KggYs', 'xoNDIBcNI-I', 'xxOcLcPrs2w',
+                     'yQ3pFBrZqak', 'mg6PCPVUg7I', 'CH9cHp-QM1c', 'lg6RecLKxXU', 'DZgGQboLTm4',
+                     'i75oLwv286U', 'ZHUDc38ncAA', 'qU_H0z6fCls')] + \
+                   [f"https://nico.ms/{nc}" for nc in
+                    ['nm4624881']] + \
+                   [f"https://www.bilibili.com/video/{bb}" for bb in
+                    ('BV1Es41127k8', 'BV1Zs411C7K8', 'BV1ds411C7pL')]
 
         # noinspection SpellCheckingInspection
-        def start(*f):
+        def start(f):
             """
             Predefined Start
 
-            :arg f: 0: Path Remove, 1: Build Playlist, 2: Desktop Window, 3: Show KeyBindings. 4: Show Info, 5: Script Settings and Toggle KeyBindings
+            :arg f: flag
             :type: list or str
             :return None
             """
 
-            if 0 in f:
+            if f & 0x1:
                 try:
                     path_list.remove(r"D:\Python\Scripts")
                     environ["PATH"] = pathsep.join(path_list)
                 except ValueError:
                     pass
 
-            if 1 in f:
+            if f & 0x2:
                 player.play(url)
                 sleep(3)
-                for pid in add_list():
+
+            if f & 0x4:
+                for pid in playlist:
                     player.playlist_append(pid)
                 player.playlist_shuffle()
                 player.playlist_pos = 0
-                player.wait_until_playing()
 
-            if 2 in f:
+            if f & 0x8:
                 player.command("cycle-values", "wid", windll.user32.GetDesktopWindow(), -1)
 
-            if 3 in f:
+            if f & 0x10:
                 for x in player.input_bindings:
                     for i, j in x.items():
                         print(f"{i}: {j}", file=stderr)
 
-            if 4 in f:
+            if f & 0x20:
                 player.command("osd-bar", "show-progress")
                 player.script_message_to("stats", "display-stats")
                 # player.script_message_to("stats", "display-stats-toggle")
                 # player.command("cycle-values", "osd-level", 3, 1)
                 print(player.time_pos, file=stderr)
 
-            if 5 in f:
+            if f & 0x40:
                 player.osd_duration = 3000
                 player.script_opts = "osc-hidetimeout=3000,osc-fadeduration=1000,osc-visibility=always"
                 player.cycle("input-default-bindings")
