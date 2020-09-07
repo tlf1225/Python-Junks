@@ -5,7 +5,7 @@ from http.server import ThreadingHTTPServer, CGIHTTPRequestHandler
 from logging import basicConfig, error, info, DEBUG
 from mimetypes import add_type
 from os import chdir
-from ssl import create_default_context, wrap_socket, Purpose
+from ssl import create_default_context, Purpose
 from sys import stderr
 
 # noinspection SpellCheckingInspection
@@ -33,13 +33,13 @@ def http(root=None):
 def https(root=None):
     ssl = create_default_context(Purpose.CLIENT_AUTH)
     ssl.load_cert_chain(certfile="../certificate.crt", keyfile="../private.key")
-    ssl.load_verify_locations(cafile="../ca_bundle.crt")
-    ssl.set_alpn_protocols(["http/1.1", "h2", "h3"])
+    # ssl.load_verify_locations(cafile="../ca_bundle.crt")
+    ssl.set_alpn_protocols(["http/1.1", "h2"])
     chdir(root)
     basicConfig(level=DEBUG, format=FORMAT)
     with ThreadingHTTPServer(("", 443), HTTPWorker) as httpd:
         info("Running")
-        httpd.socket = wrap_socket(httpd.socket, server_side=True)
+        httpd.socket = ssl.wrap_socket(httpd.socket, server_side=True)
         httpd.serve_forever()
         error("Exit")
 
@@ -52,11 +52,7 @@ def main():
         a = [worker.submit(http, root=root),
              worker.submit(https, root=root)]
         for c in a:
-            try:
-                c.exception()
-            except (FileNotFoundError, KeyboardInterrupt):
-                print("Cancelling")
-                c.cancel()
+            c.exception()
 
 
 if __name__ == '__main__':
