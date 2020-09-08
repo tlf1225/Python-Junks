@@ -13,12 +13,17 @@ FORMAT = "%(levelname)s: %(asctime)s [%(funcName)s] {%(threadName)s:%(thread)d}:
 
 
 class HTTPWorker(CGIHTTPRequestHandler):
+    server_version = ""
+    protocol_version = "HTTP/1.1"
 
     def log_message(self, fmt: str, *args) -> None:
         print(f"{self.address_string()} [{self.log_date_time_string()}] {fmt % args}", file=stderr)
 
     def do_GET(self) -> None:
         super().do_GET()
+
+    def parse_request(self) -> bool:
+        return super().parse_request()
 
 
 def http(root=None):
@@ -33,8 +38,6 @@ def http(root=None):
 def https(root=None):
     ssl = create_default_context(Purpose.CLIENT_AUTH)
     ssl.load_cert_chain(certfile="../certificate.crt", keyfile="../private.key")
-    # ssl.load_verify_locations(cafile="../ca_bundle.crt")
-    ssl.set_alpn_protocols(["http/1.1", "h2"])
     chdir(root)
     basicConfig(level=DEBUG, format=FORMAT)
     with ThreadingHTTPServer(("", 443), HTTPWorker) as httpd:
