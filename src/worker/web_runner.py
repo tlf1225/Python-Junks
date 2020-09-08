@@ -6,10 +6,10 @@ from logging import basicConfig, error, info, DEBUG
 from mimetypes import add_type
 from os import chdir
 from ssl import create_default_context, Purpose
-from sys import stderr
 
 # noinspection SpellCheckingInspection
-FORMAT = "%(levelname)s: %(asctime)s [%(funcName)s] {%(threadName)s:%(thread)d}: %(message)s"
+# FORMAT = "%(levelname)s: %(asctime)s [%(funcName)s] {%(threadName)s:%(thread)d}: %(message)s"
+FORMAT = "%(levelname)s: %(asctime)s {%(threadName)s:%(thread)d}: %(message)s"
 
 
 class HTTPWorker(CGIHTTPRequestHandler):
@@ -17,7 +17,8 @@ class HTTPWorker(CGIHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
     def log_message(self, fmt: str, *args) -> None:
-        print(f"{self.address_string()} [{self.log_date_time_string()}] {fmt % args}", file=stderr)
+        # info(f"{self.address_string()} [{self.log_date_time_string()}] {fmt % args}")
+        info(f"{self.address_string()} {fmt % args}")
 
     def do_GET(self) -> None:
         super().do_GET()

@@ -8,60 +8,54 @@ time_timer = setInterval(() => {
 
 function onYouTubeIframeAPIReady() {
     const yt_list = []
+    const base = {
+        width: innerWidth / 2,
+        height: innerHeight / 2,
+        wmode: "transparent",
+        host: "https://www.youtube-nocookie.com",
+        playerVars: {
+            autoplay: 1,
+            cc_lang_pref: "en",
+            cc_load_policy: 1,
+            controls: 1,
+            disablekb: 1,
+            fs: 1,
+            hl: "en",
+            iv_load_policy: 3,
+            loop: 1,
+            modestbranding: 1,
+            playsinline: 1,
+            rel: 0,
+            widget_referrer: location.href
+        }
+    };
     document.getElementById("open").onclick = () => {
         if (youtube.childElementCount == 0) {
             const a = document.createElement("div");
             a.id = "abc";
             youtube.appendChild(a);
-            yt_list.push(new YT.Player("abc", {
-                width: innerWidth / 3,
-                height: innerHeight / 3,
+            yt_list.push(new YT.Player(a.id, {
+                ...base,
                 videoId: "videoseries",
-                host: "https://www.youtube-nocookie.com",
                 playerVars: {
-                    list: "PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr",
-                    loop: 1,
-                    rel: 0,
-                    disablekb: 1,
-                    controls: 0,
-                    modestbranding: 1,
-                    widget_referrer: location.href
+                    ...base.playerVars,
+                    list: "PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"
                 }
             }));
             const b = document.createElement("div");
             b.id = "def";
             youtube.appendChild(b);
-            yt_list.push(new YT.Player("def", {
-                width: innerWidth / 3,
-                height: innerHeight / 3,
-                videoId: "ikgFvU_4rI8",
-                host: "https://www.youtube-nocookie.com",
-                playerVars: {
-                    rel: 0,
-                    disablekb: 1,
-                    controls: 0,
-                    modestbranding: 1,
-                    widget_referrer: location.href
-                }
+            yt_list.push(new YT.Player(b.id, {
+                ...base,
+                videoId: "ikgFvU_4rI8"
             }));
-            /*
             const c = document.createElement("div");
             c.id = "ghi";
             youtube.appendChild(c);
-            yt_list.push(new YT.Player("ghi", {
-                width: innerWidth / 3,
-                height: innerHeight / 3,
-                videoId: "ikgFvU_4rI8",
-                host: "https://www.youtube-nocookie.com",
-                playerVars: {
-                    rel: 0,
-                    disablekb: 1,
-                    controls: 0,
-                    modestbranding: 1,
-                    widget_referrer: location.href
-                }
+            yt_list.push(new YT.Player(c.id, {
+                ...base,
+                videoId: "ikgFvU_4rI8"
             }));
-            */
             youtube.hidden = false;
             document.getElementById("open").innerText = "Close";
         } else {

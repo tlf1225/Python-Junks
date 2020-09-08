@@ -1,23 +1,15 @@
 function onYouTubeIframeAPIReady() {
-    window.player = new YT.Player("yt-pre", {
-        height: innerHeight / 2,
-        width: innerWidth / 2,
-        videoId: "lSqnqSSXTUI",
+    const base = {
+        height: Math.trunc(innerHeight / 2),
+        width: Math.trunc(innerWidth / 2),
         wmode: "transparent",
         host: "https://www.youtube-nocookie.com",
-        events: {
-            onReady: event => {
-                event.target.setVolume(100);
-                event.target.setPlaybackQuality("highres");
-                event.target.setPlaybackRate(1.0);
-            }
-        },
         playerVars: {
-            autoplay: 0,
+            autoplay: 1,
             cc_lang_pref: "en",
             cc_load_policy: 1,
             controls: 1,
-            disablekb: 0,
+            disablekb: 1,
             fs: 1,
             hl: "en",
             iv_load_policy: 3,
@@ -27,20 +19,32 @@ function onYouTubeIframeAPIReady() {
             rel: 0,
             widget_referrer: location.href
         }
-    });
-    window.ncs = new YT.Player("yt-ncs", {
-        height: innerHeight / 2,
-        width: innerWidth / 2,
-        wmode: "transparent",
-        host: "https://www.youtube-nocookie.com",
+    };
+    let player1 = {
+        ...base,
+        videoId: "lSqnqSSXTUI",
+        events: {
+            ...base.events,
+            onReady: event => {
+                event.target.setVolume(100);
+                event.target.setPlaybackQuality("highres");
+                event.target.setPlaybackRate(1.0);
+            }
+        }
+    };
+
+    let player2 = {
+        ...base,
+        videoId: "videoseries",
         playerVars: {
-            autoplay: 1,
+            ...base.playerVars,
             list: "PLRBp0Fe2GpgmsW46rJyudVFlY6IYjFBIK",
             listType: "playlist",
-            controls: 0,
-            widget_referrer: location.href
         }
-    });
+    };
+
+    window.player = new YT.Player("yt-pre", player1);
+    window.ncs = new YT.Player("yt-ncs", player2);
 }
 
 setTimeout(youtube_iframe, 500);
