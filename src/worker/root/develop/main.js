@@ -1,10 +1,10 @@
-canvas = document.getElementById("display");
-canvasContext = canvas.getContext('2d');
+const canvas = document.getElementById("display");
+const canvasContext = canvas.getContext('2d');
 canvas.width = 1366;
 canvas.height = 768;
 
 async function convertAudioFileToDataUrl(file) {
-    reader = new FileReader();
+    let reader = new FileReader();
 
     loadPromise = new Promise((resolve, reject) => {
         reader.onload = (event) => {
@@ -18,7 +18,7 @@ async function convertAudioFileToDataUrl(file) {
 }
 
 function render(spectrum) {
-    barWidth = Math.round(canvas.width / spectrum.length);
+    let barWidth = Math.round(canvas.width / spectrum.length);
     canvasContext.fillStyle = 'rgba(100, 210, 240, 0.9)';
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     for (i = 0; i < spectrum.length; i++) {
@@ -26,15 +26,15 @@ function render(spectrum) {
     }
 }
 
-fileInput = document.getElementById("file-input");
+const fileInput = document.getElementById("file-input");
 
 let audio = null,
     audioSource = null,
     intervalId = null;
 
 fileInput.addEventListener('change', async (event) => {
-    audioContext = new AudioContext();
-    analyzerNode = audioContext.createAnalyser();
+    const audioContext = new AudioContext();
+    const analyzerNode = audioContext.createAnalyser();
 
     if (audio) {
         audio.pause();
@@ -48,10 +48,10 @@ fileInput.addEventListener('change', async (event) => {
     }
 
     analyzerNode.fftSize = 2048;
-    file = fileInput.files[0];
+    const file = fileInput.files[0];
 
     if (file) {
-        spectrumArray = new Uint8Array(analyzerNode.frequencyBinCount);
+        let spectrumArray = new Uint8Array(analyzerNode.frequencyBinCount);
 
         audio = new Audio();
         audio.src = await convertAudioFileToDataUrl(file);
@@ -80,8 +80,8 @@ fileInput.addEventListener('change', async (event) => {
 
 link.addEventListener('keypress', (evt) => {
     if(evt.keyCode == 13) {
-        audioContext = new AudioContext();
-        analyzerNode = audioContext.createAnalyser();
+        const audioContext = new AudioContext();
+        const analyzerNode = audioContext.createAnalyser();
 
         if (audio) {
             audio.pause();
@@ -95,7 +95,7 @@ link.addEventListener('keypress', (evt) => {
         }
 
         analyzerNode.fftSize = 2048;
-        spectrumArray = new Uint8Array(analyzerNode.frequencyBinCount);
+        let spectrumArray = new Uint8Array(analyzerNode.frequencyBinCount);
 
         audio = new Audio();
         audio.src = link.value;

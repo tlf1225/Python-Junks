@@ -1,16 +1,16 @@
+const date = new Date();
+
 time_timer = setInterval(() => {
-    date = new Date();
     modify.textContent = `${date.toLocaleString("ja-JP", {
         weekday: "short", year: "numeric", month: "long", day: "numeric",
          hour: "numeric", minute: "numeric", second: "numeric", timeZone: "Asia/Tokyo"})}`;
 }, 1000);
 
-yt_list = []
-
 function onYouTubeIframeAPIReady() {
+    const yt_list = []
     document.getElementById("open").onclick = () => {
         if (youtube.childElementCount == 0) {
-            a = document.createElement("div");
+            const a = document.createElement("div");
             a.id = "abc";
             youtube.appendChild(a);
             yt_list.push(new YT.Player("abc", {
@@ -28,7 +28,7 @@ function onYouTubeIframeAPIReady() {
                     widget_referrer: location.href
                 }
             }));
-            b = document.createElement("div");
+            const b = document.createElement("div");
             b.id = "def";
             youtube.appendChild(b);
             yt_list.push(new YT.Player("def", {
@@ -45,7 +45,7 @@ function onYouTubeIframeAPIReady() {
                 }
             }));
             /*
-            c = document.createElement("div");
+            const c = document.createElement("div");
             c.id = "ghi";
             youtube.appendChild(c);
             yt_list.push(new YT.Player("ghi", {
@@ -77,7 +77,7 @@ function onYouTubeIframeAPIReady() {
 }
 
 document.getElementById("speak").onclick = () => {
-    ssu = new SpeechSynthesisUtterance("Welcome to console tlf server.");
+    const ssu = new SpeechSynthesisUtterance("Welcome to console tlf server.");
     ssu.lang = "en-US";
     speechSynthesis.speak(ssu);
 };

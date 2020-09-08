@@ -1,6 +1,6 @@
 document.query.search.onclick = () => {
 /*
-    http = new XMLHttpRequest();
+    const http = new XMLHttpRequest();
     http.onreadystatechange = () => {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
             res = JSON.parse(this.responseText);
@@ -19,14 +19,14 @@ document.query.onsubmit = () => {
 
 function error_message(d){
     if (d.hasOwnProperty("err")) {
-        title = document.createElement("p");
+        const title = document.createElement("p");
         title.style.color = "red";
         title.style.textAlign = "center";
         title.innerText = d["err"];
         error.appendChild(title);
     }
     if (d.hasOwnProperty("message")) {
-        verbose = document.createElement("p");
+        const verbose = document.createElement("p");
         verbose.style.color = "blue";
         verbose.innerText = d["message"];
         if (d.hasOwnProperty("stacktrace")) {
@@ -34,9 +34,9 @@ function error_message(d){
         }
         error.appendChild(verbose);
     }
-    panel = document.createElement("div");
+    const panel = document.createElement("div");
     panel.style.textAlign = "center";
-    cancel = document.createElement("button");
+    const cancel = document.createElement("button");
     cancel.type = "button";
     cancel.innerText = "Close";
     cancel.onclick = () => {
@@ -52,15 +52,15 @@ function parser(data) {
     for (k in data) {
         switch (k) {
             case "title":
-                title = document.createElement("p");
+                const title = document.createElement("p");
                 title.innerText = data[k];
                 result.append(title);
                 break;
             case "formats":
                 for (m of data[k]) {
-                    url = document.createElement("a");
-                    label = document.createElement("label");
-                    add = document.createElement("input");
+                    const url = document.createElement("a");
+                    const label = document.createElement("label");
+                    const add = document.createElement("input");
                     add.value = url.href = m["url"];
                     url.innerText = label.innerText = m["format"];
                     add.type = "radio";
@@ -88,11 +88,11 @@ function parser(data) {
 
 
 document.dialog.run.onclick = () => {
-    http = new XMLHttpRequest();
+    const http = new XMLHttpRequest();
     http.onreadystatechange = () => {
         if (http.readyState === XMLHttpRequest.DONE) {
             try {
-                data = JSON.parse(http.responseText);
+                const data = JSON.parse(http.responseText);
                 if (http.status === 500) {
                     error_message(data)
                 } else if (http.status === 200) {
@@ -106,7 +106,7 @@ document.dialog.run.onclick = () => {
         }
     };
 
-    found = /(?:(?:https?:\/\/)?(?:(?:(?:www|m)\.)?youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?v=)|youtu\.be\/))?((?:\w|-){11})/.exec(document.dialog.data.value);
+    const found = /(?:(?:https?:\/\/)?(?:(?:(?:www|m)\.)?youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?v=)|youtu\.be\/))?((?:\w|-){11})/.exec(document.dialog.data.value);
 
     if (found) {
         if (found.length == 2){
@@ -132,17 +132,17 @@ document.dialog.onsubmit = () => {
 document.sel.execute.onclick = () => {
     video.clearChildren();
     audio.clearChildren();
-    test1 = document.createNodeIterator(selvd, NodeFilter.SHOW_ELEMENT,
+    const test1 = document.createNodeIterator(selvd, NodeFilter.SHOW_ELEMENT,
         code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT).nextNode();
-    test2 = document.createNodeIterator(selad, NodeFilter.SHOW_ELEMENT,
+    const test2 = document.createNodeIterator(selad, NodeFilter.SHOW_ELEMENT,
         code => (code instanceof HTMLInputElement && code.checked) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT).nextNode();
     if (test1) {
-        soc = document.createElement("source");
+        const soc = document.createElement("source");
         soc.src = test1.value;
         video.appendChild(soc);
     }
     if (test2) {
-        soc = document.createElement("source");
+        const soc = document.createElement("source");
         soc.src = test2.value;
         audio.appendChild(soc);
     }
@@ -198,15 +198,15 @@ document.sel.onsubmit = () => {
 youtube.oncontextmenu = preview.oncontextmenu = e => e.preventDefault();
 
 function test() {
-    test = new DOMParser();
+    const test = new DOMParser();
     for (w of img) {
-        temp = /data:(.+?);?(?:base64)?,(.+)/.exec(w.src);
-        data = test.parseFromString(base64.decode(temp[2]), temp[1])
+        const temp = /data:(.+?);?(?:base64)?,(.+)/.exec(w.src);
+        const data = test.parseFromString(base64.decode(temp[2]), temp[1])
 
-        p = data.getElementsByTagName("svg");
-        a = data.getElementsByTagName("polygon");
-        b = data.getElementsByTagName("line");
-        c = data.getElementsByTagName("rect");
+        const p = data.getElementsByTagName("svg");
+        const a = data.getElementsByTagName("polygon");
+        const b = data.getElementsByTagName("line");
+        const c = data.getElementsByTagName("rect");
 
         for (x of a) {
             x.style.fill = "red";

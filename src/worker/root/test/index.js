@@ -1,12 +1,12 @@
-date = new Date();
+const date = new Date();
 
 function paddingZero(n, digit) {
-    zeros = new Array(digit + 1).join("0");
+    let zeros = new Array(digit + 1).join("0");
     return (zeros + n).slice(-digit);
 }
 
 
-val = setInterval(() => {
+var val = setInterval(() => {
     date.setTime(Date.now());
     tt = [date.getHours(),
         date.getMinutes(),

@@ -12,11 +12,11 @@ Object.defineProperty(Element.prototype, 'clearChildren', {
     }
 });
 
-description = document.createElement("meta");
+let description = document.createElement("meta");
 description.name = "description";
 description.content = "This page is test by tlf";
 
-viewport = document.createElement("meta");
+let viewport = document.createElement("meta");
 viewport.name = "viewport";
 viewport.content = "width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no";
 
@@ -24,12 +24,12 @@ document.head.appendChild(description);
 document.head.appendChild(viewport);
 
 try {
-    loader = location.pathname.split("/").pop().split(".")[0];
+    let loader = location.pathname.split("/").pop().split(".")[0];
     if (loader) {
-        sc_elm = document.createElement("script");
+        let sc_elm = document.createElement("script");
         sc_elm.src = `js/${loader}.js`;
         sc_elm.defer = true;
-        cs_elm = document.createElement("link");
+        let cs_elm = document.createElement("link");
         cs_elm.href = `css/${loader}.css`;
         cs_elm.rel = "stylesheet";
         document.head.appendChild(sc_elm);
@@ -40,7 +40,7 @@ try {
 }
 
 function youtube_iframe() {
-    yt_js = document.createElement("script");
+    let yt_js = document.createElement("script");
     yt_js.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(yt_js);
 }

@@ -46,7 +46,7 @@ function onYouTubeIframeAPIReady() {
 setTimeout(youtube_iframe, 500);
 
 ["http://qualia.clearrave.co.jp/images/gallery/06_b.jpg", "http://qualia.clearrave.co.jp/images/gallery/17_b.jpg", "http://palette.clearrave.co.jp/product/sakusaku/img/gallery/gal_b_14.jpg", "http://sweet.clearrave.co.jp/karehana/img/gallery/img_05.jpg", "http://recette.clearrave.co.jp/img/gallery/img_04.jpg", "http://qualia.clearrave.co.jp/images/gallery/11_b.jpg"].forEach(i => {
-    img = document.createElement("img");
+    const img = document.createElement("img");
     img.src = i;
     img.alt = "This image has been moved";
     pictures.appendChild(img);
