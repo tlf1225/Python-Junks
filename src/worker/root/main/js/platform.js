@@ -28,6 +28,7 @@ try {
     if (loader) {
         sc_elm = document.createElement("script");
         sc_elm.src = `js/${loader}.js`;
+        sc_elm.defer = true;
         cs_elm = document.createElement("link");
         cs_elm.href = `css/${loader}.css`;
         cs_elm.rel = "stylesheet";
