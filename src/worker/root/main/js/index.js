@@ -14,7 +14,7 @@ function onYouTubeIframeAPIReady() {
         wmode: "transparent",
         host: "https://www.youtube-nocookie.com",
         playerVars: {
-            autoplay: 1,
+            // autoplay: 1,
             cc_lang_pref: "en",
             cc_load_policy: 1,
             controls: 1,
@@ -54,7 +54,7 @@ function onYouTubeIframeAPIReady() {
             youtube.appendChild(c);
             yt_list.push(new YT.Player(c.id, {
                 ...base,
-                videoId: "ikgFvU_4rI8"
+                videoId: "olFuCEWl_3M"
             }));
             youtube.hidden = false;
             document.getElementById("open").innerText = "Close";

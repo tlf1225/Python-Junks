@@ -5,7 +5,7 @@ function onYouTubeIframeAPIReady() {
         wmode: "transparent",
         host: "https://www.youtube-nocookie.com",
         playerVars: {
-            autoplay: 1,
+            // autoplay: 1,
             cc_lang_pref: "en",
             cc_load_policy: 1,
             controls: 1,
