@@ -4,7 +4,7 @@ from http.client import InvalidURL
 from json import loads
 from re import compile
 from urllib.error import HTTPError
-from urllib.parse import parse_qs
+from urllib.parse import unquote, quote, parse_qs
 from urllib.request import urlopen, Request
 
 ORIGIN = "https://www.youtube-nocookie.com"
@@ -14,6 +14,36 @@ HD = {
     "Accept-Encoding": "gzip, deflate",
     "User-Agent": "curl"
 }
+
+
+class Decrypt:
+
+    def __init__(self, orig: list) -> None:
+        self.key = orig
+
+    def swap(self, a):
+        c = a % len(self.key)
+        self.key[0], self.key[c] = self.key[c], self.key[0]
+
+    def rev(self):
+        self.key.reverse()
+
+    def sp(self, c):
+        del self.key[0:c]
+
+    def result(self):
+        return "".join(self.key)
+
+
+def work(key: str):
+    d = Decrypt(list(unquote(key)))
+    d.sp(3)
+    d.rev()
+    d.swap(1)
+    d.swap(3)
+    d.swap(51)
+    d.rev()
+    return quote(d.result())
 
 
 # noinspection SpellCheckingInspection
@@ -48,7 +78,7 @@ def main(req: list) -> None:
 
         for j in li:
             queries = parse_qs(j)
-            ask = Request(queries["url"][0] + f'&{queries["sp"][0]}={queries["s"][0]}', headers=HD, origin_req_host=ORIGIN, method="HEAD")
+            ask = Request(queries["url"][0] + f'&{queries["sp"][0]}={work(queries["s"][0])}', headers=HD, origin_req_host=ORIGIN, method="HEAD")
             try:
                 with urlopen(ask) as e:
                     if e.status == 200:

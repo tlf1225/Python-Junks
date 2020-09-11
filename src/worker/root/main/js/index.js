@@ -1,16 +1,17 @@
 const date = new Date();
 
-time_timer = setInterval(() => {
+let time_timer = setInterval(() => {
     modify.textContent = `${date.toLocaleString("ja-JP", {
         weekday: "short", year: "numeric", month: "long", day: "numeric",
          hour: "numeric", minute: "numeric", second: "numeric", timeZone: "Asia/Tokyo"})}`;
 }, 1000);
 
+const yt_list = []
+
 function onYouTubeIframeAPIReady() {
-    const yt_list = []
     const base = {
-        width: innerWidth / 2,
-        height: innerHeight / 2,
+        width: Math.trunc(innerWidth / 2.5),
+        height: Math.trunc(innerHeight / 2.5),
         wmode: "transparent",
         host: "https://www.youtube-nocookie.com",
         playerVars: {
