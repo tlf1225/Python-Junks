@@ -3,6 +3,7 @@ from gzip import decompress
 from http.client import InvalidURL
 from json import loads
 from re import compile
+from time import sleep
 from urllib.error import HTTPError
 from urllib.parse import unquote, quote, parse_qs
 from urllib.request import urlopen, Request
@@ -77,16 +78,18 @@ def main(req: list) -> None:
             li.append(j["signatureCipher"])
 
         for j in li:
-            queries = parse_qs(j)
-            ask = Request(queries["url"][0] + f'&{queries["sp"][0]}={work(queries["s"][0])}', headers=HD, origin_req_host=ORIGIN, method="HEAD")
+            queries = {k: "".join(v) for k, v in parse_qs(j).items()}
+            ask = Request(f'{queries["url"]}&{queries["sp"]}={work(queries["s"])}&ratebypass=yes', headers=HD, origin_req_host=ORIGIN, method="HEAD")
             try:
                 with urlopen(ask) as e:
                     if e.status == 200:
-                        print("OK")
+                        print(f"OK {e.url}")
             except (HTTPError, InvalidURL) as e:
                 print(e)
+            sleep(1)
 
 
 if __name__ == '__main__':
     # main(argv[1::])
-    main(["WJ16v-hD1mw", "LRiuS9OxyP4"])
+    # main(["WJ16v-hD1mw", "LRiuS9OxyP4"])
+    main(["olFuCEWl_3M"])
