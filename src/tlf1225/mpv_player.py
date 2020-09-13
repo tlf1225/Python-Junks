@@ -254,38 +254,31 @@ def setup():
             """
 
             if f & 0x1:
-                try:
-                    path_list.remove(r"D:\Python\Scripts")
-                    environ["PATH"] = pathsep.join(path_list)
-                except ValueError:
-                    pass
-
-            if f & 0x2:
                 player.play(url)
                 sleep(3)
 
-            if f & 0x4:
+            if f & 0x2:
                 for pid in playlist:
                     player.playlist_append(pid)
                 player.playlist_shuffle()
                 player.playlist_pos = 0
 
-            if f & 0x8:
+            if f & 0x4:
                 player.command("cycle-values", "wid", windll.user32.GetDesktopWindow(), -1)
 
-            if f & 0x10:
+            if f & 0x8:
                 for x in player.input_bindings:
                     for i, j in x.items():
                         print(f"{i}: {j}", file=stderr)
 
-            if f & 0x20:
+            if f & 0x10:
                 player.command("osd-bar", "show-progress")
                 player.script_message_to("stats", "display-stats")
                 # player.script_message_to("stats", "display-stats-toggle")
                 # player.command("cycle-values", "osd-level", 3, 1)
                 print(player.time_pos, file=stderr)
 
-            if f & 0x40:
+            if f & 0x20:
                 player.osd_duration = 3000
                 player.script_opts = "osc-hidetimeout=3000,osc-fadeduration=1000,osc-visibility=always"
                 player.cycle("input-default-bindings")

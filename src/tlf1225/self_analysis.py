@@ -8,8 +8,6 @@ from urllib.error import HTTPError
 from urllib.parse import unquote, quote, parse_qs
 from urllib.request import urlopen, Request
 
-ORIGIN = "https://www.youtube-nocookie.com"
-
 # noinspection SpellCheckingInspection
 HD = {
     "Accept-Encoding": "gzip, deflate",
@@ -61,7 +59,7 @@ def main(req: list) -> None:
     for i in req:
         result = None
         try:
-            ask = Request(f"{ORIGIN}/get_video_info?video_id={i}", headers=HD, origin_req_host=ORIGIN)
+            ask = Request(f"https://www.youtube-nocookie.com/get_video_info?video_id={i}", headers=HD)
             with urlopen(ask) as res:
                 if res.getcode() == 200:
                     if res.getheader("Content-Encoding") in ("gzip", "deflate"):
@@ -79,7 +77,7 @@ def main(req: list) -> None:
 
         for j in li:
             queries = {k: "".join(v) for k, v in parse_qs(j).items()}
-            ask = Request(f'{queries["url"]}&{queries["sp"]}={work(queries["s"])}&ratebypass=yes', headers=HD, origin_req_host=ORIGIN, method="HEAD")
+            ask = Request(f'{queries["url"]}&{queries["sp"]}={work(queries["s"])}&ratebypass=yes', headers=HD, method="HEAD")
             try:
                 with urlopen(ask) as e:
                     if e.status == 200:

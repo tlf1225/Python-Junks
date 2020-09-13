@@ -9,7 +9,7 @@ from traceback import format_exc
 
 from youtube_dl import YoutubeDL
 
-enable(display=False, logdir="../logs/")
+enable(display=0, logdir="../../")
 
 buffer = StringIO()
 header = environ

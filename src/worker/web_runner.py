@@ -20,12 +20,6 @@ class HTTPWorker(CGIHTTPRequestHandler):
         # info(f"{self.address_string()} [{self.log_date_time_string()}] {fmt % args}")
         info(f"{self.address_string()} {fmt % args}")
 
-    def do_GET(self) -> None:
-        super().do_GET()
-
-    def parse_request(self) -> bool:
-        return super().parse_request()
-
 
 def http(root=None):
     chdir(root)
