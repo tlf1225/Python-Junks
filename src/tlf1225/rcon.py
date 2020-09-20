@@ -1,7 +1,7 @@
-from code import interact
 from random import randint
 from socket import socket, AF_INET, SOCK_STREAM, IPPROTO_TCP
 from struct import pack, unpack, calcsize
+from sys import argv
 
 I2 = "<2i"
 I = "<i"
@@ -28,15 +28,22 @@ def recv(so: socket):
 
 
 if __name__ == '__main__':
-    with socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) as sock:
-        address = input("IP: ").encode()
-        port = int(input("Port: "))
-        sock.connect((address, port))
-        client_id = randint(11, 2147483647)
-        password = input("Password: ").encode()
-        send(sock, client_id, 3, password)
-        print(recv(sock))
-        try:
-            interact(local=locals())
-        except Exception as e:
-            print(e)
+    try:
+        with socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) as sock:
+            address = input("IP: ") or argv[1]
+            port = int(input("Port: ") or argv[2])
+            sock.connect((address, port))
+            client_id = randint(11, 2147483647)
+            password = input("Password: ").encode() or argv[3].encode()
+            send(sock, client_id, 3, password)
+            res = recv(sock)
+            while True:
+                try:
+                    print(f"len: {res[0]}, id: {res[1]}, type: {res[2]}, data: {res[3].decode()}")
+                    command = input(">> ").encode()
+                    send(sock, client_id, 2, command)
+                    res = recv(sock)
+                except EOFError as e:
+                    break
+    except Exception as e:
+        print(e)
