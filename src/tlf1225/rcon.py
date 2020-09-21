@@ -3,7 +3,9 @@ from random import randint
 from re import compile, IGNORECASE
 from socket import socket, AF_INET6, SOCK_STREAM, IPPROTO_TCP
 from struct import pack, unpack, calcsize
-from sys import argv
+from sys import argv, stderr
+
+# from ssl import create_default_context, Purpose
 
 I2 = "<2i"
 I = "<i"
@@ -44,19 +46,35 @@ def send(so: socket, client: int, request: int, data: bytes) -> None:
     so.send(pack(I, len(auth)) + auth)
 
 
-def receive(so: socket) -> tuple:
-    a = unpack(I, so.recv(IL))[0] - 10
-    b, c = unpack(I2, so.recv(I2L))
-    s = f"{a}s"
-    sl = calcsize(s)
-    d = unpack(s, so.recv(sl))[0]
-    if so.recv(S2L) == b'\x00\x00':
-        return a, b, c, d
+def receive(so: socket, client: int) -> str:
+    res = b''
+    while True:
+        a = unpack(I, so.recv(IL))[0] - 10
+        b, c = unpack(I2, so.recv(I2L))
+        again = a // 4096
+        s = f"{a if 0 <= a < 4096 else 0 if a < 0 else 4096}s"
+        sl = calcsize(s)
+        d = unpack(s, so.recv(sl))[0]
+        print(f"Response: {c}", file=stderr)
+        if so.recv(S2L) == b'\x00\x00':
+            if b != client:
+                print(f"{b} not equals {client}", file=stderr)
+                break
+            res += d
+            if again == 0:
+                return res.decode()
+            else:
+                continue
+        else:
+            break
+    return res.decode()
 
 
 if __name__ == '__main__':
     try:
+        # ctx = create_default_context(Purpose.CLIENT_AUTH)
         with socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP) as sock:
+            # sock = ctx.wrap_socket(sock, server_hostname="localhost")
             address = input("IP: ") or argv[1]
             port = int(input("Port: ") or argv[2])
             sock.connect((address, port))
@@ -74,8 +92,8 @@ if __name__ == '__main__':
                         send(sock, client_id, 3, password)
                     else:
                         send(sock, client_id, 2, command.encode())
-                    res = receive(sock)
-                    print(f"len: {res[0]}, id: {res[1]}, type: {res[2]}\n{CR.sub(lambda m: COLOR.get(m.group(1)), res[3].decode())}")
+                    res = receive(sock, client_id)
+                    print(f"{CR.sub(lambda m: COLOR.get(m.group(1)), res)}{COLOR['r']}")
                     return ""
                 return raw
 
