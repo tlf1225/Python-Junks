@@ -42,6 +42,7 @@ class MCRcon(socket):
         self.S2 = "2s"
         self.I2S2L = calcsize("<2i") + calcsize(self.S2)
         self.CR = rc(r"\u00a7(\w)", IGNORECASE)
+        self.RP = lambda m: self.COLOR.get(m.group(1))
 
     def rcon_send(self, request: int, data: bytes) -> None:
         self.send(pack(self.I3, self.I2S2L + calcsize(f"{len(data)}s"), self.client_id, request) + data + b"\x00\x00")
@@ -71,7 +72,7 @@ class MCRcon(socket):
 
     def exec(self, req: int, command: bytes):
         self.rcon_send(req, command)
-        print(f"{self.CR.sub(lambda m: self.COLOR.get(m.group(1)), self.rcon_recv())}")
+        print(f"{self.CR.sub(self.RP, self.rcon_recv())}")
 
     def login(self, password: str):
         password = (password or input("Password: ")).encode()
