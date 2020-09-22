@@ -139,10 +139,10 @@ class Player:
         """
         data = input(prompt)
         if data.startswith("/"):
-            parser = self.parser.parse_args(data[1::].split(" "))
+            parser = self.parser.parse_args(data[1::].split())
             if parser[""]:
                 pass
-            parsed = data[1::].split(" ")
+            parsed = data[1::].split()
             if len(parsed) > 2:
                 cmd, mot, other = parsed[0], parsed[1], parsed[2::]
                 if cmd == "mpv":

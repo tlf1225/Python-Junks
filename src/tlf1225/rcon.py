@@ -1,6 +1,6 @@
 from code import interact
 from random import randint
-from re import compile, IGNORECASE
+from re import compile as rc, IGNORECASE
 from socket import socket, AF_INET6, SOCK_STREAM, IPPROTO_TCP
 from struct import pack, unpack, calcsize
 from sys import argv, stderr
@@ -9,11 +9,13 @@ from sys import argv, stderr
 
 I2 = "<2i"
 I = "<i"
+S2 = "2s"
 I2L = calcsize(I2)
 IL = calcsize(I)
-S2L = calcsize("2s")
+S2L = calcsize(S2)
+I2S2L = I2L + S2L
 
-CR = compile(r"\u00a7([\da-fk-or])", IGNORECASE)
+CR = rc(r"\u00a7(\w)", IGNORECASE)
 
 COLOR = {
     '0': '\033[0;30m',  # 00 BLACK
@@ -49,55 +51,61 @@ def send(so: socket, client: int, request: int, data: bytes) -> None:
 def receive(so: socket, client: int) -> str:
     res = b''
     while True:
-        a = unpack(I, so.recv(IL))[0] - 10
+        a = unpack(I, so.recv(IL))[0] - I2S2L
         b, c = unpack(I2, so.recv(I2L))
         again = a // 4096
-        s = f"{a if 0 <= a < 4096 else 0 if a < 0 else 4096}s"
+        s = f"{a if 0 <= a <= 4096 else 0 if a < 0 else 4096}s"
         sl = calcsize(s)
         d = unpack(s, so.recv(sl))[0]
-        print(f"Response: {c}", file=stderr)
-        if so.recv(S2L) == b'\x00\x00':
+        pad = so.recv(S2L) == b'\x00\x00'
+        if pad:
+            print(f"Response: {c}", file=stderr)
             if b != client:
-                print(f"{b} not equals {client}", file=stderr)
+                print(f"Client: {b} not valid {client}", file=stderr)
                 break
             res += d
-            if again == 0:
-                return res.decode()
-            else:
+            if again:
                 continue
+            else:
+                return res.decode()
         else:
             break
     return res.decode()
 
 
-if __name__ == '__main__':
+def main():
     try:
         # ctx = create_default_context(Purpose.CLIENT_AUTH)
         with socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP) as sock:
             # sock = ctx.wrap_socket(sock, server_hostname="localhost")
-            address = input("IP: ") or argv[1]
-            port = int(input("Port: ") or argv[2])
+            address = input("IP: ") or (argv[1] if len(argv) > 1 else "localhost")
+            port = int(input("Port: ") or (int(argv[2]) if len(argv) > 2 else 25575))
             sock.connect((address, port))
             client_id = -1
 
+            def login(password: str):
+                nonlocal sock, client_id
+                client_id = randint(11, 2147483647)
+                password = (password or input("Password: ")).encode()
+                send(sock, client_id, 3, password)
+                print(f"{CR.sub(lambda m: COLOR.get(m.group(1)), receive(sock, client_id))}")
 
             def reader(prompt) -> str:
-                global client_id
+                nonlocal sock, client_id
                 raw = input(prompt)
                 if raw.startswith("/"):
-                    command = raw[1:]
-                    if command.startswith("login"):
-                        client_id = randint(11, 2147483647)
-                        password = (input("Password: ") or argv[3]).encode()
-                        send(sock, client_id, 3, password)
-                    else:
-                        send(sock, client_id, 2, command.encode())
-                    res = receive(sock, client_id)
-                    print(f"{CR.sub(lambda m: COLOR.get(m.group(1)), res)}{COLOR['r']}")
+                    send(sock, client_id, 2, raw[1:].encode())
+                    print(f"{CR.sub(lambda m: COLOR.get(m.group(1)), receive(sock, client_id))}")
                     return ""
                 return raw
 
-
-            interact(banner="Minecraft RCon", readfunc=reader, local=locals(), exitmsg="Exit")
+            login(argv[3] if len(argv) > 3 else "")
+            work = globals().copy()
+            work.update(locals())
+            interact(banner="Minecraft RCon", readfunc=reader, local=work, exitmsg="Exit")
     except Exception as e:
         print(e)
+
+
+if __name__ == '__main__':
+    main()
