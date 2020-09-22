@@ -63,6 +63,49 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
     :param url: Youtube Link
     :return: None
     """
+
+    # noinspection SpellCheckingInspection
+    def ytdl_info() -> list:
+        """
+        YoutubeDL Information Extractor
+
+        :return: information: Requested Formats
+        """
+        nonlocal url
+
+        information = []
+        with YoutubeDL(params={
+            "no_cache": True,
+            "no_warnings": False,
+            "ignoreerrors": True,
+            "quiet": True,
+            "skip_download": True,
+            "simulate": True,
+            "format": "bestvideo+bestaudio/best",
+            "ffmpeg_location": ""
+        }) as ytdl:
+            result = ytdl.extract_info(url=url, download=False)
+
+            if not result:
+                return information
+            if "entries" not in result:
+                print(result["title"], file=stderr)
+                mapping = {}
+                for url in sorted(result["formats"], key=lambda x: int(x["format_id"])):
+                    mapping[url['format_id']] = url['url']
+                    # print(f"{url['format']} {url['url']}", file=stderr)
+                information.append(mapping)
+            else:
+                for entries in result["entries"]:
+                    mapping = {}
+                    print(entries["title"], file=stderr)
+                    for url in sorted(entries["formats"], key=lambda x: int(x["format_id"])):
+                        mapping[url['format_id']] = url['url']
+                        # print(f"{url['format']} {url['url']}", file=stderr)
+                    information.append(mapping)
+                    print(file=stderr)
+        return information
+
     if p is None or len(p) < 3:
         return
 
@@ -77,7 +120,7 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
         :return: ttt
         """
 
-        information = ytdl_info(url=url)
+        information = ytdl_info()
         if not information:
             return
 
@@ -104,50 +147,6 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
         print("FFmpeg Terminate", file=stderr)
     player.quit()
     player.terminate()
-
-
-# noinspection SpellCheckingInspection
-def ytdl_info(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr", ffloc="ffmpeg-latest-win64-shared/bin") -> list:
-    """
-    YoutubeDL Information Extractor
-
-    :param url: Youtube URL
-    :param ffloc: FFmpeg Location
-    :return: information: Requested Formats
-    """
-
-    information = []
-    with YoutubeDL(params={
-        "no_cache": True,
-        "no_warnings": False,
-        "ignoreerrors": True,
-        "quiet": True,
-        "skip_download": True,
-        "simulate": True,
-        "format": "bestvideo+bestaudio/best",
-        "ffmpeg_location": ffloc
-    }) as ytdl:
-        result = ytdl.extract_info(url=url, download=False)
-
-        if not result:
-            return information
-        if "entries" not in result:
-            print(result["title"], file=stderr)
-            mapping = {}
-            for url in sorted(result["formats"], key=lambda x: int(x["format_id"])):
-                mapping[url['format_id']] = url['url']
-                # print(f"{url['format']} {url['url']}", file=stderr)
-            information.append(mapping)
-        else:
-            for entries in result["entries"]:
-                mapping = {}
-                print(entries["title"], file=stderr)
-                for url in sorted(entries["formats"], key=lambda x: int(x["format_id"])):
-                    mapping[url['format_id']] = url['url']
-                    # print(f"{url['format']} {url['url']}", file=stderr)
-                information.append(mapping)
-                print(file=stderr)
-    return information
 
 
 # noinspection SpellCheckingInspection
