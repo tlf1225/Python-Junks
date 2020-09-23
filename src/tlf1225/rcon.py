@@ -1,7 +1,7 @@
 from code import interact
 from random import randint
 from re import compile as rc, IGNORECASE
-from socket import socket, AF_INET6, SOCK_STREAM, IPPROTO_TCP
+from socket import socket, AF_INET6, SOCK_STREAM, IPPROTO_TCP, IPPROTO_IPV6, IPV6_V6ONLY
 from struct import pack, unpack, calcsize
 from sys import argv, stderr
 
@@ -93,8 +93,9 @@ def main():
     try:
         client_id = randint(11, 2147483647)
         with MCRcon(AF_INET6, SOCK_STREAM, IPPROTO_TCP, client_id) as sock:
-            address = input("IP: ") or (argv[1] if len(argv) > 1 else "localhost")
+            address = input("IPv6: ") or (argv[1] if len(argv) > 1 else "localhost")
             port = int(input("Port: ") or (int(argv[2]) if len(argv) > 2 else 25575))
+            sock.setsockopt(IPPROTO_IPV6, IPV6_V6ONLY, 0)
             sock.connect((address, port))
             sock.login(argv[3] if len(argv) > 3 else "")
             work = globals().copy()
