@@ -1,4 +1,7 @@
+from base64 import b85encode
 from code import interact
+from getpass import getpass
+from hashlib import sha3_512
 from random import randint
 from re import compile as rc, IGNORECASE
 from socket import socket, AF_INET6, SOCK_STREAM, IPPROTO_TCP, IPPROTO_IPV6, IPV6_V6ONLY
@@ -75,7 +78,7 @@ class MCRcon(socket):
         print(f"{self.CR.sub(self.RP, self.rcon_recv())}")
 
     def login(self, password: str):
-        password = (password or input("Password: ")).encode()
+        password = sha3_512(b85encode((password or getpass("Password: ")).encode())).hexdigest().encode()
         self.exec(3, password)
 
     def command(self, command: str):
