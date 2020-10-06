@@ -50,7 +50,7 @@ def ref(authorized: dict):
     return authorized
 
 
-def sign_out(username: str, password: str):
+def sign_out(username: str = "", password: str = ""):
     req = {
         "username": input("UserName: ") or username,
         "password": getpass("Password: ") or password

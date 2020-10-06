@@ -32,7 +32,7 @@ try:
     from mpv import MPV
     from youtube_dl import YoutubeDL
     import ffmpeg
-except (OSError, NameError) as fail:
+except (OSError, NameError, ImportError) as fail:
     print(fail, file=stderr)
 
 
