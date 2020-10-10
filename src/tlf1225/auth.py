@@ -57,7 +57,7 @@ def call():
 
 
 # noinspection SpellCheckingInspection
-def two_auth():
+def two_auth(key="HQKESDOB2WJO2USF7NWIO6GMH4"):
     """
     HQKESDOB2WJO2USF7NWIO6GMH4
     " RATE_LIMIT 3 30 1602326446
@@ -70,7 +70,7 @@ def two_auth():
     14451533
     """
 
-    key = TOTP("HQKESDOB2WJO2USF7NWIO6GMH4")
+    key = TOTP(key)
     current = key.now().encode()
 
     windll.kernel32.GlobalAlloc.argtypes = (UINT, c_size_t)
@@ -104,12 +104,12 @@ def two_auth():
 if __name__ == '__main__':
     two_auth()
 
+    set_trace()
+
     a = input()
     print([ord(x) for x in a])
 
     res = getpass(echo=False)
-
-    set_trace()
 
     compare = res.hexdigest()
     print(compare)
@@ -119,7 +119,3 @@ if __name__ == '__main__':
         call()
     else:
         print("Invalid")
-
-    print([ord(x) for x in res])
-    print([*res])
-    print(res)
