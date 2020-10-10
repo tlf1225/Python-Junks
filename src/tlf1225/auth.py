@@ -96,6 +96,8 @@ def two_auth():
 
     windll.user32.CloseClipboard()
 
+    windll.kernel32.GlobalFree.restype = HGLOBAL
+    windll.kernel32.GlobalFree.argtypes = (HGLOBAL,)
     windll.kernel32.GlobalFree(handle)
 
 
