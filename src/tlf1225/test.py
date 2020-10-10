@@ -26,52 +26,52 @@ try:
     EnumProcesses = PSAPI.EnumProcesses
     EnumProcesses.restype = BOOL
     # noinspection SpellCheckingInspection
-    EnumProcesses.argtypes = [LPDWORD, DWORD, LPDWORD]
+    EnumProcesses.argtypes = (LPDWORD, DWORD, LPDWORD)
 
     GetProcessImageFileName = PSAPI.GetProcessImageFileNameW
     GetProcessImageFileName.restype = DWORD
     # noinspection SpellCheckingInspection
-    GetProcessImageFileName.argtypes = [HANDLE, LPWSTR, DWORD]
+    GetProcessImageFileName.argtypes = (HANDLE, LPWSTR, DWORD)
 
     OpenProcess = KERNEL32.OpenProcess
     OpenProcess.restype = HANDLE
     # noinspection SpellCheckingInspection
-    OpenProcess.argtypes = [DWORD, BOOL, DWORD]
+    OpenProcess.argtypes = (DWORD, BOOL, DWORD)
 
     TerminateProcess = KERNEL32.TerminateProcess
     TerminateProcess.restype = BOOL
     # noinspection SpellCheckingInspection
-    TerminateProcess.argtypes = [HANDLE, UINT]
+    TerminateProcess.argtypes = (HANDLE, UINT)
 
     CloseHandle = KERNEL32.CloseHandle
     CloseHandle.restype = BOOL
     # noinspection SpellCheckingInspection
-    CloseHandle.argtypes = [HANDLE]
+    CloseHandle.argtypes = (HANDLE,)
 
     SetWindowPos = USER32.SetWindowPos
     SetWindowPos.restype = BOOL
     # noinspection SpellCheckingInspection
-    SetWindowPos.argtypes = [HWND, HWND, INT, INT, INT, INT, UINT]
+    SetWindowPos.argtypes = (HWND, HWND, INT, INT, INT, INT, UINT)
 
     EnumWindows = USER32.EnumWindows
     EnumWindows.restype = BOOL
     # noinspection SpellCheckingInspection
-    EnumWindows.argtypes = [WNDENUMPROC, LPARAM]
+    EnumWindows.argtypes = (WNDENUMPROC, LPARAM)
 
     EnumThreadWindows = USER32.EnumThreadWindows
     EnumThreadWindows.restype = BOOL
     # noinspection SpellCheckingInspection
-    EnumThreadWindows.argtypes = [DWORD, WNDENUMPROC, LPARAM]
+    EnumThreadWindows.argtypes = (DWORD, WNDENUMPROC, LPARAM)
 
     GetWindowThreadProcessId = USER32.GetWindowThreadProcessId
     GetWindowThreadProcessId.restype = DWORD
     # noinspection SpellCheckingInspection
-    GetWindowThreadProcessId.argtypes = [HWND, LPDWORD]
+    GetWindowThreadProcessId.argtypes = (HWND, LPDWORD)
 
     GetWindowText = USER32.GetWindowTextW
     GetWindowText.restype = INT
     # noinspection SpellCheckingInspection
-    GetWindowText.argtypes = [HWND, LPWSTR, INT]
+    GetWindowText.argtypes = (HWND, LPWSTR, INT)
 
 
     def perform(name=None, pid=None, flag=False):

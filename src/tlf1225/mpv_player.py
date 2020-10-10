@@ -187,11 +187,12 @@ def setup():
     player.hwdec = "auto-copy-safe"
     player.loop_playlist = "inf"
     player.geometry = player.autofit = "1280x720"
-    player.af = "lavfi=[dynaudnorm=b=1:c=1:g=11:r=0.25],asoftclip=type=tanh"
+    player.af = "lavfi=[dynaudnorm=b=1:c=1:g=11:r=1.0],asoftclip=type=tanh"
     player.vf = "lavfi=[fade=in:0:60]"
     player.input_media_keys = True
     player.ytdl_format = "bestvideo+bestaudio/best"
     player.ytdl_raw_options = "no-cache-dir="
+    player.volume_max = 100
     player.volume = 50
     player.shuffle = True
     player.config_dir = path[0]
@@ -238,7 +239,7 @@ def setup():
                      'yQ3pFBrZqak', 'mg6PCPVUg7I', 'CH9cHp-QM1c', 'lg6RecLKxXU', 'DZgGQboLTm4',
                      'i75oLwv286U', 'ZHUDc38ncAA')] + \
                    [f"https://nico.ms/{nc}" for nc in
-                    ['nm4624881']] + \
+                    ('nm4624881',)] + \
                    [f"https://www.bilibili.com/video/{bb}" for bb in
                     ('BV1Es41127k8', 'BV1Zs411C7K8', 'BV1ds411C7pL')]
 
