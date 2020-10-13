@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 from copy import copy
-from ctypes import windll, memmove, c_size_t
-from ctypes.wintypes import LPVOID, BOOL, HGLOBAL, UINT, HANDLE
 from hashlib import sha3_256
 from pdb import set_trace
 from platform import release, system
 from sys import stdin
 
 from pyotp.totp import TOTP
+from win32clipboard import OpenClipboard, EmptyClipboard, SetClipboardData, CloseClipboard, CF_TEXT
 
 validate = '1e90ce9cb0f0203e2403437c28a97300ac35ab388b3e5b9e411958d3fc3264fe'
 
@@ -72,7 +71,12 @@ def two_auth(key="HQKESDOB2WJO2USF7NWIO6GMH4"):
 
     key = TOTP(key)
     current = key.now().encode()
+    OpenClipboard()
+    EmptyClipboard()
+    SetClipboardData(CF_TEXT, current)
+    CloseClipboard()
 
+    """
     windll.kernel32.GlobalAlloc.argtypes = (UINT, c_size_t)
     windll.kernel32.GlobalAlloc.restype = HGLOBAL
     handle = windll.kernel32.GlobalAlloc(0x42, len(current) + 2)
@@ -99,6 +103,7 @@ def two_auth(key="HQKESDOB2WJO2USF7NWIO6GMH4"):
     windll.kernel32.GlobalFree.restype = HGLOBAL
     windll.kernel32.GlobalFree.argtypes = (HGLOBAL,)
     windll.kernel32.GlobalFree(handle)
+    """
 
 
 if __name__ == '__main__':

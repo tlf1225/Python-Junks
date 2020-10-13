@@ -4,18 +4,23 @@ This file is implemented with mpv.
 # noinspection PyUnresolvedReferences
 from argparse import ArgumentParser
 from code import interact
-from ctypes import byref, windll, WINFUNCTYPE
-from ctypes.wintypes import BOOL, DWORD, HWND, LPARAM
+# from ctypes import byref, windll, WINFUNCTYPE
+# from ctypes.wintypes import BOOL, DWORD, HWND, LPARAM
 # noinspection PyUnresolvedReferences
 from getopt import getopt
 from io import StringIO
-from os import environ, getpid, pathsep, scandir, sep
+# from os import environ, getpid, pathsep, scandir, sep
+from os import environ, pathsep, scandir, sep
 from os.path import isdir
 from re import search
 from sys import argv, path, stderr
 from time import sleep
 from urllib.request import urlopen
 from xml.etree.ElementTree import fromstring
+
+from win32console import SetConsoleTitle
+from win32gui import GetDesktopWindow, EnumWindows, SetWindowPos, SetForegroundWindow
+from win32process import GetCurrentProcessId, GetWindowThreadProcessId
 
 try:
     path_list = environ["PATH"].split(pathsep)
@@ -207,7 +212,9 @@ def setup():
         :return: None
         """
 
-        windll.kernel32.SetConsoleTitleW(player.media_title)
+        SetConsoleTitle(player.media_title)
+        #
+        # windll.kernel32.SetConsoleTitleW(player.media_title)
 
     event_handler.append(test_handler)
 
@@ -266,7 +273,8 @@ def setup():
                 player.playlist_pos = 0
 
             if f & 0x4:
-                player.command("cycle-values", "wid", windll.user32.GetDesktopWindow(), -1)
+                # player.command("cycle-values", "wid", windll.user32.GetDesktopWindow(), -1)
+                player.command("cycle-values", "wid", GetDesktopWindow(), -1)
 
             if f & 0x8:
                 for x in player.input_bindings:
@@ -294,20 +302,26 @@ def setup():
             # self.parser.add_argument("type", help="execute type")
             return input(prompt)
 
-        # noinspection PyTypeChecker
+        # noinspection PyTypeChecker, SpellCheckingInspection
         def topmost(hwnd_value):
             def finder(hwnd, lp):
-                result = DWORD()
-                windll.user32.GetWindowThreadProcessId(hwnd, byref(result))
-                if result.value == lp:
-                    print(hwnd, file=stderr)
-                    windll.user32.SetWindowPos(hwnd, HWND(hwnd_value), 0, 0, 0, 0, 3)
-                    windll.user32.SetForegroundWindow(hwnd)
-                    return False
-                else:
-                    return True
+                tid, pid = GetWindowThreadProcessId(hwnd)
+                if pid == lp:
+                    SetWindowPos(hwnd, hwnd_value, 0, 0, 0, 0, 3)
+                    SetForegroundWindow(hwnd)
 
-            windll.user32.EnumWindows(WINFUNCTYPE(BOOL, HWND, LPARAM)(finder), getpid())
+            # result = DWORD()
+            # windll.user32.GetWindowThreadProcessId(hwnd, byref(result))
+            # if result.value == lp:
+            #     print(hwnd, file=stderr)
+            #     windll.user32.SetWindowPos(hwnd, HWND(hwnd_value), 0, 0, 0, 0, 3)
+            #     windll.user32.SetForegroundWindow(hwnd)
+            #     return False
+            # else:
+            #     return True
+
+            # windll.user32.EnumWindows(WINFUNCTYPE(BOOL, HWND, LPARAM)(finder), getpid())
+            EnumWindows(finder, GetCurrentProcessId())
 
         while not player.core_shutdown:
             loc = locals().copy()
