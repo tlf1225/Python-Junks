@@ -60,7 +60,7 @@ def sign_out(username: str = "", password: str = ""):
         "Content-Type": "application/json"
     }
 
-    # refresh validate signout
+    # refresh validate sign_out
     with urlopen(Request("https://authserver.mojang.com/signout", dumps(req).encode(), head)) as sign:
         print(sign.read())
 

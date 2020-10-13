@@ -4,12 +4,9 @@ This file is implemented with mpv.
 # noinspection PyUnresolvedReferences
 from argparse import ArgumentParser
 from code import interact
-# from ctypes import byref, windll, WINFUNCTYPE
-# from ctypes.wintypes import BOOL, DWORD, HWND, LPARAM
 # noinspection PyUnresolvedReferences
 from getopt import getopt
 from io import StringIO
-# from os import environ, getpid, pathsep, scandir, sep
 from os import environ, pathsep, scandir, sep
 from os.path import isdir
 from re import search
@@ -18,6 +15,8 @@ from time import sleep
 from urllib.request import urlopen
 from xml.etree.ElementTree import fromstring
 
+# noinspection PyUnresolvedReferences
+from win32con import HWND_TOPMOST, HWND_NOTOPMOST, SWP_NOMOVE, SWP_NOSIZE
 from win32console import SetConsoleTitle
 from win32gui import GetDesktopWindow, EnumWindows, SetWindowPos, SetForegroundWindow
 from win32process import GetCurrentProcessId, GetWindowThreadProcessId
@@ -56,104 +55,6 @@ def update_check():
         lib_mpv = fromstring(y.read())
     down_mpv = lib_mpv[0][6][1].text
     return down_youtube_dl, down_mpv
-
-
-'''
-# noinspection SpellCheckingInspection
-def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
-    """
-    mpv load with ffmpeg and youtube-dl
-
-    :param p: predefined dictionary
-    :param url: Youtube Link
-    :return: None
-    """
-    import ffmpeg
-    
-    # noinspection SpellCheckingInspection
-    def ytdl_info() -> list:
-        """
-        YoutubeDL Information Extractor
-
-        :return: information: Requested Formats
-        """
-        nonlocal url
-
-        information = []
-        with YoutubeDL(params={
-            "no_cache": True,
-            "no_warnings": False,
-            "ignoreerrors": True,
-            "quiet": True,
-            "skip_download": True,
-            "simulate": True,
-            "format": "bestvideo+bestaudio/best",
-            "ffmpeg_location": ""
-        }) as ytdl:
-            result = ytdl.extract_info(url=url, download=False)
-
-            if not result:
-                return information
-            if "entries" not in result:
-                print(result["title"], file=stderr)
-                mapping = {}
-                for url in sorted(result["formats"], key=lambda x: int(x["format_id"])):
-                    mapping[url['format_id']] = url['url']
-                    # print(f"{url['format']} {url['url']}", file=stderr)
-                information.append(mapping)
-            else:
-                for entries in result["entries"]:
-                    mapping = {}
-                    print(entries["title"], file=stderr)
-                    for url in sorted(entries["formats"], key=lambda x: int(x["format_id"])):
-                        mapping[url['format_id']] = url['url']
-                        # print(f"{url['format']} {url['url']}", file=stderr)
-                    information.append(mapping)
-                    print(file=stderr)
-        return information
-
-    if p is None or len(p) < 3:
-        return
-
-    player = p[0]
-
-    # noinspection SpellCheckingInspection
-    @player.python_stream("abcd")
-    def reader():
-        """
-        Reading MPV
-
-        :return: ttt
-        """
-
-        information = ytdl_info()
-        if not information:
-            return
-
-        for format_list in information:
-            nonlocal process
-            video = ffmpeg.input(format_list["137"], fflags="discardcorrupt")
-            audio = ffmpeg.input(format_list["140"], fflags="discardcorrupt")
-            process = ffmpeg.output(video, audio, "pipe:", codec="copy", format="hls"). \
-                global_args("-hide_banner", "-loglevel", "warning"). \
-                run_async(pipe_stdout=True)
-            buf = process.stdout
-            while True:
-                ttt = buf.read(1024)
-                if not ttt:
-                    break
-                yield ttt
-            del video, audio, buf
-
-    process = None
-    loop = p[1]
-    loop(p, "python://abcd")
-    if hasattr(process, "terminate"):
-        process.terminate()
-        print("FFmpeg Terminate", file=stderr)
-    player.quit()
-    player.terminate()
-'''
 
 
 # noinspection SpellCheckingInspection
@@ -213,8 +114,6 @@ def setup():
         """
 
         SetConsoleTitle(player.media_title)
-        #
-        # windll.kernel32.SetConsoleTitleW(player.media_title)
 
     event_handler.append(test_handler)
 
@@ -307,20 +206,9 @@ def setup():
             def finder(hwnd, lp):
                 tid, pid = GetWindowThreadProcessId(hwnd)
                 if pid == lp:
-                    SetWindowPos(hwnd, hwnd_value, 0, 0, 0, 0, 3)
+                    SetWindowPos(hwnd, hwnd_value, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)
                     SetForegroundWindow(hwnd)
 
-            # result = DWORD()
-            # windll.user32.GetWindowThreadProcessId(hwnd, byref(result))
-            # if result.value == lp:
-            #     print(hwnd, file=stderr)
-            #     windll.user32.SetWindowPos(hwnd, HWND(hwnd_value), 0, 0, 0, 0, 3)
-            #     windll.user32.SetForegroundWindow(hwnd)
-            #     return False
-            # else:
-            #     return True
-
-            # windll.user32.EnumWindows(WINFUNCTYPE(BOOL, HWND, LPARAM)(finder), getpid())
             EnumWindows(finder, GetCurrentProcessId())
 
         while not player.core_shutdown:

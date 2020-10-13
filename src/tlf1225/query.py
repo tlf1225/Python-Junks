@@ -18,6 +18,7 @@ if __name__ == '__main__':
             tp, res_id = unpack(">ci", packet4[:5])
             if session_id == res_id:
                 info1 = [c for c in packet4[5:].split(b'\x00') if c]
+                # noinspection SpellCheckingInspection
                 print(f"Motd: {info1[0].decode()} Type: {info1[1].decode()} Map: {info1[2].decode()}")
                 print(f"Now Player / Max Player: {info1[3].decode()} / {info1[4].decode()}")
                 print(f"PORT: {unpack('<h', info1[5][:2])[0]} IP: {info1[5][2:].decode()}")

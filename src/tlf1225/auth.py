@@ -76,35 +76,6 @@ def two_auth(key="HQKESDOB2WJO2USF7NWIO6GMH4"):
     SetClipboardData(CF_TEXT, current)
     CloseClipboard()
 
-    """
-    windll.kernel32.GlobalAlloc.argtypes = (UINT, c_size_t)
-    windll.kernel32.GlobalAlloc.restype = HGLOBAL
-    handle = windll.kernel32.GlobalAlloc(0x42, len(current) + 2)
-
-    windll.kernel32.GlobalLock.restype = LPVOID
-    windll.kernel32.GlobalLock.argtypes = (HGLOBAL,)
-    text = windll.kernel32.GlobalLock(handle)
-
-    memmove(text, current, len(current))
-
-    windll.kernel32.GlobalUnlock.restype = BOOL
-    windll.kernel32.GlobalUnlock.argtypes = (HGLOBAL,)
-    windll.kernel32.GlobalUnlock(handle)
-
-    windll.user32.OpenClipboard(0)
-    windll.user32.EmptyClipboard()
-
-    windll.user32.SetClipboardData.restype = HANDLE
-    windll.user32.SetClipboardData.argtypes = (UINT, HANDLE)
-    windll.user32.SetClipboardData(1, handle)
-
-    windll.user32.CloseClipboard()
-
-    windll.kernel32.GlobalFree.restype = HGLOBAL
-    windll.kernel32.GlobalFree.argtypes = (HGLOBAL,)
-    windll.kernel32.GlobalFree(handle)
-    """
-
 
 if __name__ == '__main__':
     two_auth()
