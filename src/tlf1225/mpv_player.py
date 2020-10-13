@@ -31,7 +31,6 @@ try:
     environ["PATH"] = pathsep.join(sorted(set(path_list), key=path_list.index))
     from mpv import MPV
     from youtube_dl import YoutubeDL
-    import ffmpeg
 except (OSError, NameError, ImportError) as fail:
     print(fail, file=stderr)
 
@@ -54,6 +53,7 @@ def update_check():
     return down_youtube_dl, down_mpv
 
 
+'''
 # noinspection SpellCheckingInspection
 def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
     """
@@ -63,7 +63,8 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
     :param url: Youtube Link
     :return: None
     """
-
+    import ffmpeg
+    
     # noinspection SpellCheckingInspection
     def ytdl_info() -> list:
         """
@@ -147,6 +148,7 @@ def load_with_ffmpeg(p=None, url="https://www.youtube.com/watch?v=YoPx9EhxR0g"):
         print("FFmpeg Terminate", file=stderr)
     player.quit()
     player.terminate()
+'''
 
 
 # noinspection SpellCheckingInspection
