@@ -36,11 +36,12 @@ class Decrypt:
 
 def work(key: str):
     d = Decrypt(list(unquote(key)))
-    d.sp(3)
+    d.swap(62)
     d.rev()
-    d.swap(1)
-    d.swap(3)
-    d.swap(51)
+    d.sp(1)
+    d.swap(45)
+    d.rev()
+    d.sp(2)
     d.rev()
     return quote(d.result())
 
