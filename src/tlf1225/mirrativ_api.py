@@ -1,9 +1,10 @@
 from code import interact
 from datetime import datetime, timezone, timedelta
 from json import loads, dumps
+from urllib.request import urlopen
+
 # noinspection PyUnresolvedReferences
 from mpv_player import setup
-from urllib.request import urlopen
 
 
 # noinspection SpellCheckingInspection
