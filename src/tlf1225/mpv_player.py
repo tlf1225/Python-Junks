@@ -104,6 +104,7 @@ def setup():
     player.volume = 50
     player.shuffle = True
     player.config_dir = path[0]
+    player.input_ipc_server = r"\\.\pipe\tlf1225"
 
     @player.event_callback("file-loaded")
     def test_handler(_):
