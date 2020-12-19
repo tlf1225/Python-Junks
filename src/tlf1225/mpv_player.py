@@ -26,11 +26,12 @@ try:
     for act_dir in path:
         if isdir(act_dir):
             for working in scandir(act_dir):
-                if "ffmpeg-latest" in working.name:
-                    path_list.insert(-1, f"{working.path}{sep}bin")
+                name = getattr(working, "name")
+                if "ffmpeg-latest" in name:
+                    path_list.insert(-1, f"{name}{sep}bin")
                 # noinspection SpellCheckingInspection
-                if "libmpv" in working.name:
-                    path_list.insert(-1, working.path)
+                if "libmpv" in name:
+                    path_list.insert(-1, name)
 
     environ["PATH"] = pathsep.join(sorted(set(path_list), key=path_list.index))
     from mpv import MPV
@@ -93,6 +94,7 @@ def setup():
     player.vo = "gpu,direct3d,sdl"
     player.ao = "wasapi,openal,sdl"
     player.hwdec = "auto-copy-safe"
+    player.gpu_api = "auto"
     player.loop_playlist = "inf"
     player.geometry = player.autofit = "1280x720"
     player.af = "lavfi=[dynaudnorm=b=1:c=1:g=11:r=1.0],asoftclip=type=tanh"
