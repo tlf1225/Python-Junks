@@ -20,7 +20,8 @@ def search_background():
                 if shell:
                     view = FindWindowEx(shell, None, "SysListView32", "FolderView")
                     if view:
-                        result = (cls, wt, a, shell, view)
+                        worker = FindWindowEx(None, a, "WorkerW", None)
+                        result = (cls, wt, a, shell, view, worker)
                         return False
             return EnumChildWindows(a, test, b + 1)
 
