@@ -8,7 +8,7 @@ from win32process import GetCurrentProcessId, GetWindowThreadProcessId
 
 
 def search_background():
-    result = 0
+    result = ()
     try:
         def test(a, b):
             nonlocal result
@@ -20,8 +20,7 @@ def search_background():
                 if shell:
                     view = FindWindowEx(shell, None, "SysListView32", "FolderView")
                     if view:
-                        print(view)
-                        result = view
+                        result = (cls, wt, a, shell, view)
                         return False
             return EnumChildWindows(a, test, b + 1)
 
@@ -52,4 +51,4 @@ def topmost(hwnd_value):
 
 
 if __name__ == '__main__':
-    search_background()
+    print(search_background())
