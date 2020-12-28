@@ -15,11 +15,8 @@ from time import sleep
 from urllib.request import urlopen
 from xml.etree.ElementTree import fromstring
 
-# noinspection PyUnresolvedReferences
-from win32con import HWND_TOPMOST, HWND_NOTOPMOST, SWP_NOMOVE, SWP_NOSIZE
 from win32console import SetConsoleTitle
-from win32gui import GetDesktopWindow, EnumWindows, SetWindowPos, SetForegroundWindow
-from win32process import GetCurrentProcessId, GetWindowThreadProcessId
+from win32gui import GetDesktopWindow
 
 try:
     path_list = environ["PATH"].split(pathsep)
@@ -175,7 +172,6 @@ def setup():
                 player.playlist_pos = 0
 
             if f & 0x4:
-                # player.command("cycle-values", "wid", windll.user32.GetDesktopWindow(), -1)
                 player.command("cycle-values", "wid", GetDesktopWindow(), -1)
 
             if f & 0x8:
@@ -203,16 +199,6 @@ def setup():
             # self.parser = ArgumentParser(prog="mpv", description="mpv parser")
             # self.parser.add_argument("type", help="execute type")
             return input(prompt)
-
-        # noinspection PyTypeChecker, SpellCheckingInspection
-        def topmost(hwnd_value):
-            def finder(hwnd, lp):
-                tid, pid = GetWindowThreadProcessId(hwnd)
-                if pid == lp:
-                    SetWindowPos(hwnd, hwnd_value, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)
-                    SetForegroundWindow(hwnd)
-
-            EnumWindows(finder, GetCurrentProcessId())
 
         while not player.core_shutdown:
             loc = locals().copy()

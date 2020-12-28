@@ -26,4 +26,4 @@ def main(url="https://www.youtube.com/playlist?list=PLfwcn8kB8EmMQSt88kswhY-QqJt
 
 
 if __name__ == '__main__':
-    main(url="https://www.youtube.com/watch?v=WJ16v-hD1mw", ffmpeg="ffmpeg-latest-win64-shared/bin")
+    main(url="https://www.youtube.com/watch?v=WJ16v-hD1mw", ffmpeg="D:/IdeaC/")
