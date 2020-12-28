@@ -95,7 +95,7 @@ def setup():
     player.loop_playlist = "inf"
     player.geometry = player.autofit = "1280x720"
     player.af = "lavfi=[dynaudnorm=b=1:c=1:g=11:r=1.0],asoftclip=type=tanh"
-    player.vf = "lavfi=[fade=in:0:60]"
+    player.vf = "lavfi=[fade=in:0:60]"  # [pad=h=ih+35]
     player.input_media_keys = True
     player.ytdl_format = "bestvideo+bestaudio/best"
     player.ytdl_raw_options = "no-cache-dir="

@@ -52,4 +52,5 @@ def topmost(hwnd_value):
 
 
 if __name__ == '__main__':
+    print(default_background())
     print(search_background())
