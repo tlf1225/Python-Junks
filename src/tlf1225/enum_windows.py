@@ -1,10 +1,12 @@
 # noinspection PyUnresolvedReferences
-# from ctypes import windll
+from ctypes import windll
+
+# noinspection PyUnresolvedReferences
 from pywintypes import error as win_exception
 # noinspection PyUnresolvedReferences
-from win32con import HWND_TOPMOST, HWND_NOTOPMOST, SWP_NOMOVE, SWP_NOSIZE, WM_KEYUP, WM_KEYDOWN
+from win32con import HWND_TOPMOST, HWND_NOTOPMOST, SWP_NOMOVE, SWP_NOSIZE
 from win32gui import FindWindow, FindWindowEx, EnumWindows, EnumChildWindows, GetClassName, GetWindowText, SendMessageTimeout, SetWindowPos, \
-    SetForegroundWindow, EnumThreadWindows, SendMessage
+    SetForegroundWindow, EnumThreadWindows
 from win32process import GetCurrentProcessId, GetWindowThreadProcessId
 
 
@@ -66,14 +68,6 @@ def topmost(hwnd_value: int):
             SetWindowPos(hwnd, hwnd_value, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)
 
     EnumWindows(finder, GetCurrentProcessId())
-
-
-def key_send(ids: int, key: list):
-    for i in key:
-        SendMessage(ids, WM_KEYDOWN, i, 0)
-
-    for i in key:
-        SendMessage(ids, WM_KEYUP, i, 0)
 
 
 if __name__ == '__main__':
