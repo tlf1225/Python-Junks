@@ -1,5 +1,6 @@
 # noinspection PyUnresolvedReferences
 from ctypes import windll
+from sys import stderr
 
 # noinspection PyUnresolvedReferences
 from pywintypes import error as win_exception
@@ -12,7 +13,7 @@ from win32process import GetCurrentProcessId, GetWindowThreadProcessId
 
 def enum_info(hwnd: int, param):
     cls, wt = GetClassName(hwnd), GetWindowText(hwnd)
-    print("\t" * param + f"H: {hwnd}, C: {cls}, T: {wt}")
+    print("\t" * param + f"H: {hwnd}, C: {cls}, T: {wt}", file=stderr)
     return EnumChildWindows(hwnd, enum_info, param + 1)
 
 
@@ -40,7 +41,7 @@ def search_background():
         def worker(hwnd: int, param):
             nonlocal result
             cls, wt = GetClassName(hwnd), GetWindowText(hwnd)
-            print("\t" * param + f"H: {hwnd}, C: {cls}, T: {wt}")
+            print("\t" * param + f"H: {hwnd}, C: {cls}, T: {wt}", file=stderr)
             if cls == "WorkerW":
                 shell = FindWindowEx(hwnd, None, "SHELLDLL_DefView", None)
                 if shell:
