@@ -4,7 +4,7 @@ from json import loads, dumps
 from urllib.request import urlopen
 
 # noinspection PyUnresolvedReferences
-from mpv_player import setup
+from tlf1225.mpv.player import setup
 
 
 # noinspection SpellCheckingInspection

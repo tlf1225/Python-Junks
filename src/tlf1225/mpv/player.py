@@ -18,6 +18,8 @@ from xml.etree.ElementTree import fromstring
 from win32console import SetConsoleTitle
 from win32gui import GetDesktopWindow
 
+from tlf1225.mpv.back import search_background
+
 try:
     path_list = environ["PATH"].split(pathsep)
     for act_dir in path:
@@ -86,24 +88,11 @@ def setup():
             log.truncate(0)
             log.seek(0)
 
-    player = MPV(loglevel="warn", log_handler=log_mpv, ytdl=True, input_default_bindings=True, input_vo_keyboard=True, osc=True)
-
-    player.vo = "gpu,direct3d,sdl"
-    player.ao = "wasapi,openal,sdl"
-    player.hwdec = "auto-copy-safe"
-    player.gpu_api = "auto"
-    player.loop_playlist = "inf"
-    player.geometry = player.autofit = "1280x720"
-    player.af = "lavfi=[dynaudnorm=b=1:c=1:g=11:r=1.0],asoftclip=type=tanh"
-    player.vf = "lavfi=[fade=in:0:60]"  # [pad=h=ih+35]
-    player.input_media_keys = True
-    player.ytdl_format = "bestvideo+bestaudio/best"
-    player.ytdl_raw_options = "no-cache-dir="
-    player.volume_max = 100
-    player.volume = 50
-    player.shuffle = True
-    player.config_dir = path[0]
-    player.input_ipc_server = r"\\.\pipe\tlf1225"
+    player = MPV(loglevel="warn", log_handler=log_mpv, ytdl=True, input_default_bindings=True, input_vo_keyboard=True, input_media_keys=True,
+                 osc=True, vo="gpu,direct3d,sdl", ao="wasapi,openal,sdl", hwdec="auto-copy-safe", gpu_api="auto", loop_playlist="inf", volume_max=100,
+                 shuffle=True, config_dir=path[0], input_ipc_server=r"\\.\pipe\tlf1225", geometry="1280x720", autofit="1280x720",
+                 ytdl_format="bestvideo+bestaudio/best", ytdl_raw_options="no-cache-dir=",
+                 af="lavfi=[dynaudnorm=b=1:c=1:g=11:r=1.0],asoftclip=type=tanh", vf="lavfi=[fade=in:0:60,pad=h=ih+40*ih/720]")
 
     @player.event_callback("file-loaded")
     def test_handler(_):
@@ -152,41 +141,45 @@ def setup():
                     ('BV1Es41127k8', 'BV1Zs411C7K8', 'BV1ds411C7pL')]
 
         # noinspection SpellCheckingInspection
-        def start(f):
+        def start(de=False, to=False, desk=False, bind=False, prog=False, osc=False):
             """
-            Predefined Start
+            Simple Start
 
-            :arg f: flag
-            :type: list or str
+            :param de: Default Playlist
+            :param to: Touhou Playlist
+            :param desk: Desktop Window
+            :param bind: Key Binding list
+            :param prog: Progress Bar
+            :param osc: OSC Configure
             :return None
             """
 
-            if f & 0x1:
+            if de:
                 player.play(url)
                 sleep(3)
 
-            if f & 0x2:
+            if to:
                 for pid in playlist:
                     player.playlist_append(pid)
                 player.playlist_shuffle()
                 player.playlist_pos = 0
 
-            if f & 0x4:
-                player.command("cycle-values", "wid", GetDesktopWindow(), -1)
+            if desk:
+                player.command("cycle-values", "wid", GetDesktopWindow(), search_background()[7], -1)
 
-            if f & 0x8:
+            if bind:
                 for x in player.input_bindings:
                     for i, j in x.items():
                         print(f"{i}: {j}", file=stderr)
 
-            if f & 0x10:
+            if prog:
                 player.command("osd-bar", "show-progress")
                 player.script_message_to("stats", "display-stats")
                 # player.script_message_to("stats", "display-stats-toggle")
                 # player.command("cycle-values", "osd-level", 3, 1)
                 print(player.time_pos, file=stderr)
 
-            if f & 0x20:
+            if osc:
                 player.osd_duration = 3000
                 player.script_opts = "osc-hidetimeout=3000,osc-fadeduration=1000,osc-visibility=always"
                 player.cycle("input-default-bindings")
@@ -232,11 +225,10 @@ def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
     sleep(1)
     loop(url)
     for x in event_handler:
-        for z in [y for y in dir(x) if y.startswith("unregister")]:
-            test = getattr(x, z)
-            if callable(test):
-                print(f"{x}.{z} Unregistering", file=stderr)
-                test()
+        for func in [z for z in [getattr(x, y) for y in dir(x) if y.startswith("unregister")] if callable(z)]:
+            func()
+            print(f"{func} Unregistering", file=stderr)
+
     event_handler.clear()
     player.quit()
     player.terminate()
