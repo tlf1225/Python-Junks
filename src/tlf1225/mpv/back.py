@@ -7,19 +7,27 @@ from pywintypes import error as win_exception
 # noinspection PyUnresolvedReferences
 from win32con import HWND_TOPMOST, HWND_NOTOPMOST, SWP_NOMOVE, SWP_NOSIZE
 from win32gui import FindWindow, FindWindowEx, EnumWindows, EnumChildWindows, GetClassName, GetWindowText, SendMessageTimeout, SetWindowPos, \
-    SetForegroundWindow, EnumThreadWindows
+    SetForegroundWindow, EnumThreadWindows, GetParent
 from win32process import GetCurrentProcessId, GetWindowThreadProcessId
 
 
-def enum_info(hwnd: int, param):
+def enum_info(hwnd: int, param: tuple):
     cls, wt = GetClassName(hwnd), GetWindowText(hwnd)
-    print("\t" * param + f"H: {hwnd}, C: {cls}, T: {wt}", file=stderr)
-    return EnumChildWindows(hwnd, enum_info, param + 1)
+    print("\t" * param[0] + f"H: {hwnd}, C: {cls}, T: {wt}", file=stderr)
+
+    if not param[1]:
+        EnumChildWindows(hwnd, enum_info, (param[0] + 1, hwnd))
+        return True
+    elif GetParent(hwnd) == param[1]:
+        return True
+    else:
+        EnumChildWindows(hwnd, enum_info, (param[0] + 1, hwnd))
+        return False
 
 
 def enum_window():
     try:
-        EnumWindows(enum_info, 0)
+        EnumWindows(enum_info, (0, None))
     except win_exception as e:
         print(e.strerror)
 
