@@ -77,9 +77,20 @@ def topmost(enum=enum_windows(), c=0, hwnd_value: int = -1, cl: str = "", wtx: s
                 SetForegroundWindow(i)
                 SetWindowPos(i, hwnd_value, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)
                 break
-
     else:
         print("Not Found", file=stderr, end='\r')
+
+
+def search(enum=enum_windows(), c=0, cl: str = "", wtx: str = ""):
+    for i in enum:
+        if isinstance(i, tuple):
+            search(i, c + 1, cl, wtx)
+        else:
+            cls, wt = GetClassName(i), GetWindowText(i)
+            if cls.find(cl) > 0 or wt.find(wtx) > 0:
+                print(f"Found {i}")
+    else:
+        print("...", file=stderr, end='\r')
 
 
 def show_enum_windows(enum=enum_windows(), c=0):
