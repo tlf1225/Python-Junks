@@ -66,18 +66,20 @@ def search_background():
 
 
 # noinspection SpellCheckingInspection
-def topmost(enum=enum_windows(), c=0, hwnd_value: int = -1, cl: str = None, wtx: str = None):
+def topmost(enum=enum_windows(), c=0, hwnd_value: int = -1, cl: str = "", wtx: str = ""):
     for i in enum:
         if isinstance(i, tuple):
-            show_enum_windows(i, c + 1)
+            topmost(i, c + 1, hwnd_value, cl, wtx)
         else:
             cls, wt = GetClassName(i), GetWindowText(i)
-            if cls == cl or wt == wtx:
+            if cls.find(cl) > 0 or wt.find(wtx) > 0:
+                print(f"Found {i}")
                 SetForegroundWindow(i)
                 SetWindowPos(i, hwnd_value, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)
                 break
+
     else:
-        print("Not Found", file=stderr)
+        print("Not Found", file=stderr, end='\r')
 
 
 def show_enum_windows(enum=enum_windows(), c=0):
@@ -87,7 +89,7 @@ def show_enum_windows(enum=enum_windows(), c=0):
         else:
             print('\t' * (c - 1) + f"H: {i}, C: {GetClassName(i)}, T: {GetWindowText(i)}", file=stderr)
     else:
-        print("That's all", file=stderr)
+        print('-' * 4 * (c - 1), file=stderr)
 
 
 if __name__ == '__main__':
