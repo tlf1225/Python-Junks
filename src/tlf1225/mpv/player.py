@@ -1,11 +1,10 @@
 """
 This file is implemented with mpv.
 """
-# noinspection PyUnresolvedReferences
-from argparse import ArgumentParser
+# from argparse import ArgumentParser
 from code import interact
-# noinspection PyUnresolvedReferences
-from getopt import getopt
+from ctypes import windll
+# from getopt import getopt
 from io import StringIO
 from os import environ, pathsep, scandir, sep
 from os.path import isdir
@@ -14,11 +13,6 @@ from sys import argv, path, stderr
 from time import sleep
 from urllib.request import urlopen
 from xml.etree.ElementTree import fromstring
-
-from win32console import SetConsoleTitle
-from win32gui import GetDesktopWindow
-
-from tlf1225.mpv.back import search_background
 
 try:
     path_list = environ["PATH"].split(pathsep)
@@ -34,7 +28,6 @@ try:
 
     environ["PATH"] = pathsep.join(sorted(set(path_list), key=path_list.index))
     from mpv import MPV
-    from youtube_dl import YoutubeDL
 except (OSError, NameError, ImportError) as fail:
     print(fail, file=stderr)
 
@@ -102,7 +95,7 @@ def setup():
         :return: None
         """
 
-        SetConsoleTitle(player.media_title)
+        windll.kernel32.SetConsoleTitleW(player.media_title)
 
     event_handler.append(test_handler)
 
@@ -141,13 +134,12 @@ def setup():
                     ('BV1Es41127k8', 'BV1Zs411C7K8', 'BV1ds411C7pL')]
 
         # noinspection SpellCheckingInspection
-        def start(de=False, to=False, desk=False, bind=False, prog=False, osc=False):
+        def start(de=False, to=False, bind=False, prog=False, osc=False):
             """
             Simple Start
 
             :param de: Default Playlist
             :param to: Touhou Playlist
-            :param desk: Desktop Window
             :param bind: Key Binding list
             :param prog: Progress Bar
             :param osc: OSC Configure
@@ -163,9 +155,6 @@ def setup():
                     player.playlist_append(pid)
                 player.playlist_shuffle()
                 player.playlist_pos = 0
-
-            if desk:
-                player.command("cycle-values", "wid", GetDesktopWindow(), search_background()[7], -1)
 
             if bind:
                 for x in player.input_bindings:
