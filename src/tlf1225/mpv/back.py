@@ -24,6 +24,16 @@ def enum_child(hwnd: int, param: tuple = (int, list)):
     return True
 
 
+def enum_thread(hwnd: int, param: tuple = (int, list)):
+    child = []
+    EnumChildWindows(hwnd, enum_child, (hwnd, child))
+    if child:
+        param[1].append((hwnd, tuple(child)))
+    else:
+        param[1].append(hwnd)
+    return True
+
+
 def enum_windows():
     try:
         parent = []
@@ -48,7 +58,7 @@ def search_background():
     tid, pid = GetWindowThreadProcessId(pro)
     result = [(pid, tid), []]
     try:
-        EnumThreadWindows(tid, enum_child, (-1, result[1]))
+        EnumThreadWindows(tid, enum_thread, (pro, result[1]))
     except win_exception as e:
         print(e.strerror)
 
