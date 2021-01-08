@@ -85,7 +85,7 @@ def setup():
                  osc=True, vo="gpu,direct3d,sdl", ao="wasapi,openal,sdl", hwdec="auto-copy-safe", gpu_api="auto", loop_playlist="inf", volume_max=100,
                  shuffle=True, config_dir=path[0], input_ipc_server=r"\\.\pipe\tlf1225", geometry="1280x720", autofit="1280x720",
                  ytdl_format="bestvideo+bestaudio/best", ytdl_raw_options="no-cache-dir=",
-                 af="lavfi=[dynaudnorm=b=1:c=1:g=11:r=1.0],asoftclip=type=tanh", vf="lavfi=[fade=in:0:60,pad=h=ih+40*ih/720]")
+                 af="lavfi=[dynaudnorm=b=1:c=1:g=11:r=1.0],asoftclip=type=tanh", vf="lavfi=[fade=in:0:60,pad=0:ih+80:-1:-1:0x008fbf:0:16/9]")
 
     @player.event_callback("file-loaded")
     def test_handler(_):
