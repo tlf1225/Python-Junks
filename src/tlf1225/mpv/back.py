@@ -11,23 +11,35 @@ from win32gui import FindWindow, FindWindowEx, EnumWindows, EnumChildWindows, Ge
 from win32process import GetCurrentProcessId, GetWindowThreadProcessId
 
 
-def enum_info(hwnd: int, param: tuple):
-    cls, wt = GetClassName(hwnd), GetWindowText(hwnd)
-    print("\t" * param[0] + f"H: {hwnd}, C: {cls}, T: {wt}", file=stderr)
+def enum_parent(hwnd: int, param: list):
+    param.append(hwnd)
+    return True
 
-    if not param[1]:
-        EnumChildWindows(hwnd, enum_info, (param[0] + 1, hwnd))
-        return True
-    elif GetParent(hwnd) == param[1]:
-        return True
+
+def enum_child(hwnd: int, param: tuple = (int, list)):
+    if GetParent(hwnd) == param[0]:
+        param[1].append(hwnd)
     else:
-        EnumChildWindows(hwnd, enum_info, (param[0] + 1, hwnd))
-        return False
+        child = []
+        EnumChildWindows(hwnd, enum_child, (hwnd, child))
+        if child:
+            param[1].append((hwnd, tuple(child)))
+    return True
 
 
-def enum_window():
+def enum_windows():
     try:
-        EnumWindows(enum_info, (0, None))
+        parent = []
+        EnumWindows(enum_parent, parent)
+        result = []
+        for i in parent:
+            child = []
+            EnumChildWindows(i, enum_child, (i, child))
+            if child:
+                result.append((i, tuple(child)))
+            else:
+                result.append(i)
+        return result
     except win_exception as e:
         print(e.strerror)
 
@@ -79,9 +91,17 @@ def topmost(hwnd_value: int):
     EnumWindows(finder, GetCurrentProcessId())
 
 
+def show_enum_windows(enum=None, c=0):
+    for i in enum:
+        if isinstance(i, tuple):
+            show_enum_windows(i, c + 1)
+        else:
+            print('\t' * (c - 1) + f"H: {i}, C: {GetClassName(i)}, T: {GetWindowText(i)}")
+
+
 if __name__ == '__main__':
     # print(default_info())
-    # print(enum_window())
+    show_enum_windows(enum_windows())
     res = search_background()
     print(res)
     print(FindWindowEx(res[7], None, "mpv", None))
