@@ -1,12 +1,9 @@
-# noinspection PyUnresolvedReferences
-from ctypes import windll
 from sys import stderr
 
 # noinspection PyUnresolvedReferences
 from pywintypes import error as win_exception
-# noinspection PyUnresolvedReferences
-from win32con import HWND_TOPMOST, HWND_NOTOPMOST, SWP_NOMOVE, SWP_NOSIZE
-from win32gui import FindWindow, FindWindowEx, EnumWindows, EnumChildWindows, GetClassName, GetWindowText, SendMessageTimeout, SetWindowPos, \
+from win32con import SWP_NOMOVE, SWP_NOSIZE
+from win32gui import FindWindow, EnumWindows, EnumChildWindows, GetClassName, GetWindowText, SendMessageTimeout, SetWindowPos, \
     SetForegroundWindow, EnumThreadWindows, GetParent
 from win32process import GetWindowThreadProcessId
 
@@ -44,13 +41,6 @@ def enum_windows():
         print(e.strerror)
 
 
-def default_info():
-    pro = FindWindow("Progman", "Program Manager")
-    shell = FindWindowEx(pro, None, "SHELLDLL_DefView", None)
-    view = FindWindowEx(shell, None, "SysListView32", "FolderView")
-    return pro, shell, view
-
-
 def search_background():
     # pro = windll.user32.GetShellWindow()
     pro = FindWindow("Progman", "Program Manager")
@@ -66,34 +56,30 @@ def search_background():
 
 
 # noinspection SpellCheckingInspection
-def topmost(enum=enum_windows(), c=0, hwnd_value: int = -1, cl: str = "", wtx: str = ""):
+def topmost(enum: tuple = enum_windows(), c: int = 0, hwnd_value: int = -1, cl: str = None, wtx: str = None):
     for i in enum:
         if isinstance(i, tuple):
             topmost(i, c + 1, hwnd_value, cl, wtx)
         else:
             cls, wt = GetClassName(i), GetWindowText(i)
-            if cls.find(cl) > 0 or wt.find(wtx) > 0:
+            if cl and cls.find(cl) >= 0 or wtx and wt.find(wtx) >= 0:
                 print(f"Found {i}")
                 SetForegroundWindow(i)
                 SetWindowPos(i, hwnd_value, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)
                 break
-    else:
-        print("Not Found", file=stderr, end='\r')
 
 
-def search(enum=enum_windows(), c=0, cl: str = "", wtx: str = ""):
+def search(enum: tuple = enum_windows(), c: int = 0, cl: str = None, wtx: str = None):
     for i in enum:
         if isinstance(i, tuple):
             search(i, c + 1, cl, wtx)
         else:
             cls, wt = GetClassName(i), GetWindowText(i)
-            if cls.find(cl) > 0 or wt.find(wtx) > 0:
-                print(f"Found {i}")
-    else:
-        print("...", file=stderr, end='\r')
+            if cl and cls.find(cl) >= 0 or wtx and wt.find(wtx) >= 0:
+                print(f"Found {i}, {cls}, {wt}")
 
 
-def show_enum_windows(enum=enum_windows(), c=0):
+def show_enum_windows(enum: tuple = enum_windows(), c: int = 0):
     for i in enum:
         if isinstance(i, tuple):
             show_enum_windows(i, c + 1)
