@@ -104,6 +104,8 @@ def setup():
     def test2_handler(_, *arg):
         if all(arg):
             player.command("vf", "toggle", f"@temp:lavfi=[fade=out:{arg[0] - 60}:60]")
+        else:
+            player.command("vf", "remove", "@temp")
 
     event_handler.append(test2_handler)
 
