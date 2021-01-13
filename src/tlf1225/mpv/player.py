@@ -85,7 +85,8 @@ def setup():
                  osc=True, vo="gpu,direct3d,sdl", ao="wasapi,openal,sdl", hwdec="auto-copy-safe", gpu_api="auto", loop_playlist="inf", volume_max=100,
                  shuffle=True, config_dir=path[0], input_ipc_server=r"\\.\pipe\tlf1225", geometry="1280x720", autofit="1280x720",
                  ytdl_format="bestvideo+bestaudio/best", ytdl_raw_options="no-cache-dir=",
-                 af="lavfi=[dynaudnorm=b=1:c=1:g=11:r=1.0],asoftclip=type=tanh", vf="lavfi=[fade=in:0:60,pad=0:ih+80:-1:-1:0x008fbf:0:16/9]")
+                 af="@default:lavfi=[dynaudnorm=b=1:c=1:g=11:r=1.0],asoftclip=type=tanh",
+                 vf="@default:!lavfi=[fade=in:0:60,pad=0:ih+80:-1:-1:0x008fbf:0:16/9]")
 
     @player.event_callback("file-loaded")
     def test_handler(_):
@@ -98,6 +99,13 @@ def setup():
         windll.kernel32.SetConsoleTitleW(player.media_title)
 
     event_handler.append(test_handler)
+
+    @player.property_observer("estimated-frame-count")
+    def test2_handler(_, *arg):
+        if all(arg):
+            player.command("vf", "toggle", f"@temp:lavfi=[fade=out:{arg[0] - 60}:60]")
+
+    event_handler.append(test2_handler)
 
     # noinspection SpellCheckingInspection
     def loop(url=None):
@@ -214,9 +222,9 @@ def main(url="ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"):
     sleep(1)
     loop(url)
     for x in event_handler:
-        for func in [z for z in [getattr(x, y) for y in dir(x) if y.startswith("unregister")] if callable(z)]:
+        for func in [z for z in [getattr(x, y) for y in dir(x) if y.startswith("un")] if callable(z)]:
             func()
-            print(f"{func} Unregistering", file=stderr)
+            print(f"Unregister: {func}", file=stderr)
 
     event_handler.clear()
     player.quit()
