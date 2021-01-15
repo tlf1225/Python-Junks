@@ -8,12 +8,12 @@ from win32gui import FindWindow, EnumWindows, EnumChildWindows, GetClassName, Ge
 from win32process import GetWindowThreadProcessId
 
 
-def enum_parent(hwnd: int, param: list):
+def enum_parent(hwnd: int, param: list) -> bool:
     param.append(hwnd)
     return True
 
 
-def enum_child(hwnd: int, param: tuple = (int, list)):
+def enum_child(hwnd: int, param: tuple = (int, list)) -> bool:
     if GetParent(hwnd) == param[0]:
         param[1].append(hwnd)
     else:
@@ -24,7 +24,7 @@ def enum_child(hwnd: int, param: tuple = (int, list)):
     return True
 
 
-def enum_thread(hwnd: int, param: tuple = (int, list)):
+def enum_thread(hwnd: int, param: tuple = (int, list)) -> bool:
     child = []
     EnumChildWindows(hwnd, enum_child, (hwnd, child))
     if child:
@@ -34,7 +34,7 @@ def enum_thread(hwnd: int, param: tuple = (int, list)):
     return True
 
 
-def enum_windows():
+def enum_windows() -> tuple:
     try:
         parent = []
         EnumWindows(enum_parent, parent)
@@ -51,27 +51,28 @@ def enum_windows():
         print(e.strerror)
 
 
-def search_background():
-    # pro = windll.user32.GetShellWindow()
+def search_background() -> tuple:
+    # noinspection SpellCheckingInspection
     pro = FindWindow("Progman", "Program Manager")
     SendMessageTimeout(pro, 0x52C, None, None, 0, 1000)
     tid, pid = GetWindowThreadProcessId(pro)
-    result = [(pid, tid), []]
+    result = [(pid, tid)]
+    child = []
     try:
-        EnumThreadWindows(tid, enum_thread, (pro, result[1]))
+        EnumThreadWindows(tid, enum_thread, (pro, child))
     except win_exception as e:
         print(e.strerror)
-
-    return result
+    result.append(tuple(child))
+    return tuple(result)
 
 
 # noinspection SpellCheckingInspection
-def topmost(enum: tuple = enum_windows(), c: int = 0, hwnd_value: int = -1, cl: str = None, wtx: str = None):
+def topmost(enum: tuple = enum_windows(), c: int = 0, hwnd_value: int = -1, cl: str = None, wtx: str = None) -> None:
     for i in enum:
         if isinstance(i, tuple):
             topmost(i, c + 1, hwnd_value, cl, wtx)
         else:
-            cls, wt = GetClassName(i), GetWindowText(i)
+            cls, wt = query_info(i)
             if cl and cls.find(cl) >= 0 or wtx and wt.find(wtx) >= 0:
                 print(f"Found {i}")
                 SetForegroundWindow(i)
@@ -79,17 +80,21 @@ def topmost(enum: tuple = enum_windows(), c: int = 0, hwnd_value: int = -1, cl: 
                 break
 
 
-def search(enum: tuple = enum_windows(), c: int = 0, cl: str = None, wtx: str = None):
+def query_info(quest: int) -> tuple:
+    return GetClassName(quest), GetWindowText(quest)
+
+
+def search(enum: tuple = enum_windows(), c: int = 0, cl: str = None, wtx: str = None) -> None:
     for i in enum:
         if isinstance(i, tuple):
             search(i, c + 1, cl, wtx)
         else:
-            cls, wt = GetClassName(i), GetWindowText(i)
+            cls, wt = query_info(i)
             if cl and cls.find(cl) >= 0 or wtx and wt.find(wtx) >= 0:
                 print(f"Found {i}, {cls}, {wt}")
 
 
-def show_enum_windows(enum: tuple = enum_windows(), c: int = 0):
+def show_enum_windows(enum: tuple = enum_windows(), c: int = 0) -> None:
     for i in enum:
         if isinstance(i, tuple):
             show_enum_windows(i, c + 1)
