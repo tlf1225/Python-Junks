@@ -1,4 +1,4 @@
-from ctypes import windll, byref, WINFUNCTYPE, c_int, c_bool, py_object, create_string_buffer
+from ctypes import windll, byref, WINFUNCTYPE, c_int, c_bool, py_object, create_unicode_buffer
 from ctypes.wintypes import HWND, DWORD
 from sys import stderr
 
@@ -91,10 +91,10 @@ def search_background() -> tuple:
 
 def query_info(quest: int) -> tuple:
     result = []
-    cls, wt = create_string_buffer(256), create_string_buffer(256)
-    GetClassName(quest, cls, 256)
-    GetWindowText(quest, wt, 256)
-    cls, wt = cls.value.decode(), wt.value.decode()
+    cls, wt = create_unicode_buffer(256), create_unicode_buffer(256)
+    GetClassName(quest, byref(cls), 256)
+    GetWindowText(quest, byref(wt), 256)
+    cls, wt = cls.value, wt.value
     result.append(cls)
     result.append(wt)
     return tuple(result)
@@ -129,7 +129,8 @@ def show_enum_windows(enum: tuple = enum_windows(), c: int = 0):
         if isinstance(i, tuple):
             show_enum_windows(i, c + 1)
         else:
-            print('\t' * (c - 1) + f"H: {i}, C: {GetClassName(i)}, T: {GetWindowText(i)}", file=stderr)
+            cls, wt = query_info(i)
+            print('\t' * (c - 1) + f"H: {i}, C: {cls}, T: {wt}", file=stderr)
     else:
         print('-' * 4 * (c - 1), file=stderr)
 
