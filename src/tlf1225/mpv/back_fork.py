@@ -89,11 +89,11 @@ def search_background() -> tuple:
     return tuple(result)
 
 
-def query_info(quest: int) -> tuple:
+def query_info(quest: int, n: int = 256) -> tuple:
     result = []
-    cls, wt = create_unicode_buffer(256), create_unicode_buffer(256)
-    GetClassName(quest, byref(cls), 256)
-    GetWindowText(quest, byref(wt), 256)
+    cls, wt = create_unicode_buffer(n), create_unicode_buffer(n)
+    GetClassName(quest, byref(cls), n)
+    GetWindowText(quest, byref(wt), n)
     cls, wt = cls.value, wt.value
     result.append(cls)
     result.append(wt)
