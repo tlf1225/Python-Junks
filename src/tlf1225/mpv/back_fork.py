@@ -1,55 +1,32 @@
-from ctypes import windll, byref, WINFUNCTYPE, c_int, c_bool, py_object, create_unicode_buffer
-from ctypes.wintypes import HWND, DWORD
+from ctypes import byref, create_unicode_buffer
 from sys import stderr
 
-DELEGATE = WINFUNCTYPE(c_bool, HWND, py_object)
-
-GetParent = windll.user32.GetParent
-EnumChildWindows = windll.user32.EnumChildWindows
-# noinspection SpellCheckingInspection
-EnumChildWindows.argtypes = (c_int, DELEGATE, py_object)
-EnumWindows = windll.user32.EnumWindows
-# noinspection SpellCheckingInspection
-EnumWindows.argtypes = (DELEGATE, py_object)
-EnumThreadWindows = windll.user32.EnumThreadWindows
-# noinspection SpellCheckingInspection
-EnumThreadWindows.argtypes = (c_int, DELEGATE, py_object)
-GetWindowThreadProcessId = windll.user32.GetWindowThreadProcessId
-SendMessageTimeout = windll.user32.SendMessageTimeoutW
-GetClassName = windll.user32.GetClassNameW
-GetWindowText = windll.user32.GetWindowTextW
-SetForegroundWindow = windll.user32.SetForegroundWindow
-SetWindowPos = windll.user32.SetWindowPos
-FindWindow = windll.user32.FindWindowW
-FindWindowEx = windll.user32.FindWindowExW
-GetShellWindow = windll.user32.GetShellWindow
-# noinspection SpellCheckingInspection
-SWP_NOSIZE = 1
-# noinspection SpellCheckingInspection
-SWP_NOMOVE = 2
+# from tlf1225.mpv.back_define import *
+from tlf1225.mpv.win_define import *
 
 
+@DELEGATE
 def enum_parent(hwnd: HWND, param: list) -> bool:
     param.append(hwnd)
     return True
 
 
+@DELEGATE
 def enum_child(hwnd: HWND, param: tuple = (int, list)) -> bool:
     if GetParent(hwnd) == param[0]:
         param[1].append(hwnd)
     else:
         child = []
-        # noinspection PyTypeChecker
-        EnumChildWindows(hwnd, DELEGATE(enum_child), (hwnd, child))
+        EnumChildWindows(hwnd, enum_child, (hwnd, child))
         if child:
             param[1].append((hwnd, tuple(child)))
     return True
 
 
+@DELEGATE
 def enum_thread(hwnd: HWND, param: tuple = (int, list)) -> bool:
     child = []
-    # noinspection PyTypeChecker
-    EnumChildWindows(hwnd, DELEGATE(enum_child), (hwnd, child))
+    EnumChildWindows(hwnd, enum_child, (hwnd, child))
     if child:
         param[1].append((hwnd, tuple(child)))
     else:
@@ -59,13 +36,11 @@ def enum_thread(hwnd: HWND, param: tuple = (int, list)) -> bool:
 
 def enum_windows() -> tuple:
     parent = []
-    # noinspection PyTypeChecker
-    EnumWindows(DELEGATE(enum_parent), parent)
+    EnumWindows(enum_parent, parent)
     result = []
     for i in parent:
         child = []
-        # noinspection PyTypeChecker
-        EnumChildWindows(i, DELEGATE(enum_child), (i, child))
+        EnumChildWindows(i, enum_child, (i, child))
         if child:
             result.append((i, tuple(child)))
         else:
@@ -78,29 +53,29 @@ def search_background() -> tuple:
     # noinspection SpellCheckingInspection
     """ pro = FindWindow("Progman", "Program Manager") """
     x = DWORD()
-    SendMessageTimeout(pro, 0x52C, None, None, 0, 1000, byref(x))
+    SendMessageTimeout(pro, 0x52C, 0, 0, 0, 1000, byref(x))
     pid = DWORD()
     tid = GetWindowThreadProcessId(pro, byref(pid))
     result = [(pid.value, tid)]
     child = []
-    # noinspection PyTypeChecker
-    EnumThreadWindows(tid, DELEGATE(enum_thread), (pro, child))
+    EnumThreadWindows(tid, enum_thread, (pro, child))
     result.append(tuple(child))
     return tuple(result)
 
 
-def query_info(quest: int, n: int = 256) -> tuple:
-    result = []
-    cls, wt = create_unicode_buffer(n), create_unicode_buffer(n)
-    GetClassName(quest, byref(cls), n)
-    GetWindowText(quest, byref(wt), n)
-    cls, wt = cls.value, wt.value
-    result.append(cls)
-    result.append(wt)
-    return tuple(result)
+def query_info(quest: int) -> tuple:
+    cls = create_unicode_buffer(256)
+    GetClassName(quest, cls, 256)
+    win_len = GetWindowTextLength(quest)
+    if win_len > 0:
+        win_len += 1
+        wt = create_unicode_buffer(win_len)
+        GetWindowText(quest, wt, win_len)
+        return cls.value, wt.value
+    else:
+        return cls.value, ""
 
 
-# noinspection SpellCheckingInspection
 def topmost(enum: tuple = enum_windows(), c: int = 0, hwnd_value: int = -1, cl: str = None, wtx: str = None):
     for i in enum:
         if isinstance(i, tuple):
