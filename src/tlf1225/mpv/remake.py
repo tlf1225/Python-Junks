@@ -154,5 +154,3 @@ if __name__ == '__main__':
 
     terminate_destroy(mpv_handle)
 
-    free(mpv_client_handle)
-    free(mpv_handle)
