@@ -40,12 +40,12 @@ ld_conf_p = con_tx + ((1, "filename"),)
 nd = (1, "node"),
 so = cre_cli_p + ((1, "format"),) + dat
 cmd_p = con_tx + ((1, "args"),)
-cm_nd = cmd_p + ((1, "result"),)
+cm_nd = cmd_p + ((2, "result"),)
 ab_cm = con_tx + ((1, "reply_userdata"),)
 cm_as = ab_cm + ((1, "args"),)
 
 get_opt_p = con_tx + ((1, "name"),)
-set_opt = get_opt = get_opt_p + ((1, "format"), (1, "data"))
+set_opt = get_opt = get_opt_p + ((1, "format"), (2, "data"))
 set_opt_p = get_opt_p + dat
 get_opt_a = con_tx + ((1, "reply_data"), (1, "name"), (1, "format"))
 set_opt_a = get_opt_a + ((1, "data"),)
@@ -122,30 +122,37 @@ __all__ = ["client_api_version", "error_string", "free", "client_name", "client_
 
 if __name__ == '__main__':
     mpv_handle = create()
+
+    set_option_string(mpv_handle, b"input-vo-keyboard", b"yes")
+    set_option_string(mpv_handle, b"input-default-bindings", b"yes")
+    set_option_string(mpv_handle, b"input-media-keys", b"yes")
+    set_option_string(mpv_handle, b"osc", b"yes")
+    set_option_string(mpv_handle, b"ytdl-raw-options", b"no-cache-dir=")
+    # set_option_string(mpv_handle, b"audio-display", b"yes")
+
     initialize(mpv_handle)
 
-    # set_option_string(mpv_handle, c_char_p(b"audio-display"), c_char_p(b"yes"))
+    host_name = client_name(mpv_handle)
+    host_id = client_id(mpv_handle)
 
-    # mpv_client_handle = create_client(mpv_handle, c_char_p(b"Worker"))
+    mpv_client_handle = create_client(mpv_handle, c_char_p(b"Worker"))
 
-    # client_name = client_name(mpv_client_handle)
-    # client_id = client_id(mpv_client_handle)
+    client_name = client_name(mpv_client_handle)
+    client_id = client_id(mpv_client_handle)
 
-    client_name = client_name(mpv_handle)
-    client_id = client_id(mpv_handle)
-
-    print(client_name)
-    print(client_id)
+    print(host_name, client_name)
+    print(host_id, client_id)
 
     # noinspection SpellCheckingInspection
-    command(mpv_handle, (c_char_p * 2)(c_char_p(b"loadfile"), c_char_p(b"ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")))
+    command(mpv_client_handle, (c_char_p * 2)(c_char_p(b"loadfile"), c_char_p(b"ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")))
 
     interact(banner="Mpv Player", local=locals(), exitmsg="Exit")
 
-    command(mpv_handle, (c_char_p * 1)(c_char_p(b"quit")))
+    command(mpv_client_handle, (c_char_p * 1)(c_char_p(b"quit")))
 
-    # destroy(mpv_handle)
+    destroy(mpv_client_handle)
 
     terminate_destroy(mpv_handle)
 
-    # free(mpv_handle)
+    free(mpv_client_handle)
+    free(mpv_handle)
