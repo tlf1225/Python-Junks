@@ -128,7 +128,7 @@ render_context_set_parameter = i_vp_vp(("mpv_render_context_set_parameter", mpv)
 render_context_get_info = i_vp_vp(("mpv_render_context_get_info", mpv), cts)
 render_context_set_update_callback = v_vp_f_vp(("mpv_render_context_set_update_callback", mpv), csc)
 render_context_update = ui64_vp(("mpv_render_context_update", mpv), con_tx)
-render_context_render = i_vp_vp(("mpv_render_context_render", mpv), ctc)
+render_context_render = i_vp_vp(("mpv_render_context_render", mpv), cts)
 render_context_report_swap = v_vp(("mpv_render_context_report_swap", mpv), con_tx)
 render_context_free = v_vp(("mpv_render_context_free", mpv), con_tx)
 
