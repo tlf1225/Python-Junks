@@ -36,11 +36,11 @@ def main():
 
     command(mpv_handle, test)
 
-    flag = True
+    flag = 0
 
     def check_shutdown():
         nonlocal flag
-        while flag:
+        while not flag:
             off = ad = wait_event(mpv_client_handle, 3)
             x = c_int.from_address(off)
             off += sizeof(c_int)
@@ -49,9 +49,9 @@ def main():
             z = c_int64.from_address(off)
             off += sizeof(c_uint64)
             a = c_void_p.from_address(off)
-            if x != 0:
+            if x.value != 0:
                 print(ad, off, x.value, y.value, z.value, a.value)
-            elif x == 1:
+            elif x.value == 1:
                 break
 
     th = Thread(target=check_shutdown)
@@ -66,15 +66,15 @@ def main():
         try:
             interact(banner="Mpv Player", local=g, exitmsg="Exit")
         except SystemExit as ex:
-            pass
+            if ex.code:
+                flag = ex.code
         except Exception as e:
             print(e)
-        flag = g["flag"]
-        if not flag:
+        if flag:
             break
         del g
-
-    flag = False
+    else:
+        flag = 10
 
     command(mpv_handle, (c_char_p * 1)(b"quit"))
 
