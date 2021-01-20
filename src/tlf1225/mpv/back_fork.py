@@ -1,8 +1,8 @@
 from ctypes import byref, create_unicode_buffer
 from sys import stderr
 
-# from tlf1225.mpv.back_define import *
-from tlf1225.mpv.win_define import *
+# from back_define import *
+from win_define import *
 
 
 @DELEGATE

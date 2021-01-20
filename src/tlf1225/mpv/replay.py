@@ -1,7 +1,8 @@
 from code import interact
-from ctypes import c_void_p, c_char_p, c_int, c_int64, c_uint64, create_string_buffer, sizeof, cast
+from ctypes import c_void_p, c_char_p, c_int, c_int64, c_uint64, sizeof
 from threading import Thread
 
+from back_fork import search_background
 from remake import *
 
 
@@ -15,6 +16,7 @@ def main():
     set_option_string(mpv_handle, b"osc", b"yes")
     set_option_string(mpv_handle, b"ytdl-raw-options", b"no-cache-dir=")
     set_option_string(mpv_handle, b"shuffle", b"yes")
+    set_option_string(mpv_handle, b"wid", str(search_background()[1][6]).encode())
     # set_option_string(mpv_handle, b"audio-display", b"yes")
 
     initialize(mpv_handle)
@@ -30,15 +32,16 @@ def main():
     print(ho_n, cl_n)
     print(ho_i, cl_i)
 
-    test = (c_char_p * 2)(cast(create_string_buffer(64), c_char_p), cast(create_string_buffer(64), c_char_p))
-    test[0] = b"loadfile"
-    test[1] = b"ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr"
+    test = (c_char_p * 2)(b"loadfile", b"ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")
 
     command(mpv_handle, test)
 
+    flag = True
+
     def check_shutdown():
-        while True:
-            off = wait_event(mpv_client_handle, -1)
+        nonlocal flag
+        while flag:
+            off = wait_event(mpv_client_handle, 3)
             x = c_int.from_address(off)
             off += sizeof(c_int)
             y = c_int.from_address(off)
@@ -52,17 +55,22 @@ def main():
 
     th = Thread(target=check_shutdown)
 
+    th.setDaemon(True)
+
     th.start()
 
-    while th.is_alive():
+    while th.is_alive() or flag:
+        g = globals().copy()
+        g.update(locals().copy())
         try:
-            interact(banner="Mpv Player", local=locals(), exitmsg="Exit")
+            interact(banner="Mpv Player", local=g, exitmsg="Exit")
         except SystemExit as ex:
-            if ex.code:
-                break
+            pass
         except Exception as e:
             print(e)
-        wakeup(mpv_client_handle)
+        del g
+
+    flag = False
 
     command(mpv_handle, (c_char_p * 1)(c_char_p(b"quit")))
 
