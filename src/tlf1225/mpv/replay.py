@@ -41,7 +41,7 @@ def main():
     def check_shutdown():
         nonlocal flag
         while flag:
-            off = wait_event(mpv_client_handle, 3)
+            off = ad = wait_event(mpv_client_handle, 3)
             x = c_int.from_address(off)
             off += sizeof(c_int)
             y = c_int.from_address(off)
@@ -49,8 +49,9 @@ def main():
             z = c_int64.from_address(off)
             off += sizeof(c_uint64)
             a = c_void_p.from_address(off)
-            print(off, x.value, y.value, z.value, a.value)
-            if x == 1:
+            if x != 0:
+                print(ad, off, x.value, y.value, z.value, a.value)
+            elif x == 1:
                 break
 
     th = Thread(target=check_shutdown)
