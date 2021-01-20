@@ -12,15 +12,19 @@ def test(handle, req):
 
     def response():
         nonlocal handle
-        return dumps(loads(handle.readline().decode()), sort_keys=True, indent=4)
+        buf = handle.readline()
+        return dumps(loads(buf.decode()), sort_keys=True, indent=4)
 
     return request(req), response()
 
 
 def main():
     with open(r"\\.\pipe\tlf1225", "wb+") as handle:
+        def call(ary: list):
+            print("\n".join(test(handle, ary)))
+
         # test message
-        test(handle, ["set_property", "volume", 100])
+        call(["set_property", "volume", 100])
 
         while True:
             var = globals().copy()
