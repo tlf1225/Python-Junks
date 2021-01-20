@@ -59,7 +59,7 @@ def main():
 
     th.start()
 
-    while th.is_alive() or flag:
+    while th.is_alive():
         g = globals().copy()
         g.update(locals().copy())
         try:
@@ -68,11 +68,14 @@ def main():
             pass
         except Exception as e:
             print(e)
+        flag = g["flag"]
+        if not flag:
+            break
         del g
 
     flag = False
 
-    command(mpv_handle, (c_char_p * 1)(c_char_p(b"quit")))
+    command(mpv_handle, (c_char_p * 1)(b"quit"))
 
     th.join(3)
 
