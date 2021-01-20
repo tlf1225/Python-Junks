@@ -44,13 +44,13 @@ ld_conf_p = con_tx + ((1, "filename"),)
 nd = (1, "node"),
 so = cre_cli_p + ((1, "format"),) + dat
 cmd_p = con_tx + ((1, "args"),)
-cm_nd = cmd_p + ((2, "result", POINTER(c_char_p)),)
+cm_nd = cmd_p + ((1, "result"),)
 ab_cm = con_tx + ((1, "reply_userdata"),)
 cm_as = ab_cm + ((1, "args"),)
 
 get_opt_p = con_tx + ((1, "name"),)
 set_opt_p = get_opt_p + dat
-get_opt = get_opt_p + ((1, "format"), (2, "data", c_char_p))
+get_opt = get_opt_p + ((1, "format"), (1, "data"))
 set_opt = get_opt_p + ((1, "format"),) + dat
 get_opt_a = con_tx + ((1, "reply_data"), (1, "name"), (1, "format"))
 set_opt_a = get_opt_a + dat
@@ -131,7 +131,7 @@ set_property_string = i_vp_cp_cp(("mpv_set_property_string", mpv), set_opt_p)
 # noinspection PyArgumentList
 set_property_async = i_vp_ui64_cp_vp_vp(("mpv_set_property_async", mpv), set_opt_a)
 # noinspection PyArgumentList
-get_property = i_vp_cp_vp_vp(("mpv_get_property", mpv), get_opt)
+get_property = i_vp_cp_i_vp(("mpv_get_property", mpv), get_opt)
 # noinspection PyArgumentList
 get_property_string = cp_vp_cp(("mpv_get_property_string", mpv), get_opt_p)
 # noinspection PyArgumentList
