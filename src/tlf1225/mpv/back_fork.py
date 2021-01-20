@@ -52,8 +52,7 @@ def search_background() -> tuple:
     pro = GetShellWindow()
     # noinspection SpellCheckingInspection
     """ pro = FindWindow("Progman", "Program Manager") """
-    x = DWORD()
-    SendMessageTimeout(pro, 0x52C, 0, 0, 0, 1000, byref(x))
+    SendMessageTimeout(pro, 0x52C, 0, 0, 0, 1000)
     pid = DWORD()
     tid = GetWindowThreadProcessId(pro, byref(pid))
     result = [(pid.value, tid)]

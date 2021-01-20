@@ -44,12 +44,12 @@ ld_conf_p = con_tx + ((1, "filename"),)
 nd = (1, "node"),
 so = cre_cli_p + ((1, "format"),) + dat
 cmd_p = con_tx + ((1, "args"),)
-cm_nd = cmd_p + ((2, "result"),)
+cm_nd = cmd_p + ((2, "result", POINTER(c_char_p)),)
 ab_cm = con_tx + ((1, "reply_userdata"),)
 cm_as = ab_cm + ((1, "args"),)
 
 get_opt_p = con_tx + ((1, "name"),)
-set_opt = get_opt = get_opt_p + ((1, "format"), (2, "data"))
+set_opt = get_opt = get_opt_p + ((1, "format"), (1, "data"))
 set_opt_p = get_opt_p + dat
 get_opt_a = con_tx + ((1, "reply_data"), (1, "name"), (1, "format"))
 set_opt_a = get_opt_a + ((1, "data"),)

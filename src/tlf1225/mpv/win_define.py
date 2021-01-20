@@ -48,7 +48,7 @@ GetWindowThreadProcessId = GetWindowThreadProcessIdF(("GetWindowThreadProcessId"
 
 SendMessageTimeoutF = WINFUNCTYPE(PLONG, HWND, UINT, WPARAM, LPARAM, UINT, UINT, LPDWORD, **key)
 # noinspection SpellCheckingInspection
-SendMessageTimeoutP = (1, "hWnd"), (1, "Msg"), (1, "wParam"), (1, "lParam"), (1, "fuFlags"), (1, "uTimeout"), (1, "lpdwResult")
+SendMessageTimeoutP = (1, "hWnd"), (1, "Msg"), (1, "wParam"), (1, "lParam"), (1, "fuFlags"), (1, "uTimeout"), (2, "lpdwResult")
 # noinspection PyArgumentList
 SendMessageTimeout = SendMessageTimeoutF(("SendMessageTimeoutW", windll.user32), SendMessageTimeoutP)
 
