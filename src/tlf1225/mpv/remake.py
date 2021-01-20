@@ -49,12 +49,13 @@ ab_cm = con_tx + ((1, "reply_userdata"),)
 cm_as = ab_cm + ((1, "args"),)
 
 get_opt_p = con_tx + ((1, "name"),)
-set_opt = get_opt = get_opt_p + ((1, "format"), (1, "data"))
 set_opt_p = get_opt_p + dat
+get_opt = get_opt_p + ((1, "format"), (2, "data", c_char_p))
+set_opt = get_opt_p + ((1, "format"),) + dat
 get_opt_a = con_tx + ((1, "reply_data"), (1, "name"), (1, "format"))
-set_opt_a = get_opt_a + ((1, "data"),)
+set_opt_a = get_opt_a + dat
 
-ob_opt = con_tx + ((1, "reply_data"), (1, "name"), (1, "format"))
+ob_opt = get_opt_a
 u_ob_opt = con_tx + ((1, "registered_reply_userdata"),)
 
 ev = (1, "event"),
@@ -68,8 +69,8 @@ hk = con_tx + ((1, "reply_userdata"), (1, "name"), (1, "priority"))
 hk_c = con_tx + ((1, "id"),)
 
 ctc = (2, "res"), (1, "mpv"), (1, "params")
-cts = (1, "ctx"), (1, "param")
-csc = (1, "ctx"), (1, "callback"), (1, "callback_ctx")
+cts = con_tx + ((1, "param"),)
+csc = con_tx + ((1, "callback"), (1, "callback_ctx"),)
 
 # noinspection PyArgumentList
 client_api_version = ul(("mpv_client_api_version", mpv), None)
