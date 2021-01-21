@@ -2,8 +2,8 @@ from code import interact
 from ctypes import c_void_p, c_char_p, c_int, c_int64, c_uint64, sizeof
 from threading import Thread
 
-from back_fork import search_background
-from remake import *
+from .back_fork import search_background
+from .remake import *
 
 
 # noinspection SpellCheckingInspection

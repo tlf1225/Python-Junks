@@ -1,8 +1,8 @@
 from ctypes import byref, create_unicode_buffer
 from sys import stderr
 
-# from back_define import *
-from win_define import *
+# from .back_define import *
+from .win_define import *
 
 
 @DELEGATE

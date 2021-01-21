@@ -3,8 +3,8 @@ from datetime import datetime, timezone, timedelta
 from json import loads, dumps
 from urllib.request import urlopen
 
-# noinspection PyUnresolvedReferences
-from tlf1225.mpv.player import setup
+
+# from ..mpv.player import setup
 
 
 # noinspection SpellCheckingInspection
