@@ -45,7 +45,7 @@ def main():
     cl_n = client_name(mpv_client_handle)
     cl_i = client_id(mpv_client_handle)
 
-    print(ho_n, cl_n)
+    print(ho_n.decode(), cl_n.decode())
     print(ho_i, cl_i)
 
     test = (c_char_p * 2)(b"loadfile", b"ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")
@@ -104,7 +104,7 @@ def main():
             off += sizeof(c_uint64)
             a = c_void_p.from_address(off)
             if x.value != 0:
-                print(ad, off, x.value, y.value, z.value, a.value)
+                print(ad, x.value, y.value, z.value, a.value)
             elif x.value == 1:
                 break
 
