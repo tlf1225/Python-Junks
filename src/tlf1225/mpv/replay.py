@@ -53,7 +53,7 @@ def main():
     command(mpv_client_handle, test)
 
     """
-    from ctypes import windll, byref
+    from ctypes import windll
     from json import loads
     
     command(mpv_client_handle, (c_char_p * 2)(b"keypress", b"i"))
@@ -64,7 +64,7 @@ def main():
     x = c_int64()
     get_property(mpv_client_handle, b"duration", 4, byref(x))
     set_property(mpv_client_handle, b"playlist-pos", 4, byref(x))
-    set_property(mpv_client_handle, b"playlist-pos", 4, byref(c_int(0)))
+    set_property(mpv_client_handle, b"playlist-pos", 4, byref(c_int64(0)))
     
     y = loads(get_property_string(mpv_client_handle, b"playlist"))
 
