@@ -17,11 +17,11 @@ i_vp_i_i = CFUNCTYPE(c_int, c_void_p, c_int, c_int)
 i_vp_ui64 = CFUNCTYPE(c_int, c_void_p, c_uint64)
 i_vp_ui64_cp_i = CFUNCTYPE(c_int, c_void_p, c_uint64, c_char_p, c_int)
 i_vp_vp_vp = CFUNCTYPE(c_int, c_void_p, c_void_p, c_void_p)
-i_vp_vpp_vp = CFUNCTYPE(c_int, c_void_p, POINTER(c_void_p), c_void_p)
+i_vp_cpp_vp = CFUNCTYPE(c_int, c_void_p, POINTER(c_char_p), c_void_p)
 i_vp_ui64_cpp = CFUNCTYPE(c_int, c_void_p, c_uint64, POINTER(c_char_p))
 i_vp_ui64_vp = CFUNCTYPE(c_int, c_void_p, c_uint64, c_void_p)
 i_vp_ui64_cp_vp = CFUNCTYPE(c_int, c_void_p, c_uint64, c_char_p, c_void_p)
-i_vp_ui64_cp_vp_vp = CFUNCTYPE(c_int, c_void_p, c_uint64, c_char_p, c_void_p, c_void_p)
+i_vp_ui64_cp_i_vp = CFUNCTYPE(c_int, c_void_p, c_uint64, c_char_p, c_int, c_void_p)
 i_vpp_vp_vp = CFUNCTYPE(c_int, POINTER(c_void_p), c_void_p, c_void_p)
 i64_vp = CFUNCTYPE(c_int64, c_void_p)
 ul = CFUNCTYPE(c_ulong)
@@ -114,7 +114,7 @@ command = i_vp_cpp(("mpv_command", mpv), cmd_p)
 # noinspection PyArgumentList
 command_node = i_vp_vp_vp(("mpv_command_node", mpv), cm_nd)
 # noinspection PyArgumentList
-command_ret = i_vp_vpp_vp(("mpv_command_ret", mpv), cm_nd)
+command_ret = i_vp_cpp_vp(("mpv_command_ret", mpv), cm_nd)
 # noinspection PyArgumentList
 command_string = i_vp_cp(("mpv_command_string", mpv), cmd_p)
 # noinspection PyArgumentList
@@ -125,11 +125,11 @@ command_node_async = i_vp_ui64_vp(("mpv_command_node_async", mpv), cm_as)
 abort_async_command = v_vp_ui64(("mpv_abort_async_command", mpv), ab_cm)
 
 # noinspection PyArgumentList
-set_property = i_vp_cp_vp_vp(("mpv_set_property", mpv), set_opt)
+set_property = i_vp_cp_i_vp(("mpv_set_property", mpv), set_opt)
 # noinspection PyArgumentList
 set_property_string = i_vp_cp_cp(("mpv_set_property_string", mpv), set_opt_p)
 # noinspection PyArgumentList
-set_property_async = i_vp_ui64_cp_vp_vp(("mpv_set_property_async", mpv), set_opt_a)
+set_property_async = i_vp_ui64_cp_i_vp(("mpv_set_property_async", mpv), set_opt_a)
 # noinspection PyArgumentList
 get_property = i_vp_cp_i_vp(("mpv_get_property", mpv), get_opt)
 # noinspection PyArgumentList
@@ -139,7 +139,7 @@ get_property_osd_string = cp_vp_cp(("mpv_get_property_osd_string", mpv), get_opt
 # noinspection PyArgumentList
 get_property_async = i_vp_ui64_cp_vp(("mpv_get_property_async", mpv), get_opt_a)
 # noinspection PyArgumentList
-observe_property = i_vp_ui64_cp_vp(("mpv_observe_property", mpv), ob_opt)
+observe_property = i_vp_ui64_cp_i(("mpv_observe_property", mpv), ob_opt)
 # noinspection PyArgumentList, SpellCheckingInspection
 unobserve_property = i_vp_ui64(("mpv_unobserve_property", mpv), u_ob_opt)
 

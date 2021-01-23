@@ -19,7 +19,7 @@ def test(handle, req):
 
 
 def main():
-    with open(r"\\.\pipe\tlf1225", "wb+") as handle:
+    with open(r"\\.\pipe\tlf1225", "rb+") as handle:
         def call(ary: list):
             print("\n".join(test(handle, ary)))
 
