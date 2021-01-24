@@ -1,7 +1,9 @@
 from code import interact
 from ctypes import c_void_p, c_char_p, c_int, c_int64, c_uint64, sizeof, byref
 from random import randint
+from sys import stderr
 from threading import Thread
+from time import sleep
 
 from .back_fork import search_background
 from .remake import *
@@ -45,8 +47,8 @@ def main():
     cl_n = client_name(mpv_client_handle)
     cl_i = client_id(mpv_client_handle)
 
-    print(ho_n.decode(), cl_n.decode())
-    print(ho_i, cl_i)
+    print(ho_n.decode(), cl_n.decode(), file=stderr)
+    print(ho_i, cl_i, file=stderr)
 
     test = (c_char_p * 4)(b"loadfile", b"ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")
 
@@ -108,7 +110,7 @@ def main():
                 a = c_void_p.from_address(off)
                 if x.value == 0:
                     continue
-                print(f"Address: {ad}, Event ID: {x.value}, Error Code: {y.value}, UserId: {z.value}, Append Address: {a.value}")
+                print(f"Address: {ad}, Event ID: {x.value}, Error Code: {y.value}, UserId: {z.value}, Append Address: {a.value}", file=stderr)
                 if x.value == 1:
                     break
                 elif event_user_id and z.value == event_user_id:
@@ -124,18 +126,20 @@ def main():
                     frame = c_int64.from_address(w.value)
                     if not w:
                         continue
-                    print(f"Name: {name.value.decode()}, Frame: {frame.value}")
+                    print(f"Name: {name.value.decode()}, Frame: {frame.value}", file=stderr)
                     if frame.value > 0:
                         command(mpv_client_handle, (c_char_p * 4)(b"vf", b"remove", b"@temp"))
                         command(mpv_client_handle, (c_char_p * 4)(b"vf", b"toggle", f"@temp:lavfi=[fade=out:{frame.value - 60}:60]".encode()))
             except Exception as g:
-                print(g)
+                print(g, file=stderr)
 
     th = Thread(target=check_shutdown)
 
     th.setDaemon(True)
 
     th.start()
+
+    sleep(3)
 
     command(mpv_client_handle, c_char_p(b"playlist-shuffle"))
 
@@ -150,7 +154,7 @@ def main():
             if ex.code:
                 flag = ex.code
         except Exception as e:
-            print(e)
+            print(e, file=stderr)
         if flag:
             break
         del g
