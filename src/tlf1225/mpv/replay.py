@@ -97,15 +97,16 @@ def main():
                 if not evt:
                     continue
                 x = getattr(evt.contents, "event_id")
+                if x == 0:
+                    continue
+                if x == 1:
+                    print("Mpv Shutdown", file=stderr)
+                    break
                 y = getattr(evt.contents, "error")
                 z = getattr(evt.contents, "reply_userdata")
                 a = getattr(evt.contents, "data")
-                if x == 0:
-                    continue
                 print(f"Event ID: {x}, Error Code: {y}, UserId: {z}, Additional Data: {a}", file=stderr)
-                if x == 1:
-                    break
-                elif event_user_id and z == event_user_id:
+                if event_user_id and z == event_user_id:
                     pro = MPVEventProperty.from_address(a)
                     name = getattr(pro, "name")
                     info = getattr(pro, "format")
