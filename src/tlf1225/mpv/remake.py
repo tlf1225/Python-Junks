@@ -269,7 +269,7 @@ v_vp = CFUNCTYPE(None, c_void_p)
 v_vp_ui64 = CFUNCTYPE(None, c_void_p, c_uint64)
 v_vp_f_vp = CFUNCTYPE(None, c_void_p, v_vp, c_void_p)
 vp_vp_cp = CFUNCTYPE(c_void_p, c_void_p, c_char_p)
-vp_vp_d = CFUNCTYPE(c_void_p, c_void_p, c_double)
+evp_vp_d = CFUNCTYPE(POINTER(MPVEvent), c_void_p, c_double)
 
 con_tx = (1, "ctx"),
 err = (1, "error"),
@@ -389,7 +389,7 @@ request_event = i_vp_i_i(("mpv_request_event", mpv), re)
 # noinspection PyArgumentList
 request_log_messages = i_vp_cp(("mpv_request_log_messages", mpv), rl)
 # noinspection PyArgumentList
-wait_event = vp_vp_d(("mpv_wait_event", mpv), we)
+wait_event = evp_vp_d(("mpv_wait_event", mpv), we)
 # noinspection PyArgumentList
 wakeup = v_vp(("mpv_wakeup", mpv), con_tx)
 # noinspection PyArgumentList

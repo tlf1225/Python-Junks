@@ -1,5 +1,5 @@
 from code import interact
-from ctypes import c_void_p, c_char_p, c_int, c_int64, c_uint64, sizeof, byref
+from ctypes import c_char_p, c_int64, byref
 from random import randint
 from sys import stderr
 from threading import Thread
@@ -100,33 +100,29 @@ def main():
         nonlocal flag
         while not flag:
             try:
-                off = ad = wait_event(mpv_client_handle, 10)
-                x = c_int.from_address(off)
-                off += sizeof(c_int)
-                y = c_int.from_address(off)
-                off += sizeof(c_int)
-                z = c_uint64.from_address(off)
-                off += sizeof(c_uint64)
-                a = c_void_p.from_address(off)
-                if x.value == 0:
+                evt = wait_event(mpv_client_handle, 10)
+                if not evt:
                     continue
-                print(f"Address: {ad}, Event ID: {x.value}, Error Code: {y.value}, UserId: {z.value}, Append Address: {a.value}", file=stderr)
-                if x.value == 1:
+                x = getattr(evt.contents, "event_id")
+                y = getattr(evt.contents, "error")
+                z = getattr(evt.contents, "reply_userdata")
+                a = getattr(evt.contents, "data")
+                if x == 0:
+                    continue
+                print(f"Event ID: {x}, Error Code: {y}, UserId: {z}, Additional Data: {a}", file=stderr)
+                if x == 1:
                     break
-                elif event_user_id and z.value == event_user_id:
-                    off = a.value
-                    name = c_char_p.from_address(off)
-                    off += sizeof(c_char_p)
-                    info = c_int.from_address(off)
-                    if info.value != 4:
+                elif event_user_id and z == event_user_id:
+                    pro = MPVEventProperty.from_address(a)
+                    name = getattr(pro, "name")
+                    info = getattr(pro, "format")
+                    if info != 4:
                         continue
-                    off += sizeof(c_int)
-                    off += sizeof(c_int)
-                    w = c_void_p.from_address(off)
-                    frame = c_int64.from_address(w.value)
-                    if not w:
+                    w = getattr(pro, "data")
+                    frame = c_int64.from_address(w)
+                    if not frame:
                         continue
-                    print(f"Name: {name.value.decode()}, Frame: {frame.value}", file=stderr)
+                    print(f"Name: {name.decode()}, Frame: {frame.value}", file=stderr)
                     if frame.value > 0:
                         command(mpv_client_handle, (c_char_p * 4)(b"vf", b"remove", b"@temp"))
                         command(mpv_client_handle, (c_char_p * 4)(b"vf", b"toggle", f"@temp:lavfi=[fade=out:{frame.value - 60}:60]".encode()))
