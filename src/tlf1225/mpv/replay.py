@@ -106,7 +106,7 @@ def main():
                 z = getattr(evt.contents, "reply_userdata")
                 a = getattr(evt.contents, "data")
                 print(f"Event ID: {x}, Error Code: {y}, UserId: {z}, Additional Data: {a}", file=stderr)
-                if event_user_id and z == event_user_id:
+                if z == event_user_id and x == 22:
                     pro = MPVEventProperty.from_address(a)
                     name = getattr(pro, "name")
                     info = getattr(pro, "format")
