@@ -96,6 +96,7 @@ def main():
 
     flag = 0
 
+    # noinspection SpellCheckingInspection
     def check_shutdown():
         nonlocal flag
         while not flag:
@@ -126,8 +127,8 @@ def main():
                     if frame.value > 0:
                         command(mpv_client_handle, (c_char_p * 4)(b"vf", b"remove", b"@temp"))
                         command(mpv_client_handle, (c_char_p * 4)(b"vf", b"toggle", f"@temp:lavfi=[fade=out:{frame.value - 60}:60]".encode()))
-            except Exception as g:
-                print(g, file=stderr)
+            except Exception as h:
+                print(h, file=stderr)
 
     th = Thread(target=check_shutdown)
 

@@ -3,6 +3,7 @@ from ctypes.util import find_library
 
 mpv = CDLL(find_library("mpv-1.dll"))
 
+# noinspection SpellCheckingInspection
 MPVError = {
     0: "MPV_ERROR_SUCCESS",
     -1: "MPV_ERROR_EVENT_QUEUE_FULL",
@@ -40,6 +41,7 @@ MPVFormat = {
     9: "MPV_FORMAT_BYTE_ARRAY"
 }
 
+# noinspection SpellCheckingInspection
 MPVEventId = {
     0: "MPV_EVENT_NONE",
     1: "MPV_EVENT_SHUTDOWN",
@@ -240,7 +242,7 @@ cp_i = CFUNCTYPE(c_char_p, c_int)
 cp_vp = CFUNCTYPE(c_char_p, c_void_p)
 cp_vp_cp = CFUNCTYPE(c_char_p, c_void_p, c_char_p)
 i_vp = CFUNCTYPE(c_int, c_void_p)
-i_nd_ev = CFUNCTYPE(c_int, MPVNode, MPVEvent)
+i_ndp_evp = CFUNCTYPE(c_int, POINTER(MPVNode), POINTER(MPVEvent))
 i_vp_cp = CFUNCTYPE(c_int, c_void_p, c_char_p)
 i_vp_cp_cp = CFUNCTYPE(c_int, c_void_p, c_char_p, c_char_p)
 i_vp_cp_vp_vp = CFUNCTYPE(c_int, c_void_p, c_char_p, c_void_p, c_void_p)
@@ -251,11 +253,10 @@ i_vp_ui64 = CFUNCTYPE(c_int, c_void_p, c_uint64)
 i_vp_ui64_cp_i = CFUNCTYPE(c_int, c_void_p, c_uint64, c_char_p, c_int)
 i_vp_rp = CFUNCTYPE(c_int, c_void_p, MPVRenderParam)
 i_vp_rpp = CFUNCTYPE(c_int, c_void_p, POINTER(MPVRenderParam))
-i_vp_nd_nd = CFUNCTYPE(c_int, c_void_p, MPVNode, MPVNode)
-i_vp_cpp_nd = CFUNCTYPE(c_int, c_void_p, POINTER(c_char_p), MPVNode)
+i_vp_ndp_ndp = CFUNCTYPE(c_int, c_void_p, POINTER(MPVNode), POINTER(MPVNode))
+i_vp_cpp_ndp = CFUNCTYPE(c_int, c_void_p, POINTER(c_char_p), POINTER(MPVNode))
 i_vp_ui64_cpp = CFUNCTYPE(c_int, c_void_p, c_uint64, POINTER(c_char_p))
-i_vp_ui64_nd = CFUNCTYPE(c_int, c_void_p, c_uint64, MPVNode)
-i_vp_ui64_cp_vp = CFUNCTYPE(c_int, c_void_p, c_uint64, c_char_p, c_void_p)
+i_vp_ui64_ndp = CFUNCTYPE(c_int, c_void_p, c_uint64, POINTER(MPVNode))
 i_vp_ui64_cp_i_vp = CFUNCTYPE(c_int, c_void_p, c_uint64, c_char_p, c_int, c_void_p)
 i_vpp_vp_vp = CFUNCTYPE(c_int, POINTER(c_void_p), c_void_p, c_void_p)
 i_vpp_vp_rpp = CFUNCTYPE(c_int, POINTER(c_void_p), c_void_p, POINTER(MPVRenderParam))
@@ -264,7 +265,7 @@ ul = CFUNCTYPE(c_ulong)
 ui64_vp = CFUNCTYPE(c_int64, c_void_p)
 vp = CFUNCTYPE(c_void_p)
 vp_vp = CFUNCTYPE(c_void_p, c_void_p)
-v_nd = CFUNCTYPE(None, MPVNode)
+v_ndp = CFUNCTYPE(None, POINTER(MPVNode))
 v_vp = CFUNCTYPE(None, c_void_p)
 v_vp_ui64 = CFUNCTYPE(None, c_void_p, c_uint64)
 v_vp_f_vp = CFUNCTYPE(None, c_void_p, v_vp, c_void_p)
@@ -339,7 +340,7 @@ load_config_file = i_vp_cp(("mpv_load_config_file", mpv), ld_conf_p)
 # noinspection PyArgumentList
 get_time_us = i64_vp(("mpv_get_time_us", mpv), con_tx)
 # noinspection PyArgumentList
-free_node_contents = v_nd(("mpv_free_node_contents", mpv), nd)
+free_node_contents = v_ndp(("mpv_free_node_contents", mpv), nd)
 
 # noinspection PyArgumentList
 set_option = i_vp_cp_i_vp(("mpv_set_option", mpv), so)
@@ -349,15 +350,15 @@ set_option_string = i_vp_cp_cp(("mpv_set_option_string", mpv), set_opt_p)
 # noinspection PyArgumentList
 command = i_vp_cpp(("mpv_command", mpv), cmd_p)
 # noinspection PyArgumentList
-command_node = i_vp_nd_nd(("mpv_command_node", mpv), cm_nd)
+command_node = i_vp_ndp_ndp(("mpv_command_node", mpv), cm_nd)
 # noinspection PyArgumentList
-command_ret = i_vp_cpp_nd(("mpv_command_ret", mpv), cm_nd)
+command_ret = i_vp_cpp_ndp(("mpv_command_ret", mpv), cm_nd)
 # noinspection PyArgumentList
 command_string = i_vp_cp(("mpv_command_string", mpv), cmd_p)
 # noinspection PyArgumentList
 command_async = i_vp_ui64_cpp(("mpv_command_async", mpv), cm_as)
 # noinspection PyArgumentList
-command_node_async = i_vp_ui64_nd(("mpv_command_node_async", mpv), cm_as)
+command_node_async = i_vp_ui64_ndp(("mpv_command_node_async", mpv), cm_as)
 # noinspection PyArgumentList
 abort_async_command = v_vp_ui64(("mpv_abort_async_command", mpv), ab_cm)
 
@@ -374,7 +375,7 @@ get_property_string = cp_vp_cp(("mpv_get_property_string", mpv), get_opt_p)
 # noinspection PyArgumentList
 get_property_osd_string = cp_vp_cp(("mpv_get_property_osd_string", mpv), get_opt_p)
 # noinspection PyArgumentList
-get_property_async = i_vp_ui64_cp_vp(("mpv_get_property_async", mpv), get_opt_a)
+get_property_async = i_vp_ui64_cp_i(("mpv_get_property_async", mpv), get_opt_a)
 # noinspection PyArgumentList
 observe_property = i_vp_ui64_cp_i(("mpv_observe_property", mpv), ob_opt)
 # noinspection PyArgumentList, SpellCheckingInspection
@@ -383,7 +384,7 @@ unobserve_property = i_vp_ui64(("mpv_unobserve_property", mpv), u_ob_opt)
 # noinspection PyArgumentList
 event_name = cp_i(("mpv_event_name", mpv), ev)
 # noinspection PyArgumentList
-event_to_node = i_nd_ev(("mpv_event_to_node", mpv), en)
+event_to_node = i_ndp_evp(("mpv_event_to_node", mpv), en)
 # noinspection PyArgumentList
 request_event = i_vp_i_i(("mpv_request_event", mpv), re)
 # noinspection PyArgumentList
