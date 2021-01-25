@@ -1,5 +1,5 @@
 from code import interact
-from ctypes import c_char_p, c_int64, byref
+from ctypes import c_char_p, c_int64, byref, windll
 from random import randint
 from sys import stderr
 from threading import Thread
@@ -55,18 +55,13 @@ def main():
     command(mpv_client_handle, test)
 
     """
-    from ctypes import windll
     from json import loads
     
     command(mpv_client_handle, (c_char_p * 2)(b"keypress", b"i"))
-    command(mpv_client_handle, c_char_p(b"playlist-next"))
-    command(mpv_client_handle, c_char_p(b"playlist-shuffle"))
-    command(mpv_client_handle, (c_char_p * 2)(b"cycle", "pause"))
     
     x = c_int64()
     get_property(mpv_client_handle, b"duration", 4, byref(x))
     set_property(mpv_client_handle, b"playlist-pos", 4, byref(x))
-    set_property(mpv_client_handle, b"playlist-pos", 4, byref(c_int64(0)))
     
     y = loads(get_property_string(mpv_client_handle, b"playlist"))
 
@@ -82,17 +77,14 @@ def main():
     command_string(mpv_client_handle, b"keypress i")
     command_string(mpv_client_handle, b"playlist-next")
     
-    windll.kernel32.SetConsoleTitleA(get_property_string(mpv_client_handle, b"media-title"))
-    
     frame = c_int64()
     get_property(mpv_client_handle, b"estimated-frame-count", 4, byref(frame))
-    command(mpv_client_handle, (c_char_p * 3)(b"vf", b"toggle", f"@temp:lavfi=[fade=out:{frame.value}:60]".encode()))
-    command(mpv_client_handle, (c_char_p * 3)(b"vf", b"remove", b"@temp"))
     """
 
     event_user_id = randint(0, 32768)
 
     observe_property(mpv_client_handle, event_user_id, b"estimated-frame-count", 4)
+    observe_property(mpv_client_handle, event_user_id, b"media-title", 1)
 
     flag = 0
 
@@ -117,16 +109,20 @@ def main():
                     pro = MPVEventProperty.from_address(a)
                     name = getattr(pro, "name")
                     info = getattr(pro, "format")
-                    if info != 4:
+                    if info != 4 and info != 1:
                         continue
                     w = getattr(pro, "data")
-                    frame = c_int64.from_address(w)
-                    if not frame:
-                        continue
-                    print(f"Name: {name.decode()}, Frame: {frame.value}", file=stderr)
-                    if frame.value > 0:
-                        command(mpv_client_handle, (c_char_p * 4)(b"vf", b"remove", b"@temp"))
-                        command(mpv_client_handle, (c_char_p * 4)(b"vf", b"toggle", f"@temp:lavfi=[fade=out:{frame.value - 60}:60]".encode()))
+                    if name == b"estimated-frame-count":
+                        frame = c_int64.from_address(w)
+                        if not frame:
+                            continue
+                        print(f"Name: {name.decode()}, Frame: {frame.value}", file=stderr)
+                        if frame.value > 0:
+                            command(mpv_client_handle, (c_char_p * 4)(b"vf", b"remove", b"@temp"))
+                            command(mpv_client_handle, (c_char_p * 4)(b"vf", b"toggle", f"@temp:lavfi=[fade=out:{frame.value - 60}:60]".encode()))
+                    elif name == b"media-title":
+                        media = c_char_p.from_address(w)
+                        windll.kernel32.SetConsoleTitleA(media)
             except Exception as h:
                 print(h, file=stderr)
 
