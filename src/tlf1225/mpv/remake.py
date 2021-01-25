@@ -420,13 +420,14 @@ render_context_report_swap = v_vp(("mpv_render_context_report_swap", mpv), con_t
 render_context_free = v_vp(("mpv_render_context_free", mpv), con_tx)
 
 # noinspection SpellCheckingInspection
-__all__ = ["client_api_version", "error_string", "free", "client_name", "client_id", "create", "initialize", "destroy", "terminate_destroy",
-           "create_client", "create_weak_client", "load_config_file", "get_time_us", "free_node_contents", "set_option", "set_option_string",
-           "command", "command_node", "command_ret", "command_string", "command_async", "command_node_async", "abort_async_command", "set_property",
+__all__ = ["MPVEventStartFile", "MPVEventEndFile", "MPVEventClientMessage", "MPVEventHook", "MPVEventLogMessage", "MPVEventProperty", "MPVEvent",
+           "MPVByteArray", "MPVUnion", "MPVNode", "MPVNodeList", "MPVEventCommand", "MPVRenderFrameInfo", "MPVRenderParam", "MPVError", "MPVFormat",
+           "MPVEventId", "MPVLog", "MPVEndFileReason", "MPVRenderParamType", "MPVRenderFrameInfoFlags", "MPVRenderUpdateFlag", "client_api_version",
+           "error_string", "free", "client_name", "client_id", "create", "initialize", "destroy", "terminate_destroy", "create_client",
+           "create_weak_client", "load_config_file", "get_time_us", "free_node_contents", "set_option", "set_option_string", "command",
+           "command_node", "command_ret", "command_string", "command_async", "command_node_async", "abort_async_command", "set_property",
            "set_property_string", "set_property_async", "get_property", "get_property_string", "get_property_osd_string", "get_property_async",
            "observe_property", "unobserve_property", "event_name", "event_to_node", "request_event", "request_log_messages", "wait_event", "wakeup",
            "set_wakeup_callback", "wait_async_requests", "hook_add", "hook_continue", "render_context_create", "render_context_set_parameter",
-           "render_context_set_update_callback", "render_context_update", "render_context_render", "render_context_report_swap",
-           "render_context_free", "MPVEventStartFile", "MPVEventEndFile", "MPVEventClientMessage", "MPVEventHook", "MPVEventLogMessage",
-           "MPVEventProperty", "MPVEvent", "MPVByteArray", "MPVUnion", "MPVNode", "MPVNodeList", "MPVEventCommand", "MPVRenderFrameInfo",
-           "MPVRenderParam"]
+           "render_context_get_info", "render_context_set_update_callback", "render_context_update", "render_context_render",
+           "render_context_report_swap", "render_context_free"]
