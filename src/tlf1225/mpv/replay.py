@@ -44,7 +44,7 @@ def main():
 
     mpv_client_handle = create_client(mpv_handle, b"Worker")
 
-    request_log_messages(mpv_client_handle, "trace")
+    request_log_messages(mpv_client_handle, b"v")
 
     cl_n = client_name(mpv_client_handle)
     cl_i = client_id(mpv_client_handle)
