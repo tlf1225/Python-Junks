@@ -98,41 +98,34 @@ def main():
                 evt = wait_event(mpv_client_handle, 10)
                 if not evt:
                     continue
-                x = getattr(evt.contents, "event_id")
-                if x == 0:
+                event_id, error_code, reply_userdata, data = \
+                    getattr(evt.contents, "event_id"), getattr(evt.contents, "error"), \
+                    getattr(evt.contents, "reply_userdata"), getattr(evt.contents, "data")
+                if event_id == 0:
                     continue
-                if x == 1:
+                if event_id == 1:
                     print("Mpv Shutdown", file=stderr)
                     break
-                y = getattr(evt.contents, "error")
-                z = getattr(evt.contents, "reply_userdata")
-                a = getattr(evt.contents, "data")
-                print(f"Event ID: {x}, Error Code: {y}, UserId: {z}, Additional Data: {a}", file=stderr)
-                if z == event_user_id and x == 22:
-                    pro = MPVEventProperty.from_address(a)
-                    name = getattr(pro, "name")
-                    info = getattr(pro, "format")
-                    if info != 4 and info != 1:
-                        continue
-                    w = getattr(pro, "data")
-                    if name == b"estimated-frame-count":
-                        frame = c_int64.from_address(w)
+                if event_id == 22 and reply_userdata == event_user_id:
+                    pro = MPVEventProperty.from_address(data)
+                    name, info, work = getattr(pro, "name"), getattr(pro, "format"), getattr(pro, "data")
+                    if name == b"estimated-frame-count" and info == 4:
+                        frame = c_int64.from_address(work)
                         if not frame:
                             continue
                         print(f"Name: {name.decode()}, Frame: {frame.value}", file=stderr)
                         if frame.value > 0:
                             command(mpv_client_handle, (c_char_p * 4)(b"vf", b"remove", b"@temp"))
                             command(mpv_client_handle, (c_char_p * 4)(b"vf", b"toggle", f"@temp:lavfi=[fade=out:{frame.value - 60}:60]".encode()))
-                    elif name == b"media-title":
-                        media = c_char_p.from_address(w)
+                    elif name == b"media-title" and info == 1:
+                        media = c_char_p.from_address(work)
                         windll.kernel32.SetConsoleTitleA(media)
-                elif x == 2:
-                    log = MPVEventLogMessage.from_address(a)
-                    prefix = getattr(log, "prefix")
-                    level = getattr(log, "level")
-                    text = getattr(log, "text")
-                    log_level = getattr(log, "log_level")
-                    print(f"[{prefix.decode()}] {level.decode()}/{log_level}: {text.decode()}", file=stderr)
+                elif event_id == 2:
+                    log = MPVEventLogMessage.from_address(data)
+                    prefix, level, text, log_level = getattr(log, "prefix"), getattr(log, "level"), getattr(log, "text"), getattr(log, "log_level")
+                    print(f"[{prefix.decode()}] {level.decode()}({log_level}): {text.decode()}", file=stderr)
+                else:
+                    print(f"Event ID: {event_id}, Error Code: {error_code}, UserData: {reply_userdata}, Additional Data: {data}", file=stderr)
             except Exception as h:
                 print(h, file=stderr)
 
