@@ -126,6 +126,13 @@ def main():
                     elif name == b"media-title":
                         media = c_char_p.from_address(w)
                         windll.kernel32.SetConsoleTitleA(media)
+                elif x == 2:
+                    log = MPVEventLogMessage.from_address(a)
+                    prefix = getattr(log, "prefix")
+                    level = getattr(log, "level")
+                    text = getattr(log, "text")
+                    log_level = getattr(log, "log_level")
+                    print(f"[{prefix.decode()}] {level.decode()}/{log_level}: {text.decode()}", file=stderr)
             except Exception as h:
                 print(h, file=stderr)
 
