@@ -44,7 +44,7 @@ def main():
 
     mpv_client_handle = create_client(mpv_handle, b"Worker")
 
-    request_log_messages(mpv_client_handle, b"v")
+    request_log_messages(mpv_client_handle, b"info")
 
     cl_n = client_name(mpv_client_handle)
     cl_i = client_id(mpv_client_handle)
@@ -123,7 +123,7 @@ def main():
                 elif event_id == 2:
                     log = MPVEventLogMessage.from_address(data)
                     prefix, level, text, log_level = getattr(log, "prefix"), getattr(log, "level"), getattr(log, "text"), getattr(log, "log_level")
-                    print(f"[{prefix.decode()}] {level.decode()}({log_level}): {text.decode()}", file=stderr)
+                    print(f"[{prefix.decode()}] {level.decode()}({log_level}): {text.decode()}", file=stderr, end="")
                 else:
                     print(f"Event ID: {event_id}, Error Code: {error_code}, UserData: {reply_userdata}, Additional Data: {data}", file=stderr)
             except Exception as h:
