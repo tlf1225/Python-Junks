@@ -1,7 +1,7 @@
 from ctypes import CDLL, c_void_p, c_char_p, c_int, c_int64, c_uint64, c_ulong, c_double, CFUNCTYPE, POINTER, Structure, Union, c_size_t
 from ctypes.util import find_library
 
-mpv = CDLL(find_library("mpv-1.dll"))
+mpv = CDLL(find_library("mpv-1"))
 
 # noinspection SpellCheckingInspection
 MPVError = {

@@ -44,6 +44,8 @@ def main():
 
     mpv_client_handle = create_client(mpv_handle, b"Worker")
 
+    request_log_messages(mpv_client_handle, "trace")
+
     cl_n = client_name(mpv_client_handle)
     cl_i = client_id(mpv_client_handle)
 
@@ -155,7 +157,7 @@ def main():
     else:
         flag = 10
 
-    command(mpv_client_handle, (c_char_p * 1)(b"quit"))
+    command(mpv_client_handle, c_char_p(b"quit"))
 
     th.join(3)
 
