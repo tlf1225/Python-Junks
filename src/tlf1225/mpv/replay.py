@@ -1,5 +1,5 @@
 from code import interact
-from ctypes import c_char_p, c_int64, byref, windll
+from ctypes import c_char_p, c_int64, windll
 from random import randint
 from sys import stderr
 from threading import Thread
@@ -72,9 +72,6 @@ def main():
     set_property_string(mpv_client_handle, b"speed", b"1.25")
     set_property_string(mpv_client_handle, b"playlist-pos", b"22")
     
-    for i in playlist:
-        command(mpv_client_handle, (c_char_p * 4)(b"loadfile", i.encode(), b"append"))
-    
     command_string(mpv_client_handle, b"seek 120")
     command_string(mpv_client_handle, b"keypress i")
     command_string(mpv_client_handle, b"playlist-next")
@@ -119,7 +116,7 @@ def main():
                             command(mpv_client_handle, (c_char_p * 4)(b"vf", b"toggle", f"@temp:lavfi=[fade=out:{frame.value - 60}:60]".encode()))
                     elif name == b"media-title" and info == 1:
                         media = c_char_p.from_address(work)
-                        windll.kernel32.SetConsoleTitleA(media)
+                        windll.kernel32.SetConsoleTitleW(media.value.decode())
                 elif event_id == 2:
                     log = MPVEventLogMessage.from_address(data)
                     prefix, level, text, log_level = getattr(log, "prefix"), getattr(log, "level"), getattr(log, "text"), getattr(log, "log_level")
@@ -135,11 +132,36 @@ def main():
 
     th.start()
 
-    sleep(3)
+    sleep(5)
 
     command(mpv_client_handle, c_char_p(b"playlist-shuffle"))
 
-    set_property(mpv_client_handle, b"playlist-pos", 4, byref(c_int64(0)))
+    set_property_string(mpv_client_handle, b"playlist-pos", b"0")
+
+    playlist = [f"ytdl://{yt}" for yt in
+                ('0mxpCgVE_4c', '14C7d1LO8bU', '340ZzONBHhQ', '4mbtk45j6rc', '5aFDb2aUI-o',
+                 '5gzJ7uk74UA', '6G5PS8alMuM', '6gBbpbRSRiY', '6it-y7zyt8s', '7U1qiS7B8Nk',
+                 '7kHDRCO43iw', '9avbb6e9eBw', '9c0gAfV7M_4', '9m3qeiAgZvA', 'B1g1djVfweY',
+                 'B5nzIG1B45g', 'BVGUA5vLsl8', 'BaB0e3O08I4', 'BahP4Pixv5w', 'E46l605KSlg',
+                 'EHY4GTg1wpM', 'FnVLrIV2Ook', 'I42W9RyGvF4', 'IHCrqdLTWKo', 'JDocJA7hDKY',
+                 'K0lw3qXBQ0g', 'Lk7t7m8uXgg', 'NgCGAIKdcYI', 'Oiud3DLGloA', 'OjYskFbYJTI',
+                 'PhbB4eGV-fI', 'QRcagfSTRE0', 'Q_as_NVMfB4', 'Rf9ppDaIxAI', 'qU_H0z6fCls',
+                 'VLng2Eu1YyQ', 'WcNIJldE7U8', 'Xuf2Kt2CfkQ', 'Ys2p_bXOaAc', 'ZRWq2JFOSXw',
+                 'ZojVSmK_3-c', '_W90dohDz1s', '_lRkDv7gelw', 'aKtHNlP0_zo', 'cN5S-fHGhAA',
+                 'co-YIaCO1ig', 'cxWJK8VJkoQ', 'e3yq5UBR0hQ', 'ejZan8kKjsY', 'fZLptuqF9pk',
+                 'iPNkYAA_f90', 'j33hMzdsq9k', 'jFvB1WleWNU', 'jtH_nLso2Gg', 'jztI5SZ6lEc',
+                 'm4zkuc_wU2s', 'mfZVElthNHA', 'oMr0y0hZ2HA', 'oag5Wb93ah0', 'oejeamt3akY',
+                 'sLz2CsN0NZU', 'sNuNR8v9MLU', 'thDKz6QQtQk', 'uk2c0qLhOaY', 'v0jb3Ld8bF8',
+                 'vaYdSkvJAdU', 'vw-we-8-vwc', 'w-l9a4KggYs', 'xoNDIBcNI-I', 'xxOcLcPrs2w',
+                 'yQ3pFBrZqak', 'mg6PCPVUg7I', 'CH9cHp-QM1c', 'lg6RecLKxXU', 'DZgGQboLTm4',
+                 'i75oLwv286U', 'ZHUDc38ncAA')] + \
+               [f"https://nico.ms/{nc}" for nc in
+                ('nm4624881',)] + \
+               [f"https://www.bilibili.com/video/{bb}" for bb in
+                ('BV1Es41127k8', 'BV1Zs411C7K8', 'BV1ds411C7pL')]
+
+    for i in playlist:
+        command(mpv_client_handle, (c_char_p * 4)(b"loadfile", i.encode(), b"append"))
 
     while th.is_alive():
         g = globals().copy()
