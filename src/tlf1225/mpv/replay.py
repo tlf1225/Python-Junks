@@ -34,6 +34,9 @@ def main():
     set_option_string(mpv_handle, b"af", b"@default:lavfi=[dynaudnorm=b=1:c=1:g=11:r=1.0],asoftclip=type=tanh")
     set_option_string(mpv_handle, b"vf", b"@default:lavfi=[fade=in:0:60,pad=0:ih+80:-1:-1:0x008fbf:0:16/9]")
     set_option_string(mpv_handle, b"audio-display", b"yes")
+    # set_option_string(mpv_handle, b"idle", b"yes")
+    # set_option_string(mpv_handle, b"input-terminal", b"no")
+    # set_option_string(mpv_handle, b"terminal", b"no")
 
     load_config_file(mpv_handle, b"mpv.conf")
 
@@ -100,27 +103,30 @@ def main():
                     getattr(evt.contents, "reply_userdata"), getattr(evt.contents, "data")
                 if event_id == 0:
                     continue
-                if event_id == 1:
+                elif event_id == 1:
                     print("Mpv Shutdown", file=stderr)
                     break
-                if event_id == 22 and reply_userdata == event_user_id:
-                    pro = MPVEventProperty.from_address(data)
-                    name, info, work = getattr(pro, "name"), getattr(pro, "format"), getattr(pro, "data")
-                    if name == b"estimated-frame-count" and info == 4:
-                        frame = c_int64.from_address(work)
-                        if not frame:
-                            continue
-                        print(f"Name: {name.decode()}, Frame: {frame.value}", file=stderr)
-                        if frame.value > 0:
-                            command(mpv_client_handle, (c_char_p * 4)(b"vf", b"remove", b"@temp"))
-                            command(mpv_client_handle, (c_char_p * 4)(b"vf", b"toggle", f"@temp:lavfi=[fade=out:{frame.value - 60}:60]".encode()))
-                    elif name == b"media-title" and info == 1:
-                        media = c_char_p.from_address(work)
-                        windll.kernel32.SetConsoleTitleW(media.value.decode())
                 elif event_id == 2:
                     log = MPVEventLogMessage.from_address(data)
                     prefix, level, text, log_level = getattr(log, "prefix"), getattr(log, "level"), getattr(log, "text"), getattr(log, "log_level")
                     print(f"[{prefix.decode()}] {level.decode()}({log_level}): {text.decode()}", file=stderr, end="")
+                elif event_id == 3:
+                    pass
+                elif event_id == 22:
+                    if reply_userdata == event_user_id:
+                        pro = MPVEventProperty.from_address(data)
+                        name, info, work = getattr(pro, "name"), getattr(pro, "format"), getattr(pro, "data")
+                        if name == b"estimated-frame-count" and info == 4:
+                            frame = c_int64.from_address(work)
+                            if not frame:
+                                continue
+                            print(f"Name: {name.decode()}, Frame: {frame.value}", file=stderr)
+                            if frame.value > 0:
+                                command(mpv_client_handle, (c_char_p * 4)(b"vf", b"remove", b"@temp"))
+                                command(mpv_client_handle, (c_char_p * 4)(b"vf", b"toggle", f"@temp:lavfi=[fade=out:{frame.value - 60}:60]".encode()))
+                        elif name == b"media-title" and info == 1:
+                            media = c_char_p.from_address(work)
+                            windll.kernel32.SetConsoleTitleW(media.value.decode())
                 else:
                     print(f"Event ID: {event_id}, Error Code: {error_code}, UserData: {reply_userdata}, Additional Data: {data}", file=stderr)
             except Exception as h:
@@ -189,4 +195,8 @@ def main():
 
 
 if __name__ == '__main__':
+    cw = windll.kernel32.GetConsoleWindow()
+    sm = windll.user32.GetSystemMenu(cw, False)
+    windll.user32.EnableMenuItem(sm, 0xF060, 3)
     main()
+    windll.user32.EnableMenuItem(sm, 0xF060, 0)
