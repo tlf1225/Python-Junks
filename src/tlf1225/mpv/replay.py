@@ -55,7 +55,7 @@ def main():
     print(ho_n.decode(), cl_n.decode(), file=stderr)
     print(ho_i, cl_i, file=stderr)
 
-    test = (c_char_p * 4)(b"loadfile", b"ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr")
+    test = (c_char_p * 4)(b"loadfile", b"ytdl://PLfwcn8kB8EmMQSt88kswhY-QqJtWfVYEr", b"append-play")
 
     command(mpv_client_handle, test)
 
@@ -141,8 +141,6 @@ def main():
     sleep(5)
 
     command(mpv_client_handle, c_char_p(b"playlist-shuffle"))
-
-    set_property_string(mpv_client_handle, b"playlist-pos", b"0")
 
     playlist = [f"ytdl://{yt}" for yt in
                 ('0mxpCgVE_4c', '14C7d1LO8bU', '340ZzONBHhQ', '4mbtk45j6rc', '5aFDb2aUI-o',
