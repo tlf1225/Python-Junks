@@ -172,10 +172,7 @@ def main():
 
     def test(prompt):
         with lock:
-            temp = input(prompt)
-            if not temp:
-                sleep(3)
-            return temp
+            return input(prompt)
 
     while th.is_alive():
         g = globals().copy()
